@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<package name="craft.library.node" xmlns="http://www.neoneo.nl/craft">
+	<container type="Container">
+		<id type="string" />
+		<class type="array" delimiter=" " />
+	</container>
+</package>

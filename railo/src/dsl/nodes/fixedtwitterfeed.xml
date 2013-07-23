@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<node name="fixedtwitterfeed" extends="twitterfeed"><!-- neem een ander node type als uitgangspunt -->
+	<!-- alle attributen die hier komen overschrijven of breiden uit -->
+	<count type="numeric" editable="false">5</count>
+	<handle>@jeroenknoef</handle>
+</node>

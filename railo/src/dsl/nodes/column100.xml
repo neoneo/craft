@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<node name="column100" extends="container">
+	<class type="string">column100</class>
+</node>

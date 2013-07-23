@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- 
+	In een layout definitie wordt alleen gepraat in termen van elementen binnen elementen.
+	Afhankelijkheden van elementen worden bij het element gedefinieerd.
+-->
+<layout ref="threecolumnlayout">
+	<title>Iets</title>
+	<script src="script.js" />
+	<stylesheet href="style.css" media="all" />
+
+	<column100>
+		<logo />
+		<mainmenu />
+	</column100>
+	<column33>
+		<submenu />
+	</column33>
+	<column33>
+		<region ref="main" />
+	</column33>
+	<column33 class="right">
+		<twitterfeed handle="@crispydata" count="5" />
+		<region ref="side" />
+	</column33>
+</layout>

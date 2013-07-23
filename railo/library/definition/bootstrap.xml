@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package name="craft.library.node.bootstrap" xmlns="http://www.neoneo.nl/craft" xmlns:b="http://www.neoneo.nl/craft/bootstrap">
+	<b:scaffoldelement extends="container">
+		<fluid type="boolean">false</fluid>
+	</b:scaffoldelement>
+	<b:row type="Row" extends="b:scaffoldelement" />
+	<b:container type="Container" extends="b:scaffoldelement" />
+	<b:column100 type="Column100" extends="b:container" />
+	<b:column17 type="Column17" extends="b:container" />
+	<b:column25 type="Column25" extends="b:container" />
+	<b:column33 type="Column33" extends="b:container" />
+	<b:column42 type="Column42" extends="b:container" />
+	<b:column50 type="Column50" extends="b:container" />
+	<b:column58 type="Column58" extends="b:container" />
+	<b:column67 type="Column67" extends="b:container" />
+	<b:column75 type="Column75" extends="b:container" />
+	<b:column83 type="Column83" extends="b:container" />
+</package>

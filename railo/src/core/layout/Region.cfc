@@ -1,0 +1,6 @@
+/**
+ * @abstract
+ **/
+component extends="TemplateComponent" {
+
+}
