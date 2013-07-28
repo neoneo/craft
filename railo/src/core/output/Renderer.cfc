@@ -1,5 +1,5 @@
 interface {
 
-	public String function render(required String template, required Struct model);
+	public Struct function render(required String view, required Struct model, required Extension extension);
 
 }

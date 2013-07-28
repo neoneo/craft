@@ -1,8 +1,4 @@
-/**
- * QueryStringContext
- * This context uses only the query string. It expects the path to be present in the path parameter on the query string.
- **/
-component extends="Context" {
+component extends="EndPoint" {
 
 	public String function createUrl(required String path, Struct parameters, String extensionName) {
 
@@ -37,7 +33,7 @@ component extends="Context" {
 	}
 
 	public String function getPath() {
-		return getParameters().path ?: "/"
+		return url.path ?: "/"
 	}
 
 }

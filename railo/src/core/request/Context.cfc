@@ -10,15 +10,15 @@ import craft.core.output.Renderer;
  **/
 component accessors="true" {
 
-	property PathSegment pathSegment setter="false";
+	property Content content setter="false";
 	property Struct parameters setter="false";
 	property Extension extension setter="false";
 
-	public void function init(required PathSegment pathSegment, required Struct parameters, required ViewInventory viewInventory, required Renderer renderer, required Extension extension) {
+	public void function init(required Content content, required Struct parameters, required Extension extension, required Renderer renderer) {
 
-		variables.pathSegment = pathSegment
+		variables.content = arguments.content
 		variables.parameters = arguments.parameters
-		variables.viewInventory = arguments.viewInventory
+		//variables.viewInventory = arguments.viewInventory
 		variables.renderer = arguments.renderer
 		variables.extension = arguments.extension
 
@@ -26,15 +26,17 @@ component accessors="true" {
 
 	public Struct function render(required String view, required Struct model) {
 
-		// the view inventory returns the name of the template and the extension that is rendered by the template
-		var data = variables.viewInventory.get(arguments.view, variables.context.getExtension())
-		var template = data.template
-		var extension = data.extension
+		return variables.renderer.render(arguments.view, arguments.model, getExtension())
 
-		return {
-			output = variables.renderer.render(template, arguments.model),
-			extension = extension
-		}
+		// the view inventory returns the name of the template and the extension that is rendered by the template
+		// var data = variables.viewInventory.get(arguments.view, variables.context.getExtension())
+		// var template = data.template
+		// var extension = data.extension
+
+		// return {
+		// 	output = variables.renderer.render(template, arguments.model),
+		// 	extension = extension
+		// }
 	}
 
 	public void function write() {
