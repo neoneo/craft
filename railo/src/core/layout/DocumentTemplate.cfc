@@ -1,3 +1,7 @@
+/**
+ * Lets a document take the role of a template. The placeholders in the template it wraps can be replaced by fixed content, and other placeholders can be inserted. The effect is that a sparse template
+ * can be extended without losing the template function.
+ */
 component extends="DocumentFoundation" implements="TemplateContent" {
 
 	/**

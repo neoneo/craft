@@ -1,4 +1,4 @@
-component extends="Leaf" accessors="true" {
+component extends="Node" accessors="true" {
 
 	property String ref setter="false";
 

@@ -3,20 +3,12 @@
  **/
 component extends="Node" {
 
-	public Boolean function hasChildren() {
-		return false
-	}
+	public String function render(required Context context, Struct parentModel) {
 
-	public Array function getChildren() {
-		Throw("Not supported")
-	}
+		var model = model(arguments.context, arguments.parentModel ?: {})
+		var result = arguments.context.render(view(arguments.context), model)
 
-	public void function addChild(required Node child, Node beforeChild) {
-		Throw("Not supported")
-	}
-
-	public void function removeChild(required Node child) {
-		Throw("Not supported")
+		return result.output
 	}
 
 }

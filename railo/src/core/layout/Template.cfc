@@ -1,13 +1,17 @@
-component extends="TemplateComponent" implements="TemplateContent" {
+import craft.core.request.Context;
 
-	/**
-	 * @override Node
-	 */
-	private Struct function result(required Context context) {
-		return {
-			output = "[[children]]", // the template should only gather all contents of its children
-			extension = arguments.context.getExtenstion()
-		}
+component implements="TemplateContent" {
+
+	public void function init(required TemplateComponent templateComponent) {
+		variables.templateComponent = arguments.templateComponent
+	}
+
+	public String function render(required Context context) {
+		return variables.templateComponent.render(arguments.context)
+	}
+
+	public Array function getPlaceholders() {
+		return variables.TemplateComponent.getPlaceholders()
 	}
 
 }

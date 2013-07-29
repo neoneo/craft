@@ -1,3 +1,5 @@
+import craft.core.request.Context;
+
 component implements="Content" accessors="true" {
 
 	property TemplateContent template;

@@ -10,9 +10,11 @@ component extends="Node" {
 		variables.children = new BranchArrayList(this)
 	}
 
-	public String function render(required Context context) {
+	public String function render(required Context context, Struct parentModel) {
 
-		var result = result(arguments.context)
+		var model = model(arguments.context, arguments.parentModel ?: {})
+		var result = arguments.context.render(view(arguments.context), model)
+
 		var output = result.output // the rendered output
 		var extension = result.extension // the extension corresponding to the output
 
@@ -20,7 +22,7 @@ component extends="Node" {
 			var contents = []
 			if (hasChildren()) {
 				for (var child in getChildren()) {
-					contents.append(child.render(arguments.context))
+					contents.append(child.render(arguments.context, model))
 				}
 			}
 
