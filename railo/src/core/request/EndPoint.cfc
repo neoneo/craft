@@ -48,7 +48,7 @@ component {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
-	public String function createUrl() {
+	public String function createUrl(required String path, Struct parameters, String extensionName) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
