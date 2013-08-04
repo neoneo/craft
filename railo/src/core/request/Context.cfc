@@ -15,10 +15,10 @@ component accessors="true" {
 
 		variables.endPoint = arguments.endPoint
 
-		var info = arguments.endPoint.parse()
+		var info = arguments.endPoint.parsePath()
 		variables.pathSegment = info.pathSegment
 		variables.extension = info.extension
-		variables.parameters = arguments.endPoint.getParameters()
+		variables.parameters = arguments.endPoint.getRequestParameters()
 
 		variables.renderer = arguments.renderer
 

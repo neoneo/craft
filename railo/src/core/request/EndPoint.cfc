@@ -12,9 +12,8 @@ component {
 
 	}
 
-	public Struct function parse() {
+	public Struct function parsePath() {
 
-		// parse the path
 		var path = getPath()
 		var extensionName = ListLast(path, ".")
 		// get the extension from the set; it returns the default one if the extension does not exist
@@ -36,12 +35,16 @@ component {
 		}
 	}
 
-	public Struct function getParameters() {
+	public Struct function getRequestParameters() {
 		// merge the parameters from the form and url scopes
 		var parameters = form.copy()
 		var parameters.append(url, false)
 
 		return parameters
+	}
+
+	public String function getRequestMethod() {
+		return cgi.request_method
 	}
 
 	public String function getPath() {
