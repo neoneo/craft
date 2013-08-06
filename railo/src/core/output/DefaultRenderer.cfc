@@ -4,10 +4,10 @@ component implements="Renderer" {
 		variables.viewInventory = arguments.viewInventory
 	}
 
-	public Struct function render(required String view, required Struct model, required Extension extension) {
+	public Struct function render(required String view, required Struct model, required String requestMethod, required Extension extension) {
 
 		// the view inventory returns the name of the template and the extension that is rendered by the template
-		var data = variables.viewInventory.get(arguments.view, arguments.extension)
+		var data = variables.viewInventory.get(arguments.view, arguments.requestMethod, arguments.extension)
 		var template = data.template
 		var extension = data.extension
 

@@ -10,6 +10,7 @@ component accessors="true" {
 	property PathSegment pathSegment setter="false";
 	property Struct parameters setter="false";
 	property Extension extension setter="false";
+	property String requestMethod setter="false";
 
 	public void function init(required EndPoint endPoint, required Renderer renderer) {
 
@@ -18,6 +19,7 @@ component accessors="true" {
 		var info = arguments.endPoint.parsePath()
 		variables.pathSegment = info.pathSegment
 		variables.extension = info.extension
+		variables.requestMethod = arguments.endPoint.getRequestMethod()
 		variables.parameters = arguments.endPoint.getRequestParameters()
 
 		variables.renderer = arguments.renderer
@@ -25,7 +27,7 @@ component accessors="true" {
 	}
 
 	public Struct function render(required String view, required Struct model) {
-		return variables.renderer.render(arguments.view, arguments.model, getExtension())
+		return variables.renderer.render(arguments.view, arguments.model, getRequestMethod(), getExtension())
 	}
 
 	public void function write() {

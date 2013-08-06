@@ -21,27 +21,33 @@ component {
 		}
 	}
 
-	public Struct function get(required String view, required Extension extension) {
+	public Struct function get(required String view, required String requestMethod, required Extension extension) {
 
-		var key = arguments.view & "." & arguments.extension.getName()
+		var key = arguments.view & "." & arguments.requestMethod & "." & arguments.extension.getName()
 		if (!variables.cache.keyExists(key)) {
 			var extensions = ([arguments.extension]).merge(arguments.extension.getFallbacks()) // first look for the most specific template
+			// search for files with or without the request method (in that order)
+			var names = [
+				arguments.view & "." & arguments.requestMethod & "." & extension.getName() & variables.fileExtension,
+				arguments.view & "." & extension.getName() & variables.fileExtension
+			]
 			var found = false
 			search:for (var extension in extensions) {
-				var name = arguments.view & "." & extension.getName() & variables.fileExtension
-				for (var mapping in variables.mappings) {
-					if (FileExists(mapping.directory & "/" & name)) {
-						variables.cache[key] = {
-							template = mapping.path & "/" & name,
-							extension = extension
+				for (var name in names) {
+					for (var mapping in variables.mappings) {
+						if (FileExists(mapping.directory & "/" & name)) {
+							variables.cache[key] = {
+								template = mapping.path & "/" & name,
+								extension = extension
+							}
+							found = true
+							break search;
 						}
-						found = true
-						break search;
 					}
 				}
 			}
 			if (!found) {
-				Throw("View '#arguments.view#.#arguments.extension.getName()#' not found", "ViewNotFoundException")
+				Throw("View '#arguments.view# for extension #arguments.extension.getName()#' not found", "ViewNotFoundException")
 			}
 		}
 
