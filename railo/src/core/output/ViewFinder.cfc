@@ -28,16 +28,17 @@ component {
 			var extensions = ([arguments.extension]).merge(arguments.extension.getFallbacks()) // first look for the most specific template
 			// search for files with or without the request method (in that order)
 			var names = [
-				arguments.view & "." & arguments.requestMethod & "." & extension.getName() & variables.fileExtension,
-				arguments.view & "." & extension.getName() & variables.fileExtension
+				arguments.view & "." & arguments.requestMethod,
+				arguments.view
 			]
 			var found = false
 			search:for (var extension in extensions) {
 				for (var name in names) {
 					for (var mapping in variables.mappings) {
-						if (FileExists(mapping.directory & "/" & name)) {
+						var filename = name & "." & extension.getName() & variables.fileExtension
+						if (FileExists(mapping.directory & "/" & filename)) {
 							variables.cache[key] = {
-								template = mapping.path & "/" & name,
+								template = mapping.path & "/" & filename,
 								extension = extension
 							}
 							found = true

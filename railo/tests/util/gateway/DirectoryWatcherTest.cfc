@@ -29,7 +29,7 @@ component extends="mxunit.framework.TestCase" {
 			variables.watcher.close()
 			fail("trying to watch a directory that does not exist should throw an exception")
 		} catch (any e) {
-			assertEquals("craft.InvalidArgumentException", e.type, "trying to watch a directory that does not exist should throw exception 'craft.InvalidArgumentException'")
+			assertEquals("FileNotFoundException", e.type, "trying to watch a directory that does not exist should throw exception 'FileNotFoundException'")
 		}
 	}
 
@@ -39,7 +39,7 @@ component extends="mxunit.framework.TestCase" {
 			variables.watcher.close()
 			fail("trying to watch a directory that is not a directory should throw an exception")
 		} catch (any e) {
-			assertEquals("craft.InvalidArgumentException", e.type, "trying to watch a directory that is not a directory should throw exception 'craft.InvalidArgumentException'")
+			assertEquals("FileNotFoundException", e.type, "trying to watch a directory that is not a directory should throw exception 'FileNotFoundException'")
 		}
 	}
 

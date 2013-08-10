@@ -36,7 +36,6 @@ component extends="mxunit.framework.TestCase" {
 		assertFalse(branchList.add(child2, child3), "branchList.add should return false if the item should be moved before an item that is not in the list")
 		branchList.add(child3)
 		branchList.add(child2)
-		//branchList.add(child3, child2)
 
 		assertTrue(branchList.contains(child1), "branchList should contain child1")
 		assertTrue(branchList.contains(child2), "branchList should contain child2")
@@ -84,7 +83,6 @@ component extends="mxunit.framework.TestCase" {
 		var selected = branchList.select(function (child) {
 			return arguments.child.getId() == child2.getId()
 		})
-
 		assertEquals(selected, child2, "child2 should be selected")
 		var selected = branchList.select(function (child) {
 			return arguments.child.getId() == child1.getId()

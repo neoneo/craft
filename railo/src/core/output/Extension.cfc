@@ -24,7 +24,7 @@ component {
 	}
 
 	public void function addFallback(required Extension extension) {
-		if (arguments.extension !== this && variables.fallbacks.find(arguments.extension) == 0) {
+		if (arguments.extension.getName() != getName() && variables.fallbacks.find(arguments.extension) == 0) {
 			variables.fallbacks.append(arguments.extension)
 		}
 	}

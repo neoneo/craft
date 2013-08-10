@@ -53,7 +53,7 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			extension.write("a")
 		} catch (any e) {
-			assertEquals("craft.core.output.IllegalContentException", e.type, "when writing invalid JSON, exception 'craft.core.output.IllegalContentException' should be thrown")
+			assertEquals("IllegalContentException", e.type, "when writing invalid JSON, exception 'IllegalContentException' should be thrown")
 		}
 
 		fallbacks(extension)
@@ -77,7 +77,7 @@ component extends="mxunit.framework.TestCase" {
 			extension.write('<node1>')
 			fail("when writing invalid XML, an exception should be thrown")
 		} catch (any e) {
-			assertEquals("craft.core.output.IllegalContentException", e.type, "when writing invalid XML, exception 'craft.core.output.IllegalContentException' should be thrown")
+			assertEquals("IllegalContentException", e.type, "when writing invalid XML, exception 'IllegalContentException' should be thrown")
 		}
 
 		fallbacks(extension)
