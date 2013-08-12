@@ -1,6 +1,6 @@
-import craft.core.layout.Content
-import craft.core.util.Branch
-import craft.core.util.BranchList
+import craft.core.layout.Content;
+import craft.core.util.Branch;
+import craft.core.util.ScopeBranchList;
 
 /**
  * PathSegment
@@ -9,10 +9,10 @@ component implements="Branch" accessors="true" {
 
 	property String parameterName setter="false"; // the name of the parameter that corresponds to this path segment
 
-	public void function init(required PathMatcher pathMatcher, required BranchList branchList, String parameterName) {
+	public void function init(required PathMatcher pathMatcher, String parameterName) {
 
 		variables.pathMatcher = arguments.pathMatcher
-		variables.children = arguments.branchList
+		variables.children = new ScopeBranchList(this)
 		variables.parameterName = arguments.parameterName ?: null
 
 		variables.content = {}
