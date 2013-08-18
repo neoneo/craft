@@ -1,6 +1,7 @@
 import craft.core.layout.Content;
+
 import craft.core.util.Branch;
-import craft.core.util.ScopeBranchList;
+import craft.core.util.BranchList;
 
 /**
  * PathSegment
@@ -12,10 +13,13 @@ component implements="Branch" accessors="true" {
 	public void function init(required PathMatcher pathMatcher, String parameterName) {
 
 		variables.pathMatcher = arguments.pathMatcher
-		variables.children = new ScopeBranchList(this)
 		variables.parameterName = arguments.parameterName ?: null
 
 		variables.content = {}
+
+		if (IsNull(variables.children)) {
+			Throw("Child collection must be set using setChildCollection", "NotImplementedException")
+		}
 
 	}
 
@@ -29,7 +33,7 @@ component implements="Branch" accessors="true" {
 	public Content function getContent(required String type) {
 
 		var content = variables.content[arguments.type] ?: null
-		if (content == null) {
+		if (IsNull(content)) {
 			Throw("No content of type #arguments.type# found", "ContentNotFoundException")
 		}
 
@@ -38,6 +42,10 @@ component implements="Branch" accessors="true" {
 
 	public Numeric function match(required Array path) {
 		return variables.pathMatcher.match(arguments.path)
+	}
+
+	private void function setChildCollection(required BranchList children) {
+		variables.children = children
 	}
 
 	// Branch IMPLEMENTATION ======================================================================

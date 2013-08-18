@@ -3,18 +3,10 @@
  **/
 component {
 
-	public void function init(required Branch parent) {
-		variables.parent = arguments.parent
-	}
-
-	public Branch function getParent() {
-		return variables.parent
-	}
-
 	public Boolean function add(required Branch child, Branch beforeChild) {
 
 		var added = false
-		if (!contains(arguments.child) && !arguments.child.hasParent()) {
+		if (!arguments.child.hasParent()) {
 			if (IsNull(arguments.beforeChild) || contains(arguments.beforeChild)) {
 				arguments.child.setParent(getParent())
 				append(arguments.child)
@@ -32,9 +24,11 @@ component {
 
 		var moved = false
 		var currentIndex = indexOf(arguments.child)
+		// child must be in the collection already
 		if (currentIndex > 0) {
+			// newIndex is 0 if beforeChild is not found; use -1 to indicate the end of the collection
 			var newIndex = IsNull(arguments.beforeChild) ? -1 : indexOf(arguments.beforeChild)
-			if (newIndex == -1) {
+			if (newIndex == -1 && currentIndex < size()) {
 				append(arguments.child)
 				moved = true
 			} else if (newIndex > 0 && newIndex != currentIndex) {
@@ -53,6 +47,10 @@ component {
 		return moved
 	}
 
+	public Branch function getParent() {
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
+	}
+
 	public Boolean function remove(required Branch child) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
@@ -69,7 +67,7 @@ component {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
-	public any function select(required Function predicate) {
+	public Any function select(required Function predicate) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
@@ -77,14 +75,23 @@ component {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
+	/**
+	 * Appends the child to the collection. If child is already a member of the collection, child is moved to the end.
+	 */
 	private void function append(required Branch child) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
+	/**
+	 * Inserts the child at the given index in the collection. The child must already be a member of the collection.
+	 */
 	private void function insertAt(required Numeric index, required Branch child) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
+	/**
+	 * Removes the child at the given index from the collection.
+	 */
 	private void function deleteAt(required Numeric index) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}

@@ -1,4 +1,4 @@
-import craft.core.util.BranchArrayList
+import craft.core.util.BranchArrayList;
 
 /**
  * @abstract

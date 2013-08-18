@@ -58,6 +58,7 @@ component extends="BranchList" {
 	private void function append(required Branch child) {
 
 		var key = obtainKey(arguments.child)
+		variables.keys.delete(key)
 		variables.keys.append(key)
 		variables.cache.put(key, arguments.child)
 
@@ -65,12 +66,10 @@ component extends="BranchList" {
 
 	private void function insertAt(required Numeric index, required Branch child) {
 		variables.keys.insertAt(arguments.index, obtainKey(arguments.child))
-		dump(variables.keys)
 	}
 
 	private void function deleteAt(required Numeric index) {
 		variables.keys.deleteAt(arguments.index)
-		dump(variables.keys)
 	}
 
 	private Numeric function indexOf(required Branch child) {

@@ -1,4 +1,4 @@
-import craft.core.request.Context
+import craft.core.request.Context;
 
 component extends="DocumentFoundation" {
 

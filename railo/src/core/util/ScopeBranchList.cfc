@@ -1,8 +1,12 @@
 component extends="BranchList" {
 
 	public void function init(required Branch parent) {
-		super.init(arguments.parent)
+		variables.parent = arguments.parent
 		variables.children = []
+	}
+
+	public Branch function getParent() {
+		return variables.parent
 	}
 
 	public Boolean function remove(required Branch child) {
@@ -33,6 +37,7 @@ component extends="BranchList" {
 	}
 
 	private void function append(required Branch child) {
+		remove(arguments.child)
 		variables.children.append(arguments.child)
 	}
 
