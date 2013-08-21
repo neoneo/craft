@@ -1,7 +1,7 @@
-import craft.core.layout.Content;
+import craft.core.content.Content;
 
 import craft.core.util.Branch;
-import craft.core.util.BranchList;
+import craft.core.util.ScopeBranchList;
 
 /**
  * PathSegment
@@ -16,10 +16,7 @@ component implements="Branch" accessors="true" {
 		variables.parameterName = arguments.parameterName ?: null
 
 		variables.content = {}
-
-		if (IsNull(variables.children)) {
-			Throw("Child collection must be set using setChildCollection", "NotImplementedException")
-		}
+		variables.children = new ScopeBranchList(this)
 
 	}
 
@@ -44,10 +41,6 @@ component implements="Branch" accessors="true" {
 		return variables.pathMatcher.match(arguments.path)
 	}
 
-	private void function setChildCollection(required BranchList children) {
-		variables.children = children
-	}
-
 	// Branch IMPLEMENTATION ======================================================================
 
 	public Array function getChildren() {
@@ -59,8 +52,8 @@ component implements="Branch" accessors="true" {
 		variables.children.add(argumentCollection = arguments.toStruct())
 	}
 
-	public void function removeChild(required PathSegment child) {
-		variables.children.remove(arguments.child)
+	public Boolean function removeChild(required PathSegment child) {
+		return variables.children.remove(arguments.child)
 	}
 
 	public Boolean function hasParent() {
