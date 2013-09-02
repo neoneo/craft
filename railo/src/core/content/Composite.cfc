@@ -1,4 +1,4 @@
-import craft.core.util.BranchArrayList;
+import craft.core.util.ScopeBranchList;
 
 /**
  * @abstract
@@ -7,7 +7,7 @@ component extends="Node" {
 
 	public void function init() {
 		super.init()
-		variables.children = new BranchArrayList(this)
+		variables.children = new ScopeBranchList(this)
 	}
 
 	public String function render(required Context context, Struct parentModel) {
@@ -16,9 +16,9 @@ component extends="Node" {
 		var result = arguments.context.render(view(arguments.context), model)
 
 		var output = result.output // the rendered output
-		var extension = result.extension // the extension corresponding to the output
 
 		if (output contains "[[children]]") {
+			var extension = result.extension // the extension corresponding to the output
 			var contents = []
 			if (hasChildren()) {
 				for (var child in getChildren()) {

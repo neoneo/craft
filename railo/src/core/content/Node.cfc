@@ -10,7 +10,7 @@ component implements="Branch" {
 
 	public void function init() {}
 
-	public String function render(required Context context) {
+	public String function render(required Context context, Struct parentModel) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
@@ -29,8 +29,8 @@ component implements="Branch" {
 	/**
 	 * Collects data pertaining to the view before rendering.
 	 **/
-	private Struct function model(required Context context) {
-		return {}
+	private Struct function model(required Context context, Struct parentModel) {
+		return IsNull(arguments.parentModel) ? {} : ({}).append(arguments.parentModel, false)
 	}
 
 	private String function view(required Context context) {
