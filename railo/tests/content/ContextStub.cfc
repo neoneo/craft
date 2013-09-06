@@ -1,14 +1,13 @@
 component extends="craft.core.request.Context" {
 
-	public void function init() {}
+	public void function init() {
+		variables.extension = new craft.core.output.TXTExtension()
+	}
 
 	public Struct function render(required String view, required Struct model) {
-		var output = {
-			view: arguments.view,
-			model: arguments.model
-		}
 		return {
-			output: SerializeJSON(output)
+			output: arguments.view,
+			extension: variables.extension
 		}
 	}
 

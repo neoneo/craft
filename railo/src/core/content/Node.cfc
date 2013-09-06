@@ -30,7 +30,7 @@ component implements="Branch" {
 	 * Collects data pertaining to the view before rendering.
 	 **/
 	private Struct function model(required Context context, Struct parentModel) {
-		return IsNull(arguments.parentModel) ? {} : ({}).append(arguments.parentModel, false)
+		return IsNull(arguments.parentModel) ? {} : arguments.parentModel
 	}
 
 	private String function view(required Context context) {

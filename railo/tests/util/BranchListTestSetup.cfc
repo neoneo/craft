@@ -22,7 +22,9 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Add_Should_ReturnCorrectBooleanValue() {
-		assertTrue(variables.branchList.add(new BranchStub()), "branchList.add should return true if the child is not in the list")
+		var branch = new BranchStub()
+		assertTrue(variables.branchList.add(branch), "branchList.add should return true if the child is not in the list")
+		assertEquals(branchList.getParent(), branch.getParent())
 		assertFalse(variables.branchList.isEmpty(), "branchList should not be empty")
 		assertFalse(variables.branchList.add(variables.child1), "branchList.add should return false if the child is in the list")
 	}
