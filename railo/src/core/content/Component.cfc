@@ -10,9 +10,9 @@ component extends="Node" {
 		variables.children = new ScopeBranchList(this)
 	}
 
-	public String function render(required Context context, Struct parentModel) {
+	public String function render(required Context context, Struct parentModel = {}) {
 
-		var model = model(arguments.context, arguments.parentModel ?: {})
+		var model = model(arguments.context, arguments.parentModel)
 		var result = arguments.context.render(view(arguments.context), model)
 
 		var output = result.output // the rendered output

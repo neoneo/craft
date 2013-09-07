@@ -18,12 +18,16 @@ component implements="Branch" {
 		return StructKeyExists(variables, "parent")
 	}
 
-	public Composite function getParent() {
+	public Component function getParent() {
 		return variables.parent
 	}
 
-	public void function setParent(required Composite parent) {
+	public void function setParent(required Component parent) {
 		variables.parent = arguments.parent
+	}
+
+	public Boolean function hasChildren() {
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
 	/**

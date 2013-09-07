@@ -1,15 +1,15 @@
-import craft.core.layout.Composite;
+import craft.core.layout.Component;
 import craft.core.navigation.Context;
 
 /**
  * A generic composite.
  **/
-component extends="Composite" accessors="true" {
+component extends="Component" accessors="true" {
 
 	property String id;
 	property Array classes;
 
-	public Composite function addClass(required String className) {
+	public Component function addClass(required String className) {
 
 		if (IsNull(variables.classes)) {
 			variables.classes = [];
@@ -21,7 +21,7 @@ component extends="Composite" accessors="true" {
 		return this;
 	}
 
-	public Composite function removeClass(required String className) {
+	public Component function removeClass(required String className) {
 
 		if (!IsNull(variables.classes)) {
 			// the delete member function is not case sensitive

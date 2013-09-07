@@ -11,7 +11,7 @@ component implements="TemplateContent" {
 	}
 
 	public Array function getPlaceholders() {
-		return variables.TemplateComponent.getPlaceholders()
+		return variables.templateComponent.getPlaceholders()
 	}
 
 }

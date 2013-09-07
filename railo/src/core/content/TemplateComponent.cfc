@@ -1,10 +1,11 @@
 /**
  * Represents an isolated node tree.
- * Template uses this class, as well as Region.
+ *
+ * @abstract
  */
-component extends="Composite" {
+component extends="Component" {
 
-	public void function setParent(required Composite parent) {
+	public void function setParent(required Component parent) {
 		Throw("Not supported")
 	}
 

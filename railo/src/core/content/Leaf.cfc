@@ -11,4 +11,8 @@ component extends="Node" {
 		return result.output
 	}
 
+	public Boolean function hasChildren() {
+		return false
+	}
+
 }
