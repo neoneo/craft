@@ -2,16 +2,19 @@ import craft.core.content.Placeholder;
 
 component extends="mxunit.framework.TestCase" {
 
+	public void function setUp() {
+		variables.templateComponent = new craft.core.content.TemplateComponent()
+	}
+
 	public void function GetPlaceholders_Should_ReturnPlaceholdersArray() {
 
-		var component = new TemplateComponentStub()
 		// build a tree with placeholders at several levels
-		component.addChild(new Placeholder("p1"))
-		component.addChild(new ComponentStub())
+		variables.templateComponent.addChild(new Placeholder("p1"))
+		variables.templateComponent.addChild(new ComponentStub())
 
 		var level1 = new ComponentStub()
 		level1.addChild(new LeafStub())
-		component.addChild(level1)
+		variables.templateComponent.addChild(level1)
 
 		var level2 = new ComponentStub()
 		level2.addChild(new Placeholder("p3"))
@@ -20,7 +23,7 @@ component extends="mxunit.framework.TestCase" {
 		level1.addChild(level2)
 		level1.addChild(new Placeholder("p2"))
 
-		var placeholders = component.getPlaceholders()
+		var placeholders = variables.templateComponent.getPlaceholders()
 		assertEquals(3, placeholders.len())
 
 		// the order of the placeholders is not important
@@ -31,6 +34,28 @@ component extends="mxunit.framework.TestCase" {
 			}) > 0)
 		})
 
+	}
+
+	public void function SetParent_Should_ThrowNotSupportedException() {
+		var component = new craft.core.content.Component()
+		try {
+			variables.templateComponent.setParent(component)
+			fail("calling setParent should have thrown NotSupportedException")
+		} catch (Any e) {
+			assertEquals("NotSupportedException", e.type)
+		}
+	}
+
+	public void function Render_Should_ReturnChildContent() {
+		var leaf1 = new LeafWithViewStub("leaf1")
+		var leaf2 = new LeafWithViewStub("leaf2")
+
+		variables.templateComponent.addChild(leaf1)
+		variables.templateComponent.addChild(leaf2)
+
+		var context = new ContextStub()
+		var result = variables.templateComponent.render(context)
+		assertEquals("leaf1leaf2", result)
 	}
 
 }

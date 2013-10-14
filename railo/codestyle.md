@@ -3,7 +3,6 @@ Railo specifics usage
 
 Syntax
 ------
-
 * no semicolons except where the parser needs them (basically, only after script tags such as property or abort)
 * JSON style creation of structs (i.e. : instead of =)
 

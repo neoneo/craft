@@ -1,12 +1,22 @@
 /**
  * Represents an isolated node tree.
- *
- * @abstract
  */
 component extends="Component" {
 
 	public void function setParent(required Component parent) {
-		Throw("Not supported")
+		Throw("Function #GetFunctionCalledName()# is not supported", "NotSupportedException")
+	}
+
+	public String function render(required Context context, Struct parentModel) {
+
+		// override this method so that it can render without a view template
+		var extension = arguments.context.getExtension()
+		var contents = []
+		for (var child in getChildren()) {
+			contents.append(child.render(arguments.context))
+		}
+
+		return extension.concatenate(contents)
 	}
 
 	public Array function getPlaceholders() {
@@ -27,6 +37,11 @@ component extends="Component" {
 		}
 
 		return regions
+	}
+
+	private String function view(required Context context) {
+		// this method is never called, but is implemented because it is 'abstract'
+		return ""
 	}
 
 }

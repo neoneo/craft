@@ -26,7 +26,7 @@ component extends="Node" {
 				}
 			}
 
-			// concatenate the child contents together according to the type this composite is returning
+			// concatenate the child contents together according to the type this component is returning
 			var content = extension.concatenate(contents)
 			output = Replace(output, "[[children]]", content)
 		}
@@ -35,7 +35,7 @@ component extends="Node" {
 	}
 
 	/**
-	 * Returns whether the composite contains nodes.
+	 * Returns whether the component contains nodes.
 	 **/
 	public Boolean function hasChildren() {
 		return !variables.children.isEmpty()
@@ -46,14 +46,14 @@ component extends="Node" {
 	}
 
 	/**
-	 * Adds a node to this composite.
+	 * Adds a node to this component.
 	 **/
 	public void function addChild(required Node child, Node beforeChild) {
 		variables.children.add(argumentCollection = arguments.toStruct())
 	}
 
 	/**
-	 * Removes the node from this composite.
+	 * Removes the node from this component.
 	 **/
 	public void function removeChild(required Node child) {
 		variables.children.remove(arguments.child)

@@ -1,6 +1,6 @@
 /**
-* @abstract
-**/
+ * @abstract
+ **/
 component {
 
 	public void function init() {

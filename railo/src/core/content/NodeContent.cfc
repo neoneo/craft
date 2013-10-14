@@ -10,7 +10,7 @@ component implements="Content" {
 	}
 
 	public String function render(required Context context) {
-		variables.node.render(arguments.context)
+		return variables.node.render(arguments.context)
 	}
 
 }

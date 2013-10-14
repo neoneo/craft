@@ -13,7 +13,7 @@ component extends="DocumentFoundation" implements="TemplateContent" {
 		// get the placeholders from the parent template, keep the ones that aren't used and add any new ones
 		for (var placeholder in getTemplate().getPlaceholders()) {
 			var region = findRegion(placeholder)
-			if (region == null) {
+			if (IsNull(region)) {
 				// unused placeholder
 				placeholders.append(placeholder)
 			} else {
