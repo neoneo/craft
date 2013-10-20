@@ -7,8 +7,8 @@ component extends="Composite" {
 		Throw("Function #GetFunctionCalledName()# is not supported", "NotSupportedException")
 	}
 
-	public String function render(required Renderer renderer, required Struct baseModel) {
-		return arguments.renderer.section(this, arguments.baseModel)
+	public String function accept(required Renderer renderer, required Struct baseModel) {
+		return arguments.renderer.visitSection(this, arguments.baseModel)
 	}
 
 	public Array function getPlaceholders() {

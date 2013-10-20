@@ -12,7 +12,7 @@ component accessors="true" {
 	property Extension extension setter="false";
 	property String requestMethod setter="false";
 
-	public void function init(required EndPoint endPoint, required Renderer renderer) {
+	public void function init(required EndPoint endPoint) {
 
 		variables.endPoint = arguments.endPoint
 
@@ -22,13 +22,7 @@ component accessors="true" {
 		variables.requestMethod = arguments.endPoint.getRequestMethod()
 		variables.parameters = arguments.endPoint.getRequestParameters()
 
-		//variables.renderer = arguments.renderer
-
 	}
-
-	// public Struct function render(required String view, required Struct model) {
-	// 	return variables.renderer.render(arguments.view, arguments.model, getRequestMethod(), getExtension())
-	// }
 
 	//public void function write() {
 

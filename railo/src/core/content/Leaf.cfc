@@ -3,8 +3,8 @@
  **/
 component extends="Node" {
 
-	public String function render(required Renderer renderer, required Struct baseModel) {
-		return arguments.renderer.leaf(this, arguments.baseModel)
+	public String function accept(required Renderer renderer, required Struct baseModel) {
+		return arguments.renderer.visitLeaf(this, arguments.baseModel)
 	}
 
 	public Boolean function hasChildren() {

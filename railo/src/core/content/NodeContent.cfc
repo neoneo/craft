@@ -9,8 +9,8 @@ component implements="Content" {
 		variables.node = arguments.node
 	}
 
-	public String function render(required Context context) {
-		return variables.node.render(arguments.context)
+	public String function accept(required Renderer renderer) {
+		return variables.node.accept(arguments.renderer, {})
 	}
 
 }

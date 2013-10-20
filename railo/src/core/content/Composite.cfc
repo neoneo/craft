@@ -10,8 +10,8 @@ component extends="Node" {
 		variables.children = new ScopeBranchList(this)
 	}
 
-	public String function render(required Renderer, required Struct baseModel) {
-		return arguments.renderer.composite(this, arguments.baseModel)
+	public String function accept(required Renderer, required Struct baseModel) {
+		return arguments.renderer.visitComposite(this, arguments.baseModel)
 	}
 
 	/**

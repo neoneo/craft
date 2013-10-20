@@ -10,7 +10,7 @@ component implements="Branch" {
 
 	public void function init() {}
 
-	public String function render(required Renderer renderer, required Struct baseModel) {
+	public String function accept(required Renderer renderer, required Struct baseModel) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
