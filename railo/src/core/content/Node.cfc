@@ -10,7 +10,7 @@ component implements="Branch" {
 
 	public void function init() {}
 
-	public String function render(required Context context, Struct parentModel) {
+	public String function render(required Renderer renderer, required Struct baseModel) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
@@ -18,11 +18,11 @@ component implements="Branch" {
 		return StructKeyExists(variables, "parent")
 	}
 
-	public Component function getParent() {
+	public Composite function getParent() {
 		return variables.parent
 	}
 
-	public void function setParent(required Component parent) {
+	public void function setParent(required Composite parent) {
 		variables.parent = arguments.parent
 	}
 
@@ -33,11 +33,11 @@ component implements="Branch" {
 	/**
 	 * Collects data pertaining to the view before rendering.
 	 **/
-	private Struct function model(required Context context, Struct parentModel) {
-		return IsNull(arguments.parentModel) ? {} : arguments.parentModel
+	public Struct function model(required Context context, required Struct baseModel) {
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
-	private String function view(required Context context) {
+	public String function view(required Context context) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 

@@ -10,28 +10,8 @@ component extends="Node" {
 		variables.children = new ScopeBranchList(this)
 	}
 
-	public String function render(required Context context, Struct parentModel = {}) {
-
-		var model = model(arguments.context, arguments.parentModel)
-		var result = arguments.context.render(view(arguments.context), model)
-
-		var output = result.output // the rendered output
-
-		if (output contains "[[children]]") {
-			var extension = result.extension // the extension corresponding to the output
-			var contents = []
-			if (hasChildren()) {
-				for (var child in getChildren()) {
-					contents.append(child.render(arguments.context, model))
-				}
-			}
-
-			// concatenate the child contents together according to the type this component is returning
-			var content = extension.concatenate(contents)
-			output = Replace(output, "[[children]]", content)
-		}
-
-		return output
+	public String function render(required Renderer, required Struct baseModel) {
+		return arguments.renderer.composite(this, arguments.baseModel)
 	}
 
 	/**

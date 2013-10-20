@@ -1,17 +1,19 @@
-import craft.core.request.Context;
+import craft.core.output.Renderer;
 
 component implements="TemplateContent" {
 
-	public void function init(required TemplateComponent templateComponent) {
-		variables.templateComponent = arguments.templateComponent
+	property Section section setter="false";
+
+	public void function init(required Section section) {
+		variables.section = arguments.section
 	}
 
-	public String function render(required Context context) {
-		return variables.templateComponent.render(arguments.context)
+	public String function render(required Renderer renderer) {
+		return arguments.renderer.template(this)
 	}
 
 	public Array function getPlaceholders() {
-		return variables.templateComponent.getPlaceholders()
+		return variables.section.getPlaceholders()
 	}
 
 }

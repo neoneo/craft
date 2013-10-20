@@ -15,7 +15,7 @@ component {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
-	public String function concatenate(required Array strings) {
+	public String function convert(required Array strings) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 

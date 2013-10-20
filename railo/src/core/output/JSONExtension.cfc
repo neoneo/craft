@@ -8,7 +8,7 @@ component extends="Extension" {
 		return "application/json"
 	}
 
-	public String function concatenate(required Array strings) {
+	public String function convert(required Array strings) {
 
 		var result = ""
 		for (var string in arguments.strings) {

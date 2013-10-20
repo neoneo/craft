@@ -3,7 +3,7 @@ import craft.core.content.Placeholder;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.templateComponent = new craft.core.content.TemplateComponent()
+		variables.templateComponent = new craft.core.content.Section()
 	}
 
 	public void function GetPlaceholders_Should_ReturnPlaceholdersArray() {
@@ -37,7 +37,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function SetParent_Should_ThrowNotSupportedException() {
-		var component = new craft.core.content.Component()
+		var component = new craft.core.content.Composite()
 		try {
 			variables.templateComponent.setParent(component)
 			fail("calling setParent should have thrown NotSupportedException")

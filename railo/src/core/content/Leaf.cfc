@@ -3,12 +3,8 @@
  **/
 component extends="Node" {
 
-	public String function render(required Context context, Struct parentModel = {}) {
-
-		var model = model(arguments.context, arguments.parentModel)
-		var result = arguments.context.render(view(arguments.context), model)
-
-		return result.output
+	public String function render(required Renderer renderer, required Struct baseModel) {
+		return arguments.renderer.leaf(this, arguments.baseModel)
 	}
 
 	public Boolean function hasChildren() {

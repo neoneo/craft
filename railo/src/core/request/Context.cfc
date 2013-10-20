@@ -22,42 +22,26 @@ component accessors="true" {
 		variables.requestMethod = arguments.endPoint.getRequestMethod()
 		variables.parameters = arguments.endPoint.getRequestParameters()
 
-		variables.renderer = arguments.renderer
+		//variables.renderer = arguments.renderer
 
 	}
 
-	public Struct function render(required String view, required Struct model) {
-		return variables.renderer.render(arguments.view, arguments.model, getRequestMethod(), getExtension())
-	}
+	// public Struct function render(required String view, required Struct model) {
+	// 	return variables.renderer.render(arguments.view, arguments.model, getRequestMethod(), getExtension())
+	// }
 
-	public void function write() {
+	//public void function write() {
 
-		var extension = getExtension()
-		var output = getPathSegment().getContent().render(this)
+	//	var extension = getExtension()
+	//	var output = getPathSegment().getContent().render(this)
 
-		// insert region content
-		/*for (var ref in variables.regions) {
-			var content = extension.concatenate(variables.regions[ref])
-			output = Replace(output, regionPlaceholder(ref), content)
-		}*/
-
-		content type="#extension.getMimeType()#";
-		Echo(extension.convert(output))
+	//	content type="#extension.getMimeType()#";
+	//	Echo(extension.convert(output))
 
 	}
 
 	public String function createUrl(required String path, Struct parameters, String extensionName) {
 		return variables.endPoint.createUrl(argumentCollection = arguments.toStruct())
 	}
-
-	// public void function regionAppend(required String ref, required String output) {
-
-	// 	if (!variables.regions.keyExists(arguments.ref)) {
-	// 		variables.regions[arguments.ref] = []
-	// 	}
-
-	// 	variables.regions[arguments.ref].append(arguments.output)
-
-	// }
 
 }

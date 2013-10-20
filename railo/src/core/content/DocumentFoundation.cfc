@@ -2,48 +2,37 @@ import craft.core.request.Context;
 
 component implements="Content" accessors="true" {
 
-	property TemplateContent template;
+	property TemplateContent template setter="false";
+	property Struct sections setter="false";
 
 	public void function init(required TemplateContent template) {
-		variables.template = arguments.template
-		// use a hashmap so that we can use placeholder objects for keys
-		variables.regions = CreateObject("java", "java.util.HashMap").init()
+		setTemplate(arguments.template)
+		variables.sections = {}
 	}
 
-	public String function render(required Context context) {
-
-		var output = getTemplate().render(arguments.context)
-
-		var regions = getRegions()
-		for (var placeholder in regions) {
-			output = Replace(output, placeholder.getInsert(), regions.get(placeholder).render(arguments.context))
-		}
-
-		return output
+	public String function render(required Renderer renderer) {
+		return arguments.renderer.document(this)
 	}
 
-	public void function addRegion(required Placeholder placeholder, required Region region) {
+	public void function addSection(required Section section, required Placeholder placeholder) {
 
-		var regions = getRegions()
-		if (!regions.containsKey(arguments.placeholder)) {
-			regions.put(arguments.placeholder, arguments.region)
+		var sections = getSections()
+		var ref = arguments.placeholder.getRef()
+		if (!sections.keyExists(ref)) {
+			sections[ref] = arguments.section
 		}
 
 	}
 
 	/**
-	 * Removes the nodes for the given region.
+	 * Removes the nodes for the given section.
 	 **/
-	public void function removeRegion(required Placeholder placeholder) {
-		getRegions().remove(arguments.placeholder)
+	public void function removeSection(required Placeholder placeholder) {
+		getSections().delete(arguments.placeholder.getRef())
 	}
 
 	private void function setTemplate(required TemplateContent template) {
 		variables.template = arguments.template
-	}
-
-	private Struct function getRegions() {
-		return variables.regions
 	}
 
 }

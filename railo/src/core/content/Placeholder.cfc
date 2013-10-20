@@ -7,12 +7,12 @@ component extends="Node" accessors="true" {
 		variables.ref = arguments.ref
 	}
 
-	public String function render(required Context context) {
-		return getInsert()
+	public String function render(required Renderer renderer, Struct baseModel) {
+		return arguments.renderer.placeholder(this, arguments.baseModel)
 	}
 
-	public String function getInsert() {
-		return "[[" & getRef() & "]]"
+	public String function view(required Context context) {
+		return ""
 	}
 
 }

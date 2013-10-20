@@ -6,7 +6,7 @@ component implements="Renderer" {
 
 	public Struct function render(required String view, required Struct model, required String requestMethod, required Extension extension) {
 
-		// the view inventory returns the name of the template and the extension that is rendered by the template
+		// the view finder returns the name of the template and the extension that is rendered by the template
 		var data = variables.viewFinder.get(arguments.view, arguments.requestMethod, arguments.extension)
 		var template = data.template
 		var extension = data.extension

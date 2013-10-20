@@ -13,9 +13,9 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function Render_WithParentModel_Should_ReturnParentModel() {
 		makePublic(variables.node, "model")
-		var parentModel = {parent: true}
-		var model = variables.node.model(variables.context, parentModel)
-		assertEquals(parentModel, model)
+		var baseModel = {parent: true}
+		var model = variables.node.model(variables.context, baseModel)
+		assertEquals(baseModel, model)
 	}
 
 }

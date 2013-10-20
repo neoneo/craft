@@ -8,7 +8,7 @@ component extends="Extension" {
 		return "application/pdf"
 	}
 
-	public String function concatenate(required Array strings) {
+	public String function convert(required Array strings) {
 		return arguments.strings.toList("")
 	}
 

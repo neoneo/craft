@@ -1,7 +1,7 @@
 component extends="mxunit.framework.TestCase" {
 
 	public void function Render_Should_ReturnTemplateComponentContent() {
-		var templateComponent = new craft.core.content.TemplateComponent()
+		var templateComponent = new craft.core.content.Section()
 		var leaf1 = new LeafWithViewStub("leaf1")
 		var leaf2 = new LeafWithViewStub("leaf2")
 
