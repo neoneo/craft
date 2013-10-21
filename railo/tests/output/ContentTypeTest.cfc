@@ -5,7 +5,7 @@ component extends="mxunit.framework.TestCase" {
 		var contentType = new craft.core.output.TXTContentType()
 		assertEquals("txt", contentType.getName(), "contentType.getName should return 'text'")
 		assertEquals("text/plain", contentType.getMimeType(), "contentType.getMimeType should return 'text/plain'")
-		assertEquals("abc", contentType.concatenate(["a", "b", "c"]), "concatenating ['a', 'b', 'c'] should return 'abc'")
+		assertEquals("abc", contentType.convert(["a", "b", "c"]), "concatenating ['a', 'b', 'c'] should return 'abc'")
 		assertEquals("abc", contentType.write("abc"), "writing 'abc' should return 'abc'")
 
 		fallbacks(contentType)
@@ -17,7 +17,7 @@ component extends="mxunit.framework.TestCase" {
 		var contentType = new craft.core.output.HTMLContentType()
 		assertEquals("html", contentType.getName(), "contentType.getName should return 'html'")
 		assertEquals("text/html", contentType.getMimeType(), "contentType.getMimeType should return 'text/html'")
-		assertEquals("abc", contentType.concatenate(["a", "b", "c"]), "concatenating ['a', 'b', 'c'] should return 'abc'")
+		assertEquals("abc", contentType.convert(["a", "b", "c"]), "concatenating ['a', 'b', 'c'] should return 'abc'")
 		assertEquals("abc", contentType.write("abc"), "writing 'abc' should return 'abc'")
 
 		fallbacks(contentType)
@@ -30,22 +30,22 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals("json", contentType.getName(), "contentType.getName should return 'json'")
 		assertEquals("application/json", contentType.getMimeType(), "contentType.getMimeType should return 'application/json'")
 
-		var result = contentType.concatenate(["string1", "string2 with ""quotes"""])
+		var result = contentType.convert(["string1", "string2 with ""quotes"""])
 		assertEquals('"string1","string2 with \"quotes\""', result, "the result should return the original strings, possibly modified to conform to JSON")
 
 		var object1 = SerializeJSON({"a" = 1, "b" = 2})
 		var object2 = SerializeJSON({"c" = 3, "d" = 4})
-		var result = contentType.concatenate([object1, object2])
+		var result = contentType.convert([object1, object2])
 		assertEquals(object1 & "," & object2, result, "if multiple JSON strings are passed in, the result should return the strings unaltered")
 
 		var string1 = "a"
-		var result = contentType.concatenate([string1])
+		var result = contentType.convert([string1])
 		assertEquals('"a"', result, "if a single non-JSON string is passed in, the result should return the string quoted")
 
-		var result = contentType.concatenate([object1])
+		var result = contentType.convert([object1])
 		assertEquals(object1, result, "if a single JSON string is passed in, the result should equal the string unaltered")
 
-		var result = contentType.concatenate([object1, "["])
+		var result = contentType.convert([object1, "["])
 		assertEquals(object1 & "," & '"["', result, "if multiple strings are passed in, the result should contain JSON strings unaltered, and other strings quoted")
 
 		assertEquals("[1,2,3]", contentType.write("[1,2,3]"), "when writing valid JSON, the result should equal the input")
@@ -66,10 +66,10 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals("xml", contentType.getName(), "contentType.getName should return 'xml'")
 		assertEquals("application/xml", contentType.getMimeType(), "contentType.getMimeType should return 'application/xml'")
 
-		var result = contentType.concatenate(['<node1 />', '<node2 />'])
+		var result = contentType.convert(['<node1 />', '<node2 />'])
 		assertEquals('<node1 /><node2 />', result, "concatenating '<node1 />' and '<node2 />' should return '<node1 /><node2 />'")
 
-		var result = contentType.concatenate(['<node1 />', '<'])
+		var result = contentType.convert(['<node1 />', '<'])
 		assertEquals('<node1 /><![CDATA[<]]>', result, "non-XML strings with reserved characters should be wrapped in a CDATA section")
 
 		assertEquals('<node1 />', contentType.write('<node1 />', "when writing valid XML, the result should equal the input"))
@@ -89,7 +89,7 @@ component extends="mxunit.framework.TestCase" {
 		var contentType = new craft.core.output.PDFContentType()
 		assertEquals("pdf", contentType.getName(), "contentType.getName should return 'pdf'")
 		assertEquals("application/pdf", contentType.getMimeType(), "contentType.getMimeType should return 'application/pdf'")
-		assertEquals("abc", contentType.concatenate(["a", "b", "c"]), "concatenating ['a', 'b', 'c'] should return 'abc'")
+		assertEquals("abc", contentType.convert(["a", "b", "c"]), "concatenating ['a', 'b', 'c'] should return 'abc'")
 		assertTrue(IsPDFObject(contentType.write("abc")), "writing 'abc' should return PDF")
 
 		fallbacks(contentType)
