@@ -3,12 +3,8 @@
  **/
 component extends="Node" {
 
-	public String function accept(required Renderer renderer, required Struct baseModel) {
-		return arguments.renderer.visitLeaf(this, arguments.baseModel)
-	}
-
-	public Boolean function hasChildren() {
-		return false
+	public void function accept(required Visitor visitor) {
+		arguments.visitor.visitLeaf(this)
 	}
 
 }

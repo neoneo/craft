@@ -5,8 +5,8 @@ component extends="EndPoint" {
 		var path = arguments.path
 
 		if (path contains "./") {
-			// part of the path is relative, but this could be somewhere in the middle
-			// get the current path (without the file name if present)
+			// Part of the path is relative, but this could be somewhere in the middle.
+			// Get the current path (without the file name if present).
 			if (!path.startsWith("/")) {
 				path = REReplace(getPath(), "/([^/.]+\.[^/.]+)?$", "") & "/" & path
 			}
@@ -14,10 +14,10 @@ component extends="EndPoint" {
 			while (position > 0) {
 				position = Find("../", path)
 				if (position > 0) {
-					// split the path where the ../ is found
+					// Split the path where the ../ is found.
 					var absolutePath = position > 1 ? Left(path, position - 1) : "/"
 					var relativePath = Mid(path, position)
-					// remove the last list item from the current path and the first from the relative path
+					// Remove the last list item from the current path and the first from the relative path.
 					path = REReplace(absolutePath, "/[^/]+/$", "") & "/" & ListRest(relativePath, "/")
 				}
 			}
@@ -27,7 +27,7 @@ component extends="EndPoint" {
 		var queryString = "path=" & UrlEncodedFormat(path)
 
 		if (StructKeyExists(arguments, "parameters")) {
-			// put the parameters on the query string
+			// Put the parameters on the query string.
 			for (var name in arguments.parameters) {
 				queryString = ListAppend(queryString, name & "=" & UrlEncodedFormat(arguments.parameters[name]), "&")
 			}

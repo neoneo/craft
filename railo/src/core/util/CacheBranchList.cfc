@@ -33,7 +33,7 @@ component extends="BranchList" {
 	}
 
 	public any function select(required Function predicate) {
-		// the predicate wants to handle children directly, so first get the children from the cache and then apply the predicate
+		// The predicate wants to handle children directly, so first get the children from the cache and then apply the predicate.
 		var branches = toArray()
 		var index = branches.find(arguments.predicate)
 		if (index > 0) {

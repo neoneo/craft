@@ -24,9 +24,9 @@ component {
 
 		var moved = false
 		var currentIndex = indexOf(arguments.child)
-		// child must be in the collection already
+		// Child must be in the collection already.
 		if (currentIndex > 0) {
-			// newIndex is 0 if beforeChild is not found; use -1 to indicate the end of the collection
+			// The new index is 0 if beforeChild is not found. Use -1 to indicate the end of the collection.
 			var newIndex = IsNull(arguments.beforeChild) ? -1 : indexOf(arguments.beforeChild)
 			if (newIndex == -1 && currentIndex < size()) {
 				append(arguments.child)

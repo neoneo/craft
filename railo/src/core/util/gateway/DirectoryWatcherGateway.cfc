@@ -31,7 +31,7 @@ component {
 						}
 					}
 
-					// sleep until the next run, but cut it into half seconds, so we can stop the gateway easily
+					// Sleep until the next run, but cut it into half seconds, so we can stop the gateway easily.
 					var sleepStep = 500
 					var time = 0
 					while (time < variables.config.interval) {

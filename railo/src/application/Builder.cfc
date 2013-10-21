@@ -28,7 +28,7 @@ component accessors="true" {
 			// convert the file name to a segment name
 			if (ListLast(arguments.name, ".") == "xml") {
 				var partCount = ListLen(arguments.name, ".")
-				// remove the extension and the content type from the file name
+				// remove the contentType and the content type from the file name
 				var segmentName = ListDeleteAt(arguments.name, partCount, ".")
 				segmentName = ListDeleteAt(segmentName, partCount - 1, ".")
 
@@ -55,7 +55,7 @@ component accessors="true" {
 							var content = buildContent(arguments.path & "/" & listing.name)
 
 							// determine the content type
-							// the content type is the part before the extension, which should always be present
+							// the content type is the part before the contentType, which should always be present
 							var contentType = ListGetAt(listing.name, ListLen(listing.name, ".") - 1, ".")
 							childPathSegment.setContent(contentType, content)
 

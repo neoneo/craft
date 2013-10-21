@@ -6,11 +6,11 @@ component {
 		variables.extensions = arguments.extensions
 
 		variables.extensionNames = {}
-		for (var extension in variables.extensions) {
-			variables.extensionNames[extension.getName()] = extension
+		for (var contentType in variables.extensions) {
+			variables.extensionNames[contentType.getName()] = contentType
 		}
 
-		// merge the parameters from the form and url scopes
+		// Merge the parameters from the form and url scopes.
 		variables.parameters = StructCopy(form)
 		variables.parameters.append(url, false)
 
@@ -20,21 +20,21 @@ component {
 
 		var path = getPath()
 		var segments = ListToArray(path, "/")
-		var extension = variables.extensions.first() // the default extension
+		var contentType = variables.extensions.first() // The default content type.
 
 		if (!segments.isEmpty()) {
 			var lastSegment = segments.last()
 			var extensionName = ListLast(lastSegment, ".")
 
-			// the extension cannot be the whole last segment
+			// The content type cannot be the whole last segment.
 			if (extensionName != lastSegment && variables.extensionNames.keyExists(extensionName)) {
-				extension = variables.extensionNames[extensionName]
-				// remove the extension from the last segment
+				contentType = variables.extensionNames[extensionName]
+				// Remove the content type from the last segment.
 				segments[segments.len()] = Left(lastSegment, Len(lastSegment) - Len(extensionName) - 1)
 			}
 		}
 
-		// traverse the path to get the path segment that applies to this request
+		// Traverse the path to get the path segment that applies to this request.
 		var pathSegment = variables.root.match(segments) ? variables.root : traverse(segments, variables.root)
 		if (IsNull(pathSegment)) {
 			Throw("Path segment not found", "PathSegmentNotFoundException")
@@ -42,7 +42,7 @@ component {
 
 		return {
 			pathSegment = pathSegment,
-			extension = extension
+			contentType = contentType
 		}
 	}
 
@@ -80,14 +80,14 @@ component {
 				var child = children[i]
 				var segmentCount = child.match(arguments.path)
 				if (segmentCount > 0) {
-					// remove the number of segments that were matched and traverse the remaining path
+					// Remove the number of segments that were matched and traverse the remaining path.
 					result = traverse(arguments.path.mid(segmentCount + 1), child)
 
 					if (!IsNull(result)) {
-						// the complete path is traversed so the current path segment is part of the tree
+						// The complete path is traversed so the current path segment is part of the tree.
 						var parameterName = child.getParameterName()
 						if (!IsNull(parameterName)) {
-							// get the part of the path that was actually matched by the current path segment
+							// Get the part of the path that was actually matched by the current path segment.
 							variables.parameters[parameterName] = arguments.path.mid(1, segmentCount).toList("/")
 						}
 					}

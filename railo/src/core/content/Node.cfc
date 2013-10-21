@@ -6,11 +6,11 @@ import craft.core.util.Branch;
  * Base class for the composite pattern.
  * @abstract
  **/
-component implements="Branch" {
+component implements="Branch,Content" {
 
 	public void function init() {}
 
-	public String function accept(required Renderer renderer, required Struct baseModel) {
+	public void function accept(required Visitor visitor) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
@@ -33,7 +33,7 @@ component implements="Branch" {
 	/**
 	 * Collects data pertaining to the view before rendering.
 	 **/
-	public Struct function model(required Context context, required Struct baseModel) {
+	public Struct function model(required Context context, required Struct parentModel) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 

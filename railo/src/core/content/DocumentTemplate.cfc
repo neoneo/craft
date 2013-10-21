@@ -11,14 +11,14 @@ component extends="DocumentFoundation" implements="TemplateContent" {
 
 		var placeholders = []
 		var sections = getSections()
-		// get the placeholders from the parent template, keep the ones that aren't used and add any new ones
+		// Get the placeholders from the parent template. Keep the ones that aren't used and add any new ones.
 		getTemplate().getPlaceholders().each(function (placeholder) {
 			var ref = arguments.placeholder.getRef()
 			if (!sections.keyExists(ref)) {
-				// unused placeholder
+				// Unused placeholder.
 				placeholders.append(arguments.placeholder)
 			} else {
-				// get the placeholders that are descendants of this section
+				// Get the placeholders that are descendants of this section.
 				placeholders.append(sections[ref].getPlaceholders(), true)
 			}
 		})

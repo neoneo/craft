@@ -10,8 +10,8 @@ component implements="Content" accessors="true" {
 		variables.sections = {}
 	}
 
-	public String function accept(required Renderer renderer) {
-		return arguments.renderer.visitDocument(this)
+	public void function accept(required Visitor visitor) {
+		arguments.visitor.visitDocument(this)
 	}
 
 	public void function addSection(required Section section, required Placeholder placeholder) {

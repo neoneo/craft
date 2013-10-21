@@ -7,8 +7,8 @@ component extends="Node" accessors="true" {
 		variables.ref = arguments.ref
 	}
 
-	public String function accept(required Renderer renderer, Struct baseModel) {
-		return arguments.renderer.visitPlaceholder(this, arguments.baseModel)
+	public void function accept(required Visitor visitor) {
+		arguments.visitor.visitPlaceholder(this)
 	}
 
 	public String function view(required Context context) {

@@ -1,4 +1,4 @@
-component extends="Extension" {
+component extends="ContentType" {
 
 	public String function getName() {
 		return "json"
@@ -12,9 +12,9 @@ component extends="Extension" {
 
 		var result = ""
 		for (var string in arguments.strings) {
-			// make anything that doesn't look like JSON safe
+			// Make anything that doesn't look like JSON, safe for JSON.
 			if (!isValidJSON("[" & string & "]")) {
-				// although a string shouldn't be serialized by itself, this effectively makes the string safe for JSON
+				// Although a string shouldn't be serialized by itself, this effectively makes the string safe for JSON.
 				string = SerializeJSON(string)
 			}
 
@@ -34,7 +34,7 @@ component extends="Extension" {
 	}
 
 	private Boolean function isValidJSON(required String content) {
-		// workaround for https://issues.jboss.org/browse/RAILO-2373
+		// Workaround for https://issues.jboss.org/browse/RAILO-2373
 		return IsJSON(arguments.content) && FindOneOf("[{", arguments.content) == 1
 	}
 

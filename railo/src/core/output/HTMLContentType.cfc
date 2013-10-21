@@ -1,11 +1,11 @@
-component extends="Extension" {
+component extends="ContentType" {
 
 	public String function getName() {
-		return "pdf"
+		return "html"
 	}
 
 	public String function getMimeType() {
-		return "application/pdf"
+		return "text/html"
 	}
 
 	public String function convert(required Array strings) {
@@ -13,12 +13,7 @@ component extends="Extension" {
 	}
 
 	public String function write(required String content) {
-
-		document format="pdf" name="local.result" {
-			Echo(arguments.content)
-		}
-
-		return result
+		return arguments.content
 	}
 
 }

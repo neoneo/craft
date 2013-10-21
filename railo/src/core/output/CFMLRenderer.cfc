@@ -4,26 +4,26 @@ component implements="Renderer" {
 		variables.viewFinder = arguments.viewFinder
 	}
 
-	public Struct function render(required String view, required Struct model, required String requestMethod, required Extension extension) {
+	public String function render(required String view, required Struct model, required String requestMethod, required ContentType contentType) {
 
-		// the view finder returns the name of the template and the extension that is rendered by the template
-		var data = variables.viewFinder.get(arguments.view, arguments.requestMethod, arguments.extension)
-		var template = data.template
-		var extension = data.extension
+		var template = variables.viewFinder.getTemplate(arguments.view, arguments.requestMethod, arguments.contentType)
 
-		// append the model on the local scope for immediate availability in the included template
-		// using an include instead of a module performs better
-		// in the admin, local scope mode should be set to modern, or variables created by the template will be put on the variables scope
+		/*
+			Append the model on the local scope for immediate availability in the included template.
+			Using an include instead of a module performs a little better.
+			In the view, care should be taken to scope all variables, or alternatively local scope mode could be set to modern in the admin.
+		*/
 		StructAppend(local, arguments.model)
 
 		savecontent variable="local.output" {
 			include template="#template#"
 		}
 
-		return {
-			output: output,
-			extension: extension
-		}
+		return output
+	}
+
+	public ContentType function contentType(required String view, required String requestMethod, required ContentType contentType) {
+		return variables.viewFinder.getContentType(arguments.view, arguments.requestMethod, arguments.contentType)
 	}
 
 }

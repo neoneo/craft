@@ -3,19 +3,19 @@ component extends="mxunit.framework.TestCase" {
 	public void function beforeTests() {
 		variables.viewFinder = new craft.core.output.ViewFinder("cfm")
 		variables.viewFinder.addMapping("/craft/../tests/output/viewstubs")
-		variables.json = new ExtensionStub("json")
+		variables.json = new ContentTypeStub("json")
 	}
 
 	public void function setUp() {
 		variables.renderer = new craft.core.output.DefaultRenderer(variables.viewFinder)
 	}
 
-	public void function Render_Should_ReturnStructWithOutputAndExtensionKeys() {
+	public void function Render_Should_ReturnStructWithOutputAndContentTypeKeys() {
 		var result = variables.renderer.render("renderer", {}, "get", variables.json)
 		assertTrue(StructKeyExists(result, "output"), "result should contain key 'output'")
 		assertTrue(IsSimpleValue(result.output), "output should be a string")
-		assertTrue(StructKeyExists(result, "extension"), "result should contain key 'extension'")
-		assertEquals(variables.json, result.extension, "extension should equal the extension used")
+		assertTrue(StructKeyExists(result, "contentType"), "result should contain key 'contentType'")
+		assertEquals(variables.json, result.contentType, "contentType should equal the contentType used")
 	}
 
 	public void function Render_Should_ReturnOutputContainingSerializedModel() {

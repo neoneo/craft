@@ -8,8 +8,8 @@ component implements="TemplateContent" {
 		variables.section = arguments.section
 	}
 
-	public String function accept(required Renderer renderer) {
-		return arguments.renderer.visitTemplate(this)
+	public void function accept(required Visitor visitor) {
+		arguments.visitor.visitTemplate(this)
 	}
 
 	public Array function getPlaceholders() {

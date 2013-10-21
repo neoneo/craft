@@ -1,4 +1,4 @@
-component extends="craft.core.output.Extension" {
+component extends="craft.core.output.ContentType" {
 
 	property String name;
 

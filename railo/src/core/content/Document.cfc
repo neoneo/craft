@@ -2,9 +2,9 @@ component extends="DocumentFoundation" {
 
 	public void function replaceTemplate(required TemplateContent template) {
 
-		// check if the new template has placeholders compatible with the old one
+		// Check if the new template has placeholders compatible with the old one.
 		var newPlaceholders = arguments.template.getPlaceholders()
-		// loop over all current placeholders, and remove the content if there is no compatible new placeholder
+		// Loop over all current placeholders, and remove the section if there is no compatible new placeholder.
 		getTemplate().getPlaceholders().each(
 			function (placeholder) {
 				var placeholder = arguments.placeholder
@@ -12,7 +12,7 @@ component extends="DocumentFoundation" {
 					return arguments.newPlaceholder.getRef() == placeholder.getRef()
 				})
 				if (index == 0) {
-					// remove the content
+					// The placeholder is not used. Remove the sectopm.
 					removeSection(placeholder)
 				}
 			}

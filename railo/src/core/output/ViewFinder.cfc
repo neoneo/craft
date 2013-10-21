@@ -1,7 +1,7 @@
 component {
 
-	public void function init(required String fileExtension) {
-		variables.fileExtension = "." & arguments.fileExtension
+	public void function init(required String fileContentType) {
+		variables.fileContentType = "." & arguments.fileContentType
 		reset()
 	}
 
@@ -16,43 +16,17 @@ component {
 		})
 		if (index > 0) {
 			variables.mappings.deleteAt(index)
-			// the mappingPath serves as the prefix for all keys to be removed from the cache
+			// The mappingPath serves as the prefix for all keys to be removed from the cache.
 			removeByPrefix(mappingPath)
 		}
 	}
 
-	public Struct function get(required String view, required String requestMethod, required Extension extension) {
+	public String function getTemplate(required String view, required String requestMethod, required ContentType contentType) {
+		return get(arguments.view, arguments.requestMethod, arguments.contentType).template
+	}
 
-		var key = arguments.view & "." & arguments.requestMethod & "." & arguments.extension.getName()
-		if (!variables.cache.keyExists(key)) {
-			var extensions = ([arguments.extension]).merge(arguments.extension.getFallbacks()) // first look for the most specific template
-			// search for files with or without the request method (in that order)
-			var names = [
-				arguments.view & "." & arguments.requestMethod,
-				arguments.view
-			]
-			var found = false
-			search:for (var extension in extensions) {
-				for (var name in names) {
-					for (var mapping in variables.mappings) {
-						var filename = name & "." & extension.getName() & variables.fileExtension
-						if (FileExists(mapping.directory & "/" & filename)) {
-							variables.cache[key] = {
-								template = mapping.path & "/" & filename,
-								extension = extension
-							}
-							found = true
-							break search;
-						}
-					}
-				}
-			}
-			if (!found) {
-				Throw("View '#arguments.view# for extension #arguments.extension.getName()#' not found", "ViewNotFoundException")
-			}
-		}
-
-		return variables.cache[key]
+	public ContentType function getContentType(required String view, required String requestMethod, required ContentType contentType) {
+		return get(arguments.view, arguments.requestMethod, arguments.contentType).contentType
 	}
 
 	public void function reset() {
@@ -63,8 +37,8 @@ component {
 	public void function add(required String path) {
 		var key = cacheKey(arguments.path)
 		if (!IsNull(key)) {
-			// the added file might have higher priority than similar files already cached
-			// remove all similar keys; when requested the files will be put in the cache in priority order
+			// The added file might have higher priority than similar files already cached.
+			// Remove all similar keys. When requested the files will be put in the cache in priority order.
 			var prefix = ListDeleteAt(key, ListLen(key, "."), ".")
 			removeByPrefix(prefix)
 		}
@@ -77,19 +51,53 @@ component {
 		}
 	}
 
+	private Struct function get(required String view, required String requestMethod, required ContentType contentType) {
+
+		var key = arguments.view & "." & arguments.requestMethod & "." & arguments.contentType.getName()
+		if (!variables.cache.keyExists(key)) {
+			var extensions = ([arguments.contentType]).merge(arguments.contentType.getFallbacks()) // First look for the most specific template.
+			// Search for files with or without the request method (in that order).
+			var names = [
+				arguments.view & "." & arguments.requestMethod,
+				arguments.view
+			]
+			var found = false
+			search:for (var contentType in extensions) {
+				for (var name in names) {
+					for (var mapping in variables.mappings) {
+						var filename = name & "." & contentType.getName() & variables.fileContentType
+						if (FileExists(mapping.directory & "/" & filename)) {
+							variables.cache[key] = {
+								template = mapping.path & "/" & filename,
+								contentType = contentType
+							}
+							found = true
+							break search;
+						}
+					}
+				}
+			}
+			if (!found) {
+				Throw("View '#arguments.view# for contentType #arguments.contentType.getName()#' not found", "ViewNotFoundException")
+			}
+		}
+
+		return variables.cache[key]
+	}
+
 	private Any function cacheKey(required String path) {
 
-		// the file name must end with the proper file extenstion
-		if (ListLast(arguments.path, ".") == variables.fileExtension) {
+		// The file name must end with the proper file extenstion.
+		if (ListLast(arguments.path, ".") == variables.fileContentType) {
 			var path = arguments.path
 			var index = variables.mappings.find(function (mapping) {
 				return path.startsWith(arguments.mapping.directory)
 			})
 			if (index > 0) {
 				var mapping = variables.mappings[index]
-				// the cache key starts with the mapping, followed by the relative path without the file extension
+				// The cache key starts with the mapping, followed by the relative path without the file contentType.
 				var mappedPath = Replace(arguments.path, mapping.directory, mapping.path)
-				// remove the file extension
+				// Remove the file contentType.
 				var key = ListDeleteAt(mappedPath, ListLen(mappedPath, "."), ".")
 
 				return key
@@ -100,7 +108,7 @@ component {
 	}
 
 	private void function removeByPrefix(required String prefix) {
-		// just to be certain, get a key array first and then delete from the cache
+		// Just to be certain, get a key array first and then delete from the cache.
 		var prefix = arguments.prefix
 		variables.cache.keyArray().each(function (key) {
 			if (Left(arguments.key, Len(prefix)) == prefix) {

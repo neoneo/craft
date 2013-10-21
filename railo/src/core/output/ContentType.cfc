@@ -23,14 +23,14 @@ component {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
-	public void function addFallback(required Extension extension) {
-		if (arguments.extension.getName() != getName() && variables.fallbacks.find(arguments.extension) == 0) {
-			variables.fallbacks.append(arguments.extension)
+	public void function addFallback(required ContentType contentType) {
+		if (arguments.contentType.getName() != getName() && variables.fallbacks.find(arguments.contentType) == 0) {
+			variables.fallbacks.append(arguments.contentType)
 		}
 	}
 
-	public void function removeFallback(required Extension extension) {
-		variables.fallbacks.delete(arguments.extension)
+	public void function removeFallback(required ContentType contentType) {
+		variables.fallbacks.delete(arguments.contentType)
 	}
 
 	public Array function getFallbacks() {

@@ -39,7 +39,10 @@ component {
 					var kind = event.kind()
 					if (kind !== variables.events.OVERFLOW) {
 						var relativePath = event.context()
-						// in the case of ENTRY_CREATE, ENTRY_DELETE, and ENTRY_MODIFY events the context is a Path that is the relative path between the directory registered with the watch service, and the entry that is created, deleted, or modified.
+						/*
+							In the case of ENTRY_CREATE, ENTRY_DELETE, and ENTRY_MODIFY events, the context is a Path that is the relative path between the
+							directory registered with the watch service, and the entry that is created, deleted, or modified.
+						*/
 						var affectedPath = path.resolve(relativePath)
 						var file = affectedPath.toFile()
 

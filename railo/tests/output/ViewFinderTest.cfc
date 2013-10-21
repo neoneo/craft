@@ -1,9 +1,9 @@
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
-	  	variables.ext1 = new ExtensionStub("ext1")
-		variables.ext2 = new ExtensionStub("ext2")
-		variables.ext3 = new ExtensionStub("ext3")
+	  	variables.ext1 = new ContentTypeStub("ext1")
+		variables.ext2 = new ContentTypeStub("ext2")
+		variables.ext3 = new ContentTypeStub("ext3")
 
 		variables.ext1.addFallback(ext2)
 		variables.ext1.addFallback(ext3)

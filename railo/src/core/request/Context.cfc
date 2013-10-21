@@ -9,7 +9,7 @@ component accessors="true" {
 
 	property PathSegment pathSegment setter="false";
 	property Struct parameters setter="false";
-	property Extension extension setter="false";
+	property ContentType contentType setter="false";
 	property String requestMethod setter="false";
 
 	public void function init(required EndPoint endPoint) {
@@ -18,7 +18,7 @@ component accessors="true" {
 
 		var info = arguments.endPoint.parsePath()
 		variables.pathSegment = info.pathSegment
-		variables.extension = info.extension
+		variables.contentType = info.contentType
 		variables.requestMethod = arguments.endPoint.getRequestMethod()
 		variables.parameters = arguments.endPoint.getRequestParameters()
 
@@ -26,11 +26,11 @@ component accessors="true" {
 
 	//public void function write() {
 
-	//	var extension = getExtension()
+	//	var contentType = getContentType()
 	//	var output = getPathSegment().getContent().render(this)
 
-	//	content type="#extension.getMimeType()#";
-	//	Echo(extension.convert(output))
+	//	content type="#contentType.getMimeType()#";
+	//	Echo(contentType.convert(output))
 
 	}
 

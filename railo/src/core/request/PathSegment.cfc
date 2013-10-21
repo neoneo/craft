@@ -8,7 +8,7 @@ import craft.core.util.ScopeBranchList;
  **/
 component implements="Branch" accessors="true" {
 
-	property String parameterName setter="false"; // the name of the parameter that corresponds to this path segment
+	property String parameterName setter="false"; // The name of the parameter that corresponds to this path segment.
 
 	public void function init(required PathMatcher pathMatcher, String parameterName) {
 

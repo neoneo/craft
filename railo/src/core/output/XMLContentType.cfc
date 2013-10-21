@@ -1,4 +1,4 @@
-component extends="Extension" {
+component extends="ContentType" {
 
 	public String function getName() {
 		return "xml"
