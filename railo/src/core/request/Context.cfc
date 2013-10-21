@@ -24,16 +24,6 @@ component accessors="true" {
 
 	}
 
-	//public void function write() {
-
-	//	var contentType = getContentType()
-	//	var output = getPathSegment().getContent().render(this)
-
-	//	content type="#contentType.getMimeType()#";
-	//	Echo(contentType.convert(output))
-
-	}
-
 	public String function createUrl(required String path, Struct parameters, String extensionName) {
 		return variables.endPoint.createUrl(argumentCollection = arguments.toStruct())
 	}

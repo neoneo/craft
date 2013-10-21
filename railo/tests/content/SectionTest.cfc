@@ -3,18 +3,18 @@ import craft.core.content.Placeholder;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.templateComponent = new craft.core.content.Section()
+		variables.section = new craft.core.content.Section()
 	}
 
 	public void function GetPlaceholders_Should_ReturnPlaceholdersArray() {
 
 		// build a tree with placeholders at several levels
-		variables.templateComponent.addChild(new Placeholder("p1"))
-		variables.templateComponent.addChild(new ComponentStub())
+		variables.section.addChild(new Placeholder("p1"))
+		variables.section.addChild(new ComponentStub())
 
 		var level1 = new ComponentStub()
 		level1.addChild(new LeafStub())
-		variables.templateComponent.addChild(level1)
+		variables.section.addChild(level1)
 
 		var level2 = new ComponentStub()
 		level2.addChild(new Placeholder("p3"))
@@ -23,7 +23,7 @@ component extends="mxunit.framework.TestCase" {
 		level1.addChild(level2)
 		level1.addChild(new Placeholder("p2"))
 
-		var placeholders = variables.templateComponent.getPlaceholders()
+		var placeholders = variables.section.getPlaceholders()
 		assertEquals(3, placeholders.len())
 
 		// the order of the placeholders is not important
@@ -39,7 +39,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function SetParent_Should_ThrowNotSupportedException() {
 		var component = new craft.core.content.Composite()
 		try {
-			variables.templateComponent.setParent(component)
+			variables.section.setParent(component)
 			fail("calling setParent should have thrown NotSupportedException")
 		} catch (Any e) {
 			assertEquals("NotSupportedException", e.type)
@@ -50,11 +50,11 @@ component extends="mxunit.framework.TestCase" {
 		var leaf1 = new LeafWithViewStub("leaf1")
 		var leaf2 = new LeafWithViewStub("leaf2")
 
-		variables.templateComponent.addChild(leaf1)
-		variables.templateComponent.addChild(leaf2)
+		variables.section.addChild(leaf1)
+		variables.section.addChild(leaf2)
 
 		var context = new ContextStub()
-		var result = variables.templateComponent.render(context)
+		var result = variables.section.render(context)
 		assertEquals("leaf1leaf2", result)
 	}
 
