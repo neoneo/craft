@@ -21,11 +21,11 @@ component {
 		}
 	}
 
-	public String function getTemplate(required String view, required String requestMethod, required ContentType contentType) {
+	public String function template(required String view, required String requestMethod, required ContentType contentType) {
 		return get(arguments.view, arguments.requestMethod, arguments.contentType).template
 	}
 
-	public ContentType function getContentType(required String view, required String requestMethod, required ContentType contentType) {
+	public ContentType function contentType(required String view, required String requestMethod, required ContentType contentType) {
 		return get(arguments.view, arguments.requestMethod, arguments.contentType).contentType
 	}
 
