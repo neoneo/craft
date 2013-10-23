@@ -1,11 +1,18 @@
 component extends="mxunit.framework.TestCase" {
 
-	public void function Render_Should_ReturnLeafView() {
-		var leaf = new LeafStub()
-		var result = leaf.render(new ContextStub())
+	public void function init() {
+		variables.leaf = new LeafStub()
+	}
+
+	public void function Accept_Should_InvokeVistor() {
+		var visitor = new RenderVistorStub()
+		variables.leaf.accept(visitor)
+		var result = visitor.getContent()
 		assertEquals("leaf", result)
 	}
 
-	// TODO: add test for passing through the parent model passed to ContextStub.render()
+	public void function HasChildren_Should_ReturnFalse() {
+		assertFalse(variables.leaf.hasChildren())
+	}
 
 }

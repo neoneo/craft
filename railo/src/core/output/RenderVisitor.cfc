@@ -6,8 +6,6 @@ import craft.core.content.Section;
 import craft.core.content.Template;
 import craft.core.content.Visitor;
 
-import craft.core.output.Renderer;
-
 import craft.core.request.Context;
 
 component implements="Visitor" accessors="true" {

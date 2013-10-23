@@ -1,6 +1,8 @@
+import craft.core.request.Context;
+
 component extends="craft.core.content.Composite" {
 
-	private String function view(required Context context) {
+	public String function view(required Context context) {
 		return "before [[children]] after"
 	}
 

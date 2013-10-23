@@ -15,10 +15,13 @@ component implements="Branch,Content" {
 	}
 
 	public Boolean function hasParent() {
-		return StructKeyExists(variables, "parent")
+		return !IsNull(variables.parent)
 	}
 
 	public Composite function getParent() {
+		if (!hasParent()) {
+			Throw("Node has no parent", "NoSuchElementException")
+		}
 		return variables.parent
 	}
 

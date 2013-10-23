@@ -5,7 +5,7 @@ component extends="craft.core.content.Leaf" {
 		variables.viewOutput = arguments.viewOutput
 	}
 
-	private String function view(required Context context) {
+	public String function view(required Context context) {
 		return variables.viewOutput
 	}
 
