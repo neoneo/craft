@@ -1,8 +1,10 @@
+import craft.core.output.*;
+
 component extends="mxunit.framework.TestCase" {
 
 	public void function TXTContentType() {
 
-		var contentType = new craft.core.output.TXTContentType()
+		var contentType = new TXTContentType()
 		assertEquals("txt", contentType.getName(), "contentType.getName should return 'text'")
 		assertEquals("text/plain", contentType.getMimeType(), "contentType.getMimeType should return 'text/plain'")
 		assertEquals("abc", contentType.convert(["a", "b", "c"]), "concatenating ['a', 'b', 'c'] should return 'abc'")
@@ -14,7 +16,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function HTMLContentType() {
 
-		var contentType = new craft.core.output.HTMLContentType()
+		var contentType = new HTMLContentType()
 		assertEquals("html", contentType.getName(), "contentType.getName should return 'html'")
 		assertEquals("text/html", contentType.getMimeType(), "contentType.getMimeType should return 'text/html'")
 		assertEquals("abc", contentType.convert(["a", "b", "c"]), "concatenating ['a', 'b', 'c'] should return 'abc'")
@@ -26,7 +28,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function JSONContentType() {
 
-		var contentType = new craft.core.output.JSONContentType()
+		var contentType = new JSONContentType()
 		assertEquals("json", contentType.getName(), "contentType.getName should return 'json'")
 		assertEquals("application/json", contentType.getMimeType(), "contentType.getMimeType should return 'application/json'")
 
@@ -62,7 +64,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function XMLContentType() {
 
-		var contentType = new craft.core.output.XMLContentType()
+		var contentType = new XMLContentType()
 		assertEquals("xml", contentType.getName(), "contentType.getName should return 'xml'")
 		assertEquals("application/xml", contentType.getMimeType(), "contentType.getMimeType should return 'application/xml'")
 
@@ -86,7 +88,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function PDFContentType() {
 
-		var contentType = new craft.core.output.PDFContentType()
+		var contentType = new PDFContentType()
 		assertEquals("pdf", contentType.getName(), "contentType.getName should return 'pdf'")
 		assertEquals("application/pdf", contentType.getMimeType(), "contentType.getMimeType should return 'application/pdf'")
 		assertEquals("abc", contentType.convert(["a", "b", "c"]), "concatenating ['a', 'b', 'c'] should return 'abc'")
@@ -96,32 +98,37 @@ component extends="mxunit.framework.TestCase" {
 
 	}
 
-	private void function fallbacks(required craft.core.output.ContentType contentType) {
+	private void function fallbacks(required ContentType contentType) {
 
-		var ext1 = new ContentTypeStub("ext1")
-		var ext2 = new ContentTypeStub("ext2")
+		var ext1 = mock(CreateObject("ContentType")).getName().returns("ext1")
+		var ext2 = mock(CreateObject("ContentType")).getName().returns("ext2")
 
 		arguments.contentType.addFallback(ext1)
 		var array1 = arguments.contentType.getFallbacks()
-		assertEquals(1, array1.len(), "after adding one fallback contentType, getFallBacks should return an array of 1 element")
+		assertEquals(1, array1.len(), "after adding one fallback content type, getFallBacks should return an array of 1 element")
+		assertSame(ext1, array1[1])
+
+		arguments.contentType.addFallback(ext1)
+		var array2 = arguments.contentType.getFallbacks()
+		assertEquals(1, array2.len(), "adding the same fallback a second time should be ignored")
 
 		arguments.contentType.addFallback(ext2)
-		var array2 = arguments.contentType.getFallbacks()
-		assertEquals(2, array2.len(), "after adding two fallback extensions, getFallBacks should return an array of 2 elements")
-		assertEquals(ext1, array2[1], "ext1 should be the first fallback")
-		assertEquals(ext2, array2[2], "ext2 should be the second fallback")
+		var array3 = arguments.contentType.getFallbacks()
+		assertEquals(2, array3.len(), "after adding two fallback content types, getFallBacks should return an array of 2 elements")
+		assertSame(ext1, array3[1], "ext1 should be the first fallback")
+		assertSame(ext2, array3[2], "ext2 should be the second fallback")
 
 		arguments.contentType.removeFallback(ext1)
-		var array3 = arguments.contentType.getFallbacks()
-		assertEquals(1, array3.len(), "after removing one fallback contentType, getFallBacks should return an array of 1 element")
-		assertEquals(ext2, array3[1], "ext2 should be the first fallback")
+		var array4 = arguments.contentType.getFallbacks()
+		assertEquals(1, array4.len(), "after removing one fallback content type, getFallBacks should return an array of 1 element")
+		assertSame(ext2, array4[1], "ext2 should be the only remaining fallback")
 
 		var class = GetMetaData(arguments.contentType).name
 		var ext3 = new "#class#"()
 		arguments.contentType.addFallback(ext3)
-		var array4 = arguments.contentType.getFallbacks()
-		assertEquals(1, array4.len(), "after adding an instance of itself as a fallback, getFallBacks should return an array of 1 element")
-		assertEquals(ext2, array4[1], "ext2 should be the first fallback")
+		var array5 = arguments.contentType.getFallbacks()
+		assertEquals(1, array5.len(), "adding an instance of the same class as a fallback should be ignored")
+		assertSame(ext2, array5[1], "ext2 should still be the only fallback")
 
 
 	}

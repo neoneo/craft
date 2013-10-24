@@ -1,16 +1,19 @@
+import craft.core.content.*;
+
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.placeholder = new craft.core.content.Placeholder("ref")
+		variables.placeholder = new Placeholder("ref")
 	}
 
-	public void function getTag_Should_Return_Ref() {
-		assertEquals("[[ref]]", variables.placeholder.getTag())
+	public void function GetRef_Should_Return_Ref() {
+		assertEquals("ref", variables.placeholder.getRef())
 	}
 
-	public void function Render_Should_Return_Insert() {
-		var context = new ContextStub()
-		assertEquals(variables.placeholder.getTag(), variables.placeholder.render(context))
+	public void function Accept_Should_InvokeVistor() {
+		var visitor = mock(new VisitorStub()).visitPlaceholder(variables.placeholder)
+		variables.placeholder.accept(visitor)
+		visitor.verify().visitPlaceholder(variables.placeholder)
 	}
 
 }

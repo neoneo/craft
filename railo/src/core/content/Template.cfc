@@ -1,6 +1,4 @@
-import craft.core.output.Renderer;
-
-component implements="TemplateContent" {
+component implements="TemplateContent" accessors="true" {
 
 	property Section section setter="false";
 

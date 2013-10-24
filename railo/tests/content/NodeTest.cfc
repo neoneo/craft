@@ -1,7 +1,9 @@
+import craft.core.content.*;
+
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.node = new NodeStub()
+		variables.node = new Node()
 	}
 
 	public void function GetParent_Should_ThrowNoSuchElementException_When_NoParent() {
@@ -14,7 +16,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function GetSetParent_Should_Work() {
-		var composite = new CompositeStub()
+		var composite = new Composite()
 		variables.node.setParent(composite)
 		var parent = variables.node.getParent()
 
@@ -26,7 +28,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function HasParent_Should_ReturnTrue_When_Parent() {
-		var composite = new CompositeStub()
+		var composite = new Composite()
 		variables.node.setParent(composite)
 		assertTrue(variables.node.hasParent())
 	}

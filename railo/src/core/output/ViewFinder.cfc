@@ -55,14 +55,14 @@ component {
 
 		var key = arguments.view & "." & arguments.requestMethod & "." & arguments.contentType.getName()
 		if (!variables.cache.keyExists(key)) {
-			var extensions = ([arguments.contentType]).merge(arguments.contentType.getFallbacks()) // First look for the most specific template.
+			var contentTypes = ([arguments.contentType]).merge(arguments.contentType.getFallbacks()) // First look for the most specific template.
 			// Search for files with or without the request method (in that order).
 			var names = [
 				arguments.view & "." & arguments.requestMethod,
 				arguments.view
 			]
 			var found = false
-			search:for (var contentType in extensions) {
+			search:for (var contentType in contentTypes) {
 				for (var name in names) {
 					for (var mapping in variables.mappings) {
 						var filename = name & "." & contentType.getName() & variables.fileContentType

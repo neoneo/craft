@@ -1,14 +1,16 @@
+import craft.core.content.*;
+
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.component = new CompositeStub()
+		variables.composite = new Composite()
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = new VisitorStub()
-		variables.component.accept(visitor)
-		var result = visitor.getResult()
-		assertEquals("composite", result)
+		var visitor = mock(new VisitorStub()).visitComposite(variables.composite)
+		variables.composite.accept(visitor)
+
+		visitor.verify().visitComposite(variables.composite)
 	}
 
 	// public void function Render_WithChildren_Should_ReturnCompositeContent() {

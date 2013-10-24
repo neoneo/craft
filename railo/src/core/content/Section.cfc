@@ -3,12 +3,15 @@
  */
 component extends="Composite" {
 
+	/**
+	 * @final
+	 */
 	public void function setParent(required Composite parent) {
 		Throw("Function #GetFunctionCalledName()# is not supported", "NotSupportedException")
 	}
 
 	public void function accept(required Visitor visitor) {
-		arguments.renderer.visitSection(this)
+		arguments.visitor.visitSection(this)
 	}
 
 	public Array function getPlaceholders() {

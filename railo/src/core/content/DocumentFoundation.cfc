@@ -1,12 +1,10 @@
-import craft.core.request.Context;
-
 component implements="Content" accessors="true" {
 
 	property TemplateContent template setter="false";
 	property Struct sections setter="false";
 
 	public void function init(required TemplateContent template) {
-		setTemplate(arguments.template)
+		variables.template = arguments.template
 		variables.sections = {}
 	}
 
@@ -31,7 +29,24 @@ component implements="Content" accessors="true" {
 		getSections().delete(arguments.placeholder.getRef())
 	}
 
-	private void function setTemplate(required TemplateContent template) {
+	public void function replaceTemplate(required TemplateContent template) {
+
+		// Check if the new template has placeholders compatible with the old one.
+		var newPlaceholders = arguments.template.getPlaceholders()
+		// Loop over all current placeholders, and remove the section if there is no compatible new placeholder.
+		getTemplate().getPlaceholders().each(
+			function (placeholder) {
+				var placeholder = arguments.placeholder
+				var index = newPlaceholders.find(function (newPlaceholder) {
+					return arguments.newPlaceholder.getRef() == placeholder.getRef()
+				})
+				if (index == 0) {
+					// The placeholder is not used. Remove the section.
+					removeSection(placeholder)
+				}
+			}
+		)
+
 		variables.template = arguments.template
 	}
 

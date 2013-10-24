@@ -6,7 +6,7 @@ component implements="Renderer" {
 
 	public String function render(required String view, required Struct model, required String requestMethod, required ContentType contentType) {
 
-		var template = variables.viewFinder.getTemplate(arguments.view, arguments.requestMethod, arguments.contentType)
+		var template = variables.viewFinder.template(arguments.view, arguments.requestMethod, arguments.contentType)
 
 		/*
 			Append the model on the local scope for immediate availability in the included template.
@@ -23,7 +23,7 @@ component implements="Renderer" {
 	}
 
 	public ContentType function contentType(required String view, required String requestMethod, required ContentType contentType) {
-		return variables.viewFinder.getContentType(arguments.view, arguments.requestMethod, arguments.contentType)
+		return variables.viewFinder.contentType(arguments.view, arguments.requestMethod, arguments.contentType)
 	}
 
 }

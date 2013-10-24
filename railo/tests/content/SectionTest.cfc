@@ -1,24 +1,24 @@
-import craft.core.content.Placeholder;
+import craft.core.content.*;
 
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.section = new craft.core.content.Section()
+		variables.section = new Section()
 	}
 
 	public void function GetPlaceholders_Should_ReturnPlaceholdersArray() {
 
 		// build a tree with placeholders at several levels
 		variables.section.addChild(new Placeholder("p1"))
-		variables.section.addChild(new ComponentStub())
+		variables.section.addChild(new Composite())
 
-		var level1 = new ComponentStub()
-		level1.addChild(new LeafStub())
+		var level1 = new Composite()
+		level1.addChild(new Leaf())
 		variables.section.addChild(level1)
 
-		var level2 = new ComponentStub()
+		var level2 = new Composite()
 		level2.addChild(new Placeholder("p3"))
-		level2.addChild(new LeafStub())
+		level2.addChild(new Leaf())
 
 		level1.addChild(level2)
 		level1.addChild(new Placeholder("p2"))
@@ -37,25 +37,20 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function SetParent_Should_ThrowNotSupportedException() {
-		var component = new craft.core.content.Composite()
+		var composite = new Composite()
 		try {
-			variables.section.setParent(component)
+			variables.section.setParent(composite)
 			fail("calling setParent should have thrown NotSupportedException")
 		} catch (Any e) {
 			assertEquals("NotSupportedException", e.type)
 		}
 	}
 
-	public void function Render_Should_ReturnChildContent() {
-		var leaf1 = new LeafWithViewStub("leaf1")
-		var leaf2 = new LeafWithViewStub("leaf2")
+	public void function Accept_Should_InvokeVistor() {
+		var visitor = mock(new VisitorStub()).visitSection(variables.section)
+		variables.section.accept(visitor)
 
-		variables.section.addChild(leaf1)
-		variables.section.addChild(leaf2)
-
-		var context = new ContextStub()
-		var result = variables.section.render(context)
-		assertEquals("leaf1leaf2", result)
+		visitor.verify().visitSection(variables.section)
 	}
 
 }

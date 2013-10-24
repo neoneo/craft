@@ -1,14 +1,15 @@
+import craft.core.content.*;
+
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.leaf = new LeafStub()
+		variables.leaf = new Leaf()
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = new VisitorStub()
+		var visitor = mock(new VisitorStub()).visitLeaf(variables.leaf)
 		variables.leaf.accept(visitor)
-		var result = visitor.getResult()
-		assertEquals("leaf", result)
+		visitor.verify().visitLeaf(variables.leaf)
 	}
 
 	public void function HasChildren_Should_ReturnFalse() {

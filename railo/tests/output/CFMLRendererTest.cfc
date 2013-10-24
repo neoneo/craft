@@ -1,23 +1,28 @@
+import craft.core.output.*;
+
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
-		variables.viewFinder = new craft.core.output.ViewFinder("cfm")
-		variables.viewFinder.addMapping("/craft/../tests/output/viewstubs")
-		variables.json = new ContentTypeStub("json")
+		variables.json = mock("craft.core.output.ContentType", "typesafe")
+			.getName().returns("json")
+		variables.viewFinder = mock("craft.core.output.ViewFinder", "typesafe")
+			.template("renderer", "get", variables.json).returns("/craft/../tests/output/viewstubs/renderer.json.cfm")
+			.contentType("renderer", "get", variables.json).returns(variables.json)
 	}
 
 	public void function setUp() {
-		variables.renderer = new craft.core.output.CFMLRenderer(variables.viewFinder)
+		variables.renderer = new CFMLRenderer(variables.viewFinder)
 	}
 
 	public void function Render_Should_ReturnOutputString() {
 		var output = variables.renderer.render("renderer", {}, "get", variables.json)
+		variables.viewFinder.verify().template("renderer", "get", variables.json)
 		assertTrue(IsSimpleValue(output), "output should be a string")
 	}
 
 	public void function ContentType_Should_ReturnUsedContentType() {
 		var contentType = variables.renderer.contentType("renderer", "get", variables.json)
-		assertEquals(variables.json, contentType)
+		assertSame(variables.json, contentType)
 	}
 
 	public void function Render_Should_ReturnOutputContainingSerializedModel() {
