@@ -1,4 +1,4 @@
-import craft.core.util.DirectoryWatcher;
+import craft.core.util.gateway.DirectoryWatcher;
 
 component extends="mxunit.framework.TestCase" {
 
@@ -92,12 +92,12 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(variables.directory & "renamed.txt", ToString(events[index].file), "after renaming a file, the file path of the ENTRY_CREATE event should be the new path")
 	}
 
-	public void function AfterClosing_Watcher_Should_ThrowExceptionWhenPolled() {
+	public void function AfterClosing_Watcher_Should_ThrowExceptionWhen_Polled() {
 		variables.watcher = createWatcher(variables.directory, false)
 		variables.watcher.close()
 		try {
 			var events = variables.watcher.poll()
-			fail("polling a closed variables.watcher should throw an exception")
+			fail("polling a closed watcher should throw an exception")
 		} catch (any e) {
 			assertEquals("java.nio.file.ClosedWatchServiceException", e.type, "polling a closed watcher should throw exception 'java.nio.file.ClosedWatchServiceException'");
 		}

@@ -7,34 +7,34 @@ import craft.core.content.Template;
 
 component implements="craft.core.content.Visitor" accessors="true" {
 
-	property String content;
+	property String result;
 
 	// public void function init() {
 	// 	variables.context = new ContextStub()
 	// }
 
 	public void function visitComposite(required Composite composite) {
-		variables.content = "composite"
+		variables.result = "composite"
 	}
 
 	public void function visitDocument(required DocumentFoundation document) {
-		variables.content = "document"
+		variables.result = "document"
 	}
 
 	public void function visitLeaf(required Leaf leaf) {
-		variables.content = "leaf"
+		variables.result = "leaf"
 	}
 
 	public void function visitPlaceholder(required Placeholder placeholder) {
-		variables.content = "placeholder"
+		variables.result = "placeholder"
 	}
 
 	public void function visitSection(required Section section) {
-		variables.content = "section"
+		variables.result = "section"
 	}
 
 	public void function visitTemplate(required Template template) {
-		variables.content = "template"
+		variables.result = "template"
 	}
 
 }

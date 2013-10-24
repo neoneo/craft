@@ -1,14 +1,14 @@
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.component = new ComponentStub()
-		variables.visitor = new RenderVisitorStub()
+		variables.component = new CompositeStub()
 	}
 
-	public void function Accept_Should_InvokeVistor() {
-		variables.component.accept(variables.visitor)
-		var result = variables.visitor.getContent()
-		assertEquals("component", result)
+	public void function Accept_Should_InvokeVisitor() {
+		var visitor = new VisitorStub()
+		variables.component.accept(visitor)
+		var result = visitor.getResult()
+		assertEquals("composite", result)
 	}
 
 	// public void function Render_WithChildren_Should_ReturnCompositeContent() {

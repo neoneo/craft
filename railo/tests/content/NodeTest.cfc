@@ -4,7 +4,7 @@ component extends="mxunit.framework.TestCase" {
 		variables.node = new NodeStub()
 	}
 
-	public void function Get_Should_ThrowNoSuchElementException_WhenNoParent() {
+	public void function GetParent_Should_ThrowNoSuchElementException_When_NoParent() {
 		try {
 			var parent = variables.node.getParent()
 			fail("getParent should throw NoSuchElementException")
@@ -13,7 +13,7 @@ component extends="mxunit.framework.TestCase" {
 		}
 	}
 
-	public void function GetSet_Should_Work() {
+	public void function GetSetParent_Should_Work() {
 		var composite = new CompositeStub()
 		variables.node.setParent(composite)
 		var parent = variables.node.getParent()
@@ -21,11 +21,11 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(composite, parent)
 	}
 
-	public void function HasParent_Should_ReturnFalse_WhenNoParent() {
+	public void function HasParent_Should_ReturnFalse_When_NoParent() {
 		assertFalse(variables.node.hasParent())
 	}
 
-	public void function HasParent_Should_ReturnTrue_WhenParent() {
+	public void function HasParent_Should_ReturnTrue_When_Parent() {
 		var composite = new CompositeStub()
 		variables.node.setParent(composite)
 		assertTrue(variables.node.hasParent())

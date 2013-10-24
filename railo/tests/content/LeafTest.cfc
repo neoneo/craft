@@ -1,13 +1,13 @@
 component extends="mxunit.framework.TestCase" {
 
-	public void function init() {
+	public void function setUp() {
 		variables.leaf = new LeafStub()
 	}
 
-	public void function Accept_Should_InvokeVistor() {
-		var visitor = new RenderVistorStub()
+	public void function Accept_Should_InvokeVisitor() {
+		var visitor = new VisitorStub()
 		variables.leaf.accept(visitor)
-		var result = visitor.getContent()
+		var result = visitor.getResult()
 		assertEquals("leaf", result)
 	}
 
