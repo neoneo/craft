@@ -8,7 +8,7 @@ component extends="mxunit.framework.TestCase" {
 		variables.document = new Document(variables.template)
 	}
 
-	public void function Accept_Should_InvokeVistor() {
+	public void function Accept_Should_InvokeVisitor() {
 		var visitor = mock(new VisitorStub()).visitDocument(variables.document)
 		variables.document.accept(visitor)
 

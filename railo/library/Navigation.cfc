@@ -14,7 +14,7 @@ component accessors="true" {
 
 	public Navigation function addChild(required Navigation navigation, Navigation beforeNavigation) {
 
-		variables.children.add(argumentCollection = arguments.toStruct());
+		variables.children.add(argumentCollection: ArrayToStruct(arguments));
 
 		return this;
 	}
@@ -28,7 +28,7 @@ component accessors="true" {
 
 	public Navigation function moveChild(required Navigation navigation, Navigation beforeNavigation) {
 
-		variables.children.move(argumentCollection = arguments.toStruct());
+		variables.children.move(argumentCollection: ArrayToStruct(arguments));
 
 		return this;
 	}

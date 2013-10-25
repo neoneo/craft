@@ -49,7 +49,7 @@ component implements="Branch" accessors="true" {
 
 	public void function addChild(required PathSegment child, PathSegment beforeChild) {
 		// TODO: implement check for duplicates
-		variables.children.add(argumentCollection = arguments.toStruct())
+		variables.children.add(argumentCollection: ArrayToStruct(arguments))
 	}
 
 	public Boolean function removeChild(required PathSegment child) {

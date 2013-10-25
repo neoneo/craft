@@ -23,8 +23,8 @@ component implements="Content" accessors="true" {
 	}
 
 	/**
-	 * Removes the nodes for the given section.
-	 **/
+	 * Removes the `Section` that fills the given `Placeholder`.
+	 */
 	public void function removeSection(required Placeholder placeholder) {
 		getSections().delete(arguments.placeholder.getRef())
 	}

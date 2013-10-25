@@ -25,7 +25,7 @@ component accessors="true" {
 	}
 
 	public String function createUrl(required String path, Struct parameters, String extensionName) {
-		return variables.endPoint.createUrl(argumentCollection = arguments.toStruct())
+		return variables.endPoint.createUrl(argumentCollection: ArrayToStruct(arguments))
 	}
 
 }

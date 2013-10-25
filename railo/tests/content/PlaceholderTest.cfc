@@ -10,7 +10,7 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals("ref", variables.placeholder.getRef())
 	}
 
-	public void function Accept_Should_InvokeVistor() {
+	public void function Accept_Should_InvokeVisitor() {
 		var visitor = mock(new VisitorStub()).visitPlaceholder(variables.placeholder)
 		variables.placeholder.accept(visitor)
 		visitor.verify().visitPlaceholder(variables.placeholder)
