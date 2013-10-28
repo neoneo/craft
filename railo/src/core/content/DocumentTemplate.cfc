@@ -2,10 +2,10 @@
  * Lets a document take the role of a template. The placeholders in the template it wraps can be replaced by fixed content, and other placeholders can be inserted. The effect is that a sparse template
  * can be extended without losing the template function.
  */
-component extends="DocumentFoundation" implements="TemplateContent" {
+component extends="Document" implements="TemplateContent" {
 
 	/**
-	 * Returns an array containing all placeholders.
+	 * Returns an array containing all placeholders that are not filled.
 	 **/
 	public Array function getPlaceholders() {
 

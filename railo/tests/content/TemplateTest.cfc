@@ -3,11 +3,11 @@ import craft.core.content.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.section = new Section() // We're not mocking the section because of getPlaceholders(). Maybe later.
+		variables.section = mock(CreateObject("Section"))
 		variables.template = new Template(variables.section)
 	}
 
-	public void function GetSection_Should_ReturnSection() {
+	public void function GetSection_Should_Work() {
 		var section = variables.template.getSection()
 		assertSame(variables.section, section)
 	}
@@ -19,28 +19,14 @@ component extends="mxunit.framework.TestCase" {
 		visitor.verify().visitTemplate(variables.template)
 	}
 
-	public void function GetPlaceholders_Should_ReturnPlaceholdersArray() {
-
-		// Build a tree with placeholders at several levels.
-		variables.section.addChild(new Placeholder("p1"))
-		variables.section.addChild(new Composite())
-
-		var level1 = new Composite()
-		level1.addChild(new Leaf())
-		variables.section.addChild(level1)
-
-		var level2 = new Composite()
-		level2.addChild(new Placeholder("p3"))
-		level2.addChild(new Leaf())
-
-		level1.addChild(level2)
-		level1.addChild(new Placeholder("p2"))
+	public void function GetPlaceholders_Should_ReturnSectionPlaceholders() {
+		var placeholder1 = mock(CreateObject("Placeholder")).getRef().returns("p1")
+		var placeholder2 = mock(CreateObject("Placeholder")).getRef().returns("p2")
+		variables.section.getPlaceholders().returns([placeholder1, placeholder2])
 
 		var placeholders = variables.template.getPlaceholders()
-		assertEquals(3, placeholders.len())
-
-		// The order of the placeholders is not important.
-		(["p1", "p2", "p3"]).each(function (ref) {
+		assertEquals(2, placeholders.len())
+		(["p1", "p2"]).each(function (ref) {
 			var ref = arguments.ref
 			assertTrue(placeholders.find(function (placeholder) {
 				return arguments.placeholder.getRef() == ref

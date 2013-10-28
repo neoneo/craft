@@ -23,4 +23,35 @@ component extends="mxunit.framework.TestCase" {
 		visitor.verify().visitSection(variables.section)
 	}
 
+	public void function GetPlaceholders_Should_ReturnPlaceholderDescendants() {
+
+		// Build a tree with placeholders at several levels.
+		// TODO: use mock objects.
+		variables.section.addChild(new Placeholder("p1"))
+		variables.section.addChild(new Composite())
+
+		var level1 = new Composite()
+		level1.addChild(new Leaf())
+		variables.section.addChild(level1)
+
+		var level2 = new Composite()
+		level2.addChild(new Placeholder("p3"))
+		level2.addChild(new Leaf())
+
+		level1.addChild(level2)
+		level1.addChild(new Placeholder("p2"))
+
+		var placeholders = variables.section.getPlaceholders()
+		assertEquals(3, placeholders.len())
+
+		// The order of the placeholders is not important.
+		(["p1", "p2", "p3"]).each(function (ref) {
+			var ref = arguments.ref
+			assertTrue(placeholders.find(function (placeholder) {
+				return arguments.placeholder.getRef() == ref
+			}) > 0)
+		})
+
+	}
+
 }

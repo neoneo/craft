@@ -1,8 +1,9 @@
 /**
  * A `Container` is a `Composite` whose children are repeatedly visited by the `Visitor`, instead of just once.
  *
- * The model that this class produces should contain an array of objects. The objects in the array are passed to the
- * children one by one via the parent model. Each of the children is thus visited once for every object in the collection.
+ * The model (created by an ancestor node, as this class doesn't create one) should contain an array of objects. The objects in
+ * the array are passed to the children one by one via the parent model. Each of the children is thus visited once for
+ * every object in the collection.
  */
 component extends="Composite" accessors="true" {
 

@@ -49,7 +49,6 @@ component implements="Visitor" accessors="true" {
 
 		var model = arguments.leaf.model(variables.context, variables.parentModel)
 		// Append the parent model on the current model without overwriting. This effectively makes all variables of ancestor nodes available.
-		// Specifically for children of containers, this makes it possible to pass in data at runtime.
 		model.append(variables.parentModel, false)
 		var view = arguments.leaf.view(variables.context)
 
@@ -108,6 +107,7 @@ component implements="Visitor" accessors="true" {
 			arguments.container.traverse(this)
 		}
 
+		// Remove the item name from the model.
 		variables.parentModel.delete(itemName)
 
 		var content = variables.contentType.convert(variables.contents)
