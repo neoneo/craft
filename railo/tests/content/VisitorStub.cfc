@@ -1,15 +1,9 @@
-import craft.core.content.Composite;
-import craft.core.content.Container;
-import craft.core.content.DocumentFoundation;
-import craft.core.content.Leaf;
-import craft.core.content.Placeholder;
-import craft.core.content.Section;
-import craft.core.content.Template;
+import craft.core.content.*;
 
 /**
  * An empty implementation of Visitor used for mocking.
  */
-component implements="craft.core.content.Visitor" {
+component implements="Visitor" {
 
 	public void function visitComposite(required Composite composite) {
 	}

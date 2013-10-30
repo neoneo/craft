@@ -3,9 +3,9 @@ import craft.core.output.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
-		variables.json = mock("craft.core.output.ContentType", "typesafe")
+		variables.json = mock(CreateObject("ContentType"))
 			.getName().returns("json")
-		variables.viewFinder = mock("craft.core.output.ViewFinder", "typesafe")
+		variables.viewFinder = mock(CreateObject("ViewFinder"))
 			.template("renderer", "get", variables.json).returns("/craft/../tests/output/viewstubs/renderer.json.cfm")
 			.contentType("renderer", "get", variables.json).returns(variables.json)
 	}

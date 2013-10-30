@@ -22,8 +22,8 @@ component implements="Visitor" accessors="true" {
 		// Define state. The following state variables will be modified during node traversal.
 		// The contentType will contain the content type that the parent can render for the request content type. This will be the request content type itself, or a fallback content type.
 		variables.contentType = variables.context.getContentType()
-		// The model of the parent is available to every child.
-		variables.parentModel = {}
+		// The combined model of all ancestors is available to every child.
+		variables.model = {}
 		// The sections in DocumentFoundation instances are kept, so that Placeholder instances can pick them up.
 		variables.sections = {}
 		// Generated content. At the end of the process, this variable contains the request content.
@@ -37,7 +37,7 @@ component implements="Visitor" accessors="true" {
 		arguments.template.getSection().accept(this)
 	}
 
-	public void function visitDocument(required DocumentFoundation document) {
+	public void function visitDocument(required Document document) {
 
 		// Pick up the sections / placeholders that this document is filling.
 		variables.sections.append(arguments.document.getSections())
@@ -47,76 +47,82 @@ component implements="Visitor" accessors="true" {
 
 	public void function visitLeaf(required Leaf leaf) {
 
-		var model = arguments.leaf.model(variables.context, variables.parentModel)
-		// Append the parent model on the current model without overwriting. This effectively makes all variables of ancestor nodes available.
-		model.append(variables.parentModel, false)
+		var currentModel = arguments.leaf.model(variables.context, variables.model)
+		// Append the model on the current model without overwriting. This effectively makes all variables of ancestor nodes available.
+		currentModel.append(variables.model, false)
 		var view = arguments.leaf.view(variables.context)
 
-		var content = variables.renderer.render(view, model, variables.requestMethod, variables.contentType)
-		variables.contents.append(content)
+		variables.content = variables.renderer.render(view, currentModel, variables.requestMethod, variables.contentType)
+		variables.contents.append(variables.content)
 	}
 
 	public void function visitComposite(required Composite composite) {
 
 		// Copy state in local variables.
-		var parentModel = variables.parentModel
+		var model = variables.model
 		var contentType = variables.contentType
 		var contents = variables.contents
 
-		var model = arguments.composite.model(variables.context, variables.parentModel)
-		model.append(variables.parentModel, false)
+		var currentModel = arguments.composite.model(variables.context, variables.model)
+		currentModel.append(variables.model, false)
 		var view = arguments.composite.view(variables.context)
 
 		// Overwrite state.
-		variables.parentModel = model
+		variables.model = currentModel
 		variables.contentType = variables.renderer.contentType(view, variables.requestMethod, variables.contentType)
 		variables.contents = []
 
 		arguments.composite.traverse(this)
 
 		// Put the content on the model so the view can include it.
-		model.__content__ = variables.contentType.convert(variables.contents)
+		currentModel.__content__ = variables.contentType.convert(variables.contents)
 
-		var content = variables.renderer.render(view, model, variables.requestMethod, variables.contentType)
+		variables.content = variables.renderer.render(view, currentModel, variables.requestMethod, variables.contentType)
 
 		// Revert state.
 		variables.contents = contents
 		variables.contentType = contentType
-		variables.parentModel = parentModel
+		variables.model = model
 
-		variables.contents.append(content)
-
-	}
-
-	public void function visitContainer(required Container container) {
-
-		var contents = variables.contents
-		variables.contents = []
-
-		var collection = variables.parentModel[arguments.container.getCollectionName()]
-		var itemName = arguments.container.getItemName()
-
-		// Visit every child once for every item in the collection.
-		for (var item in collection) {
-			/*
-				Make the current item available on the parent model. The child doesn't know it's within the container, so the item name
-				has to be the one that's expected by the child.
-				The parent model is appended to the child's model later, so that makes the item available.
-			*/
-			variables.parentModel[itemName] = item
-			arguments.container.traverse(this)
-		}
-
-		// Remove the item name from the model.
-		variables.parentModel.delete(itemName)
-
-		var content = variables.contentType.convert(variables.contents)
-
-		// Revert state.
-		variables.contents = contents
-		variables.contents.append(content)
+		variables.contents.append(variables.content)
 
 	}
+
+	// public void function visitContainer(required Container container) {
+
+	// 	var contents = variables.contents
+	// 	variables.contents = []
+
+	// 	var collection = variables.model.__collection__
+
+	// 	// Visit every child once for every item in the collection.
+	// 	// We don't know the collection type, so use an iterator.
+	// 	var iterator = collection.iterator()
+	// 	while (iterator.hasNext()) {
+
+	// 			Make the current item available on the model. The child doesn't know it's within the container, so the item name
+	// 			has to be the one that's expected by the child.
+	// 			The model is appended to the child's model later, so that makes the item available.
+
+	// 		variables.model.__item__ = iterator.next()
+
+	// 		// Use the transformer to give the child items of the proper type?
+	// 		//for (var child in getChildren()) {
+	// 		//	variables.model[itemName] = child.getTransformer().transform(item)
+	// 		//}
+
+	// 		arguments.container.traverse(this)
+	// 	}
+
+	// 	variables.model.delete("__item__")
+
+	// 	var content = variables.contentType.convert(variables.contents)
+
+	// 	// Revert state.
+	// 	variables.contents = contents
+	// 	variables.contents.append(content)
+
+	// }
 
 	public void function visitPlaceholder(required Placeholder placeholder) {
 
@@ -133,7 +139,7 @@ component implements="Visitor" accessors="true" {
 
 		/*
 			A section has no view, so we can keep the current content type.
-			It also creates no model, so we can keep the current parent model too.
+			It also creates no model, so we can keep the current model too.
 			This doesn't apply to the contents array. If the section fills a placeholder,
 			the section effectively has a parent.
 		*/
