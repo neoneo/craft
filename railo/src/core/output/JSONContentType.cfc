@@ -26,11 +26,12 @@ component extends="ContentType" {
 
 	public String function write(required String content) {
 
-		if (!isValidJSON(arguments.content)) {
+		var content = Trim(arguments.content)
+		if (!isValidJSON(content)) {
 			Throw("Content is not valid JSON", "IllegalContentException")
 		}
 
-		return arguments.content
+		return content
 	}
 
 	private Boolean function isValidJSON(required String content) {

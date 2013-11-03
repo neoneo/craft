@@ -54,6 +54,7 @@ component implements="Visitor" accessors="true" {
 
 		variables.content = variables.renderer.render(view, currentModel, variables.requestMethod, variables.contentType)
 		variables.contents.append(variables.content)
+
 	}
 
 	public void function visitComposite(required Composite composite) {
@@ -149,7 +150,6 @@ component implements="Visitor" accessors="true" {
 
 		arguments.section.traverse(this)
 
-		// Write to variables.content, since any section could be the topmost one.
 		variables.content = variables.contentType.convert(variables.contents)
 
 		// Revert state.

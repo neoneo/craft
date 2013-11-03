@@ -11,7 +11,7 @@ component implements="Visitor" {
 	public void function visitContainer(required Container container) {
 	}
 
-	public void function visitDocument(required DocumentFoundation document) {
+	public void function visitDocument(required Document document) {
 	}
 
 	public void function visitLeaf(required Leaf leaf) {
