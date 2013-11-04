@@ -1,43 +1,20 @@
 /**
  * Represents an isolated node tree.
  */
-component extends="Composite" {
+component accessors="true" {
 
-	/**
-	 * @final
-	 */
-	public void function setParent(required Composite parent) {
-		Throw("Function #GetFunctionCalledName()# is not supported", "NotSupportedException")
-	}
+	property Node node setter="false";
 
-	public void function addChild(required Node child, Node beforeChild) {
-
-		/*
-			A section can contain only one child, because the output of a collection of children could easily produce
-			invalid output (XML for instance). Section has no view so the output cannot be made valid (by wrapping
-			the content in a root element in the case of XML).
-		*/
-		if (hasChildren()) {
-			Throw("Section may contain only one child", "NotSupportedException")
-		}
-
-		super.addChild(argumentCollection: ArrayToStruct(arguments))
+	public void function init(required Node node) {
+		variables.node = arguments.node
 	}
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitSection(this)
 	}
 
-	public String function view(required Context context) {
-		Throw("Function #GetFunctionCalledName()# is not supported", "NotSupportedException")
-	}
-
-	public Struct function model(required Context context, required Struct parentModel) {
-		Throw("Function #GetFunctionCalledName()# is not supported", "NotSupportedException")
-	}
-
 	public Array function getPlaceholders() {
-		return getPlaceholdersFromNode(this)
+		return getPlaceholdersFromNode(getNode())
 	}
 
 	private Array function getPlaceholdersFromNode(required Node node) {

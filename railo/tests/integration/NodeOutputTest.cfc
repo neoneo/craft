@@ -71,10 +71,8 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function DocumentTest() {
-		var section = new Section()
 		var composite = nestedComposite()
-		section.addChild(composite)
-
+		var section = new Section(composite)
 		var template = new Template(section)
 		var document = new Document(template)
 
@@ -102,18 +100,14 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function DocumentWithPlaceholdersTest() {
-		var section = new Section()
-		section.addChild(nestedComposite(true)) // With placeholders.
-
+		var section = new Section(nestedComposite(true)) // With placeholders.
 		var template = new Template(section)
 		var document = new Document(template)
 
-		var p1Section = new Section()
-		p1Section.addChild(simpleComposite())
+		var p1Section = new Section(simpleComposite())
 		document.addSection(p1Section, new Placeholder("p1"))
 
-		var p3Section = new Section()
-		p3Section.addChild(simpleComposite())
+		var p3Section = new Section(simpleComposite())
 		document.addSection(p3Section, new Placeholder("p3"))
 
 		variables.visitor.visitDocument(document)
@@ -160,31 +154,26 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function NestedDocumentTest() {
 
-		var section = new Section()
-		section.addChild(nestedComposite(true))
+		var section = new Section(nestedComposite(true))
 		var template = new Template(section)
 
 		var documentTemplate1 = new DocumentTemplate(template)
-		var p1Section = new Section()
-		p1Section.addChild(simpleComposite(true))
+		var p1Section = new Section(simpleComposite(true))
 		documentTemplate1.addSection(p1Section, new Placeholder("p1"))
 
 		// The available placeholders in the document template should now be: p, p2, p3.
 
 		var documentTemplate2 = new DocumentTemplate(documentTemplate1)
-		var pSection = new Section()
-		pSection.addChild(new stubs.Leaf("p"))
+		var pSection = new Section(new stubs.Leaf("p"))
 		documentTemplate2.addSection(pSection, new Placeholder("p"))
 
-		var p2Section = new Section()
-		p2Section.addChild(new stubs.Leaf("p2"))
+		var p2Section = new Section(new stubs.Leaf("p2"))
 		documentTemplate2.addSection(p2Section, new Placeholder("p2"))
 
 		// Now remains only placeholder p3.
 
 		var documentTemplate3 = new DocumentTemplate(documentTemplate2)
-		var p3Section = new Section()
-		p3Section.addChild(new stubs.Leaf("p3"))
+		var p3Section = new Section(new stubs.Leaf("p3"))
 		documentTemplate3.addSection(p3Section, new Placeholder("p3"))
 
 		var document = new Document(documentTemplate3)
@@ -229,29 +218,24 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function ReplaceTemplateTest() {
-		var section1 = new Section()
-		section1.addChild(nestedComposite(true))
+		var section1 = new Section(nestedComposite(true))
 		var template1 = new Template(section1)
 
-		var section2 = new Section()
 		// For this test, only include p1 en p2 in the second template.
 		var composite = new stubs.Composite("composite")
 		composite.addChild(new Placeholder("p1"))
 		composite.addChild(new Placeholder("p2"))
-		section2.addChild(composite)
+		var section2 = new Section(composite)
 		var template2 = new Template(section2)
 
 		// Create a document based on template 1.
 		var document = new Document(template1)
 		// Fill all placeholders p1, p2 and p3.
-		var p1Section = new Section()
-		p1Section.addChild(new stubs.Leaf("p1"))
+		var p1Section = new Section(new stubs.Leaf("p1"))
 		document.addSection(p1Section, new Placeholder("p1"))
-		var p2Section = new Section()
-		p2Section.addChild(new stubs.Leaf("p2"))
+		var p2Section = new Section(new stubs.Leaf("p2"))
 		document.addSection(p2Section, new Placeholder("p2"))
-		var p3Section = new Section()
-		p3Section.addChild(new stubs.Leaf("p3"))
+		var p3Section = new Section(new stubs.Leaf("p3"))
 		document.addSection(p3Section, new Placeholder("p3"))
 
 		// Actual test.

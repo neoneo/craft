@@ -1,6 +1,6 @@
 import craft.core.content.Composite;
 //import craft.core.content.Container;
-import craft.core.content.DocumentFoundation;
+import craft.core.content.Document;
 import craft.core.content.Leaf;
 import craft.core.content.Placeholder;
 import craft.core.content.Section;

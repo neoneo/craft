@@ -137,25 +137,7 @@ component implements="Visitor" accessors="true" {
 	}
 
 	public void function visitSection(required Section section) {
-
-		/*
-			A section has no view, so we can keep the current content type.
-			It also creates no model, so we can keep the current model too.
-			This doesn't apply to the contents array. If the section fills a placeholder,
-			the section effectively has a parent.
-		*/
-
-		var contents = variables.contents
-		variables.contents = []
-
-		arguments.section.traverse(this)
-
-		variables.content = variables.contentType.convert(variables.contents)
-
-		// Revert state.
-		variables.contents = contents
-		variables.contents.append(variables.content)
-
+		arguments.section.getNode().accept(this)
 	}
 
 }

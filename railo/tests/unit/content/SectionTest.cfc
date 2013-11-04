@@ -2,37 +2,41 @@ import craft.core.content.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	public void function setUp() {
-		variables.section = new Section()
-	}
+	public void function GetNode_Should_Work() {
+		var node1 = mock(CreateObject("Node"))
+		var section = new Section(node1)
 
-	public void function SetParent_Should_ThrowNotSupportedException() {
-		var composite = new Composite()
-		try {
-			variables.section.setParent(composite)
-			fail("calling setParent should have thrown NotSupportedException")
-		} catch (Any e) {
-			assertEquals("NotSupportedException", e.type)
-		}
+		// Test.
+		var node2 = section.getNode()
+
+		// Assert.
+		assertSame(node1, node2)
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = mock(new VisitorStub()).visitSection(variables.section)
-		variables.section.accept(visitor)
+		var node = mock(CreateObject("Node"))
+		var section = new Section(node)
+		var visitor = mock(new VisitorStub()).visitSection(section)
 
-		visitor.verify().visitSection(variables.section)
+		// Actual test.
+		section.accept(visitor)
+
+		// Verify.
+		visitor.verify().visitSection(section)
 	}
 
 	public void function GetPlaceholders_Should_ReturnPlaceholderDescendants() {
 
 		// Build a tree with placeholders at several levels.
 		// TODO: use mock objects.
-		variables.section.addChild(new Placeholder("p1"))
-		variables.section.addChild(new Composite())
+		var root = new Composite()
+
+		root.addChild(new Placeholder("p1"))
+		root.addChild(new Composite())
 
 		var level1 = new Composite()
 		level1.addChild(new Leaf())
-		variables.section.addChild(level1)
+		root.addChild(level1)
 
 		var level2 = new Composite()
 		level2.addChild(new Placeholder("p3"))
@@ -41,7 +45,12 @@ component extends="mxunit.framework.TestCase" {
 		level1.addChild(level2)
 		level1.addChild(new Placeholder("p2"))
 
-		var placeholders = variables.section.getPlaceholders()
+		var section = new Section(root)
+
+		// Test.
+		var placeholders = section.getPlaceholders()
+
+		// Assert.
 		assertEquals(3, placeholders.len())
 
 		// The order of the placeholders is not important.

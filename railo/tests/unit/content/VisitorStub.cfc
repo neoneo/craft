@@ -8,8 +8,8 @@ component implements="Visitor" {
 	public void function visitComposite(required Composite composite) {
 	}
 
-	public void function visitContainer(required Container container) {
-	}
+	// public void function visitContainer(required Container container) {
+	// }
 
 	public void function visitDocument(required Document document) {
 	}
