@@ -16,7 +16,7 @@ component extends="mxunit.framework.TestCase" {
 		variables.visitor = new RenderVisitor(renderer, context)
 	}
 
-	public void function LeafTest() {
+	public void function RenderLeaf() {
 		var leaf = new stubs.Leaf("leaf")
 
 		variables.visitor.visitLeaf(leaf)
@@ -28,7 +28,7 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, output)
 	}
 
-	public void function CompositeTest() {
+	public void function RenderComposite() {
 		variables.visitor.visitComposite(simpleComposite())
 
 		var content = variables.visitor.getContent()
@@ -45,7 +45,7 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, output)
 	}
 
-	public void function NestedCompositeTest() {
+	public void function RenderNestedComposite() {
 		var composite = nestedComposite()
 
 		variables.visitor.visitComposite(composite)
@@ -70,7 +70,7 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, output)
 	}
 
-	public void function DocumentTest() {
+	public void function RenderDocument() {
 		var composite = nestedComposite()
 		var section = new Section(composite)
 		var template = new Template(section)
@@ -99,7 +99,7 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, output)
 	}
 
-	public void function DocumentWithPlaceholdersTest() {
+	public void function RenderDocumentWithPlaceholders() {
 		var section = new Section(nestedComposite(true)) // With placeholders.
 		var template = new Template(section)
 		var document = new Document(template)
@@ -152,7 +152,7 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, output)
 	}
 
-	public void function NestedDocumentTest() {
+	public void function RenderNestedDocument() {
 
 		var section = new Section(nestedComposite(true))
 		var template = new Template(section)
@@ -217,7 +217,7 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, output)
 	}
 
-	public void function ReplaceTemplateTest() {
+	public void function UseTemplate_Should_KeepMatchingContent() {
 		var section1 = new Section(nestedComposite(true))
 		var template1 = new Template(section1)
 
@@ -284,6 +284,81 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, output)
 	}
 
+	public void function ParentModel_Should_Propagate() {
+		var root = new stubs.RootComposite()
+		// Create a non-predictable constant that should be passed down the hierarchy of nodes unchanged.
+		var constant = CreateGUID()
+		root.setConstant(constant)
+
+		// Create siblings on each level. The depth variable should remain constant within a level.
+		root.addChild(new stubs.ModelLeaf("before1"))
+
+		var composite1 = new stubs.ModelComposite("composite1")
+		composite1.addChild(new stubs.ModelLeaf("before2"))
+		var composite2 = new stubs.ModelComposite("composite2")
+		composite2.addChild(new stubs.ModelLeaf("bottom"))
+		composite1.addChild(composite2)
+		composite1.addChild(new stubs.ModelLeaf("after2"))
+		root.addChild(composite1)
+
+		root.addChild(new stubs.ModelLeaf("after1"))
+
+		// Actual test.
+		variables.visitor.visitComposite(root)
+
+		var content = variables.visitor.getContent()
+		var output = DeserializeJSON(variables.contentType.write(content))
+
+		var expected = {
+			"node": "root",
+			"depth": 1,
+			"constant": constant,
+			"content": [
+				{
+					"node": "before1",
+					"depth": 2,
+					"constant": constant
+				},
+				{
+					"node": "composite1",
+					"depth": 2,
+					"constant": constant,
+					"content": [
+						{
+							"node": "before2",
+							"depth": 3,
+							"constant": constant
+						},
+						{
+							"node": "composite2",
+							"depth": 3,
+							"constant": constant,
+							"content": [
+								{
+									"node": "bottom",
+									"depth": 4,
+									"constant": constant
+								}
+							]
+						},
+						{
+							"node": "after2",
+							"depth": 3,
+							"constant": constant
+						}
+					]
+				},
+				{
+					"node": "after1",
+					"depth": 2,
+					"constant": constant
+				}
+			]
+		}
+
+		assertEquals(expected, output)
+	}
+
 	private stubs.Composite function simpleComposite(Boolean placeholder = true) {
 		var composite = new stubs.Composite("composite")
 		composite.addChild(new stubs.Leaf("leaf1"))
@@ -318,11 +393,6 @@ component extends="mxunit.framework.TestCase" {
 		}
 
 		return composite1
-	}
-
-	private Section function placeholderSection(required String ref) {
-		var section = new Section()
-
 	}
 
 }
