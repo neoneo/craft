@@ -3,11 +3,7 @@
  */
 component accessors="true" {
 
-	property Node node setter="false";
-
-	public void function init(required Node node) {
-		variables.node = arguments.node
-	}
+	property Node node;
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitSection(this)

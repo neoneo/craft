@@ -1,11 +1,11 @@
 component implements="Content" accessors="true" {
 
-	property TemplateContent template setter="false";
-	property Struct sections setter="false";
+	property TemplateContent template;
 
-	public void function init(required TemplateContent template) {
-		variables.template = arguments.template
-		variables.sections = {}
+	variables.sections = {}
+
+	public Struct function getSections() {
+		return variables.sections
 	}
 
 	public void function accept(required Visitor visitor) {
@@ -41,23 +41,26 @@ component implements="Content" accessors="true" {
 	 * Replaces the current template with the given template.
 	 * Content in placeholders is retained, if the placeholders in the new template have the same ref.
 	 */
-	public void function useTemplate(required TemplateContent template) {
+	public void function setTemplate(required TemplateContent template) {
 
-		// Check if the new template has placeholders compatible with the old one.
-		var newPlaceholders = arguments.template.getPlaceholders()
-		// Loop over all current placeholders, and remove the section if there is no compatible new placeholder.
-		getTemplate().getPlaceholders().each(
-			function (placeholder) {
-				var placeholder = arguments.placeholder
-				var index = newPlaceholders.find(function (newPlaceholder) {
-					return arguments.newPlaceholder.getRef() == placeholder.getRef()
-				})
-				if (index == 0) {
-					// The placeholder is not used. Remove the section.
-					removeSection(placeholder)
+		var currentTemplate = getTemplate()
+		if (!IsNull(currentTemplate)) {
+			// Check if the new template has placeholders compatible with the old one.
+			var newPlaceholders = arguments.template.getPlaceholders()
+			// Loop over all current placeholders, and remove the section if there is no compatible new placeholder.
+			currentTemplate.getPlaceholders().each(
+				function (placeholder) {
+					var placeholder = arguments.placeholder
+					var index = newPlaceholders.find(function (newPlaceholder) {
+						return arguments.newPlaceholder.getRef() == placeholder.getRef()
+					})
+					if (index == 0) {
+						// The placeholder is not used. Remove the section.
+						removeSection(placeholder)
+					}
 				}
-			}
-		)
+			)
+		}
 
 		variables.template = arguments.template
 	}

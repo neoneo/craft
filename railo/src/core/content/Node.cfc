@@ -8,8 +8,6 @@ import craft.core.util.Branch;
  **/
 component implements="Branch,Content" {
 
-	public void function init() {}
-
 	public void function accept(required Visitor visitor) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}

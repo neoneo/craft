@@ -7,10 +7,7 @@ import craft.core.util.ScopeBranchList;
  */
 component extends="Node" {
 
-	public void function init() {
-		super.init()
-		variables.children = new ScopeBranchList(this)
-	}
+	variables.children = new ScopeBranchList(this)
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitComposite(this)

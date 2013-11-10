@@ -1,18 +1,21 @@
 component extends="Node" accessors="true" {
 
-	property String ref setter="false";
-
-	public void function init(required String ref) {
-		super.init()
-		variables.ref = arguments.ref
-	}
+	property String ref;
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitPlaceholder(this)
 	}
 
+	public Boolean function hasChildren() {
+		return false
+	}
+
+	public Struct function model(required Context context, required Struct parentModel) {
+		Throw("Not supported", "NotSupportedException")
+	}
+
 	public String function view(required Context context) {
-		return ""
+		Throw("Not supported", "NotSupportedException")
 	}
 
 }
