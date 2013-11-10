@@ -1,7 +1,7 @@
-import craft.core.layout.Node
-import craft.core.layout.Content
-import craft.core.layout.Document
-import craft.core.layout.Template
+import craft.core.layout.Node;
+import craft.core.layout.Content;
+import craft.core.layout.Document;
+import craft.core.layout.Template;
 
 component {
 
