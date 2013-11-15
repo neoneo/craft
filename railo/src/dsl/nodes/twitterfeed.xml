@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<node name="twitterfeed" extends="column100">
-	<!-- per attribuut kun je instellen of die te wijzigen is in het cms (standaard aan) -->
-	<handle required="true" type="string" editable="false" /><!-- required wil zeggen dat dit als attribuut gezet moet worden -->
-	<count type="numeric">10</count><!-- de waarde is een default -->
-</node>

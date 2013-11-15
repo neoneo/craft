@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<page template="articlelayout">
-	<region ref="main">
-		<node ref="article" article="%service.getArticleById(125)" />
-	</region>
-</page>

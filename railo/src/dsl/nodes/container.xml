@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<node name="container" type="sprockle.library.Container" transformer="sprockle.dsl.nodes.ArrayTransformer">
-	<id type="string" editable="false" />
-	<class type="string" editable="false" />
-</node>
