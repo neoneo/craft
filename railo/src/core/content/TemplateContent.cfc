@@ -1,5 +1,5 @@
 interface extends="Content" {
 
-	public Array function getPlaceholders();
+	public Array function placeholders();
 
 }

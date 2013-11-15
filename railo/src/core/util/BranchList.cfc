@@ -8,7 +8,7 @@ component {
 		var added = false
 		if (!arguments.child.hasParent()) {
 			if (IsNull(arguments.beforeChild) || contains(arguments.beforeChild)) {
-				arguments.child.setParent(getParent())
+				arguments.child.setParent(parent())
 				append(arguments.child)
 				added = true
 				if (!IsNull(arguments.beforeChild)) {
@@ -47,7 +47,7 @@ component {
 		return moved
 	}
 
-	public Branch function getParent() {
+	public Branch function parent() {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 

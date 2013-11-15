@@ -65,7 +65,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function VisitTemplate_Should_CallSectionAccept() {
 		var section = mock(CreateObject("Section")).accept(variables.visitor)
-		var template = mock(CreateObject("Template")).getSection().returns(section)
+		var template = mock(CreateObject("Template")).section().returns(section)
 
 		variables.visitor.visitTemplate(template)
 
@@ -75,8 +75,8 @@ component extends="mxunit.framework.TestCase" {
 	public void function VisitDocument_Should_CallTemplateAccept() {
 		var template = mock(CreateObject("Template")).accept(variables.visitor)
 		var document = mock(CreateObject("Document"))
-			.getTemplate().returns(template)
-			.getSections().returns({})
+			.template().returns(template)
+			.sections().returns({})
 
 		variables.visitor.visitDocument(document)
 
@@ -84,7 +84,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function VisitPlaceholder_ShouldNot_CallAccept_When_NoSections() {
-		var placeholder = mock(CreateObject("Placeholder")).getRef().returns("p1").accept(variables.visitor)
+		var placeholder = mock(CreateObject("Placeholder")).ref().returns("p1").accept(variables.visitor)
 
 		variables.visitor.visitPlaceholder(placeholder)
 
@@ -98,32 +98,33 @@ component extends="mxunit.framework.TestCase" {
 		var template = mock(CreateObject("Template")).accept(variables.visitor)
 		var section = mock(CreateObject("Section")).accept(variables.visitor)
 		var document = mock(CreateObject("Document"))
-			.getSections().returns({"p2": section})
-			.getTemplate().returns(template)
+			.sections().returns({"p2": section})
+			.template().returns(template)
 
 		// Add the section by visiting the document. Unfortunately the visitor does not provide another way to do this.
 		variables.visitor.visitDocument(document)
 
 		// Now the actual test.
-		var placeholder1 = mock(CreateObject("Placeholder")).getRef().returns("p1")
+		var placeholder1 = mock(CreateObject("Placeholder")).ref().returns("p1")
 		variables.visitor.visitPlaceholder(placeholder1)
 		// The section should not have been called.
 		section.verify(0).accept(variables.visitor)
 
-		var placeholder2 = mock(CreateObject("Placeholder")).getRef().returns("p2")
+		var placeholder2 = mock(CreateObject("Placeholder")).ref().returns("p2")
 		variables.visitor.visitPlaceholder(placeholder2)
 		// Now we expect a call the section.
 		section.verify().accept(variables.visitor)
 	}
 
-	public void function VisitSection_Should_CallTraverse() {
-		var section = mock(CreateObject("Section")).traverse(variables.visitor)
-		// The visitor will try to convert the result using the content type.
-		variables.contentType.convert("{array}").returns("")
+	public void function VisitSection_Should_CallAcceptOnNodes() {
+		var node1 = mock(CreateObject("Node")).accept(variables.visitor)
+		var node2 = mock(CreateObject("Node")).accept(variables.visitor)
+		var section = mock(CreateObject("Section")).nodes().returns([node1, node2])
 
 		variables.visitor.visitSection(section)
 
-		section.verify().traverse(variables.visitor)
+		node1.verify().accept(variables.visitor)
+		node2.verify().accept(variables.visitor)
 	}
 
 }

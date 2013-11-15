@@ -7,11 +7,11 @@ component {
 
 		variables.extensionNames = {}
 		for (var contentType in variables.extensions) {
-			variables.extensionNames[contentType.getName()] = contentType
+			variables.extensionNames[contentType.name()] = contentType
 		}
 
 		// Merge the parameters from the form and url scopes.
-		variables.parameters = StructCopy(form)
+		variables.parameters = Duplicate(form, false)
 		variables.parameters.append(url, false)
 
 	}

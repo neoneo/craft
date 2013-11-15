@@ -7,11 +7,11 @@ component {
 		variables.fallbacks = []
 	}
 
-	public String function getName() {
+	public String function name() {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
-	public String function getMimeType() {
+	public String function mimeType() {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
@@ -24,7 +24,7 @@ component {
 	}
 
 	public void function addFallback(required ContentType contentType) {
-		if (arguments.contentType.getName() != getName() && variables.fallbacks.find(arguments.contentType) == 0) {
+		if (arguments.contentType.name() != name() && variables.fallbacks.find(arguments.contentType) == 0) {
 			variables.fallbacks.append(arguments.contentType)
 		}
 	}
@@ -33,7 +33,7 @@ component {
 		variables.fallbacks.delete(arguments.contentType)
 	}
 
-	public Array function getFallbacks() {
+	public Array function fallbacks() {
 		return variables.fallbacks
 	}
 

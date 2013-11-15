@@ -13,18 +13,19 @@ component implements="Branch,Content" {
 	}
 
 	public Boolean function hasParent() {
-		return !IsNull(variables.parent)
+		return !IsNull(variables._parent)
 	}
 
-	public Composite function getParent() {
+	public Composite function parent() {
 		if (!hasParent()) {
 			Throw("Node has no parent", "NoSuchElementException")
 		}
-		return variables.parent
+
+		return variables._parent
 	}
 
 	public void function setParent(required Composite parent) {
-		variables.parent = arguments.parent
+		variables._parent = arguments.parent
 	}
 
 	public Boolean function hasChildren() {

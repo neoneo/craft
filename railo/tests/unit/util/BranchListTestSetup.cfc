@@ -1,15 +1,17 @@
+import craft.core.util.*;
+
 component extends="mxunit.framework.TestCase" {
 
-	private craft.core.util.BranchList function createBranchList(required craft.core.util.Branch parent) {
+	private BranchList function createBranchList(required craft.core.util.Branch parent) {
 		Throw("Not implemented")
 	}
 
 	public void function setUp() {
-		variables.parent = new BranchStub()
+		variables.parent = mockBranch()
 		variables.branchList = createBranchList(variables.parent)
-		variables.child1 = new BranchStub()
-		variables.child2 = new BranchStub()
-		variables.child3 = new BranchStub()
+		variables.child1 = mockBranch()
+		variables.child2 = mockBranch()
+		variables.child3 = mockBranch()
 		variables.branchList.add(variables.child1)
 		variables.branchList.add(variables.child2)
 		variables.branchList.add(variables.child3)
@@ -17,26 +19,24 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function AfterCreation_Should_BeEmpty() {
 		var branchList = createBranchList(variables.parent)
-		assertEquals(variables.parent, branchList.getParent(), "parent should be the object passed to the constructor")
+		assertSame(variables.parent, branchList.parent(), "parent should be the object passed to the constructor")
 		assertTrue(branchList.isEmpty(), "branchList should be empty after creation")
 	}
 
 	public void function Add_Should_ReturnCorrectBooleanValue() {
-		var branch = new BranchStub()
+		var branch = mockBranch().setParent(variables.parent)
 		assertTrue(variables.branchList.add(branch), "branchList.add should return true if the child is not in the list")
-		assertEquals(branchList.getParent(), branch.getParent())
+		branch.verify().setParent(variables.parent)
 		assertFalse(variables.branchList.isEmpty(), "branchList should not be empty")
-		assertFalse(variables.branchList.add(variables.child1), "branchList.add should return false if the child is in the list")
 	}
 
 	public void function Add_Should_ReturnFalse_IfHasParent() {
-		var child = new BranchStub()
-		child.setParent(variables.child1)
+		var child = mock(new BranchStub()).hasParent().returns(true)
 		assertFalse(branchList.add(child), "branchList.add should return false if the child has a parent")
 	}
 
 	public void function Add_Should_ReturnFalse_IfInsertedBeforeNotExists() {
-		assertFalse(branchList.add(new BranchStub(), new BranchStub()), "branchList.add should return false if the child should be moved before a child that is not in the list")
+		assertFalse(branchList.add(mockBranch(), mockBranch()), "branchList.add should return false if the child should be moved before a child that is not in the list")
 	}
 
 	public void function Contains_Should_ReturnCorrectBooleanValue() {
@@ -60,7 +60,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Move_Should_ReturnFalse_IfMovedBeforeNotExists() {
-		assertFalse(variables.branchList.move(variables.child1, new BranchStub()), "branchList.move should return false if the child should be moved before an item that does not exist")
+		assertFalse(variables.branchList.move(variables.child1, mockBranch()), "branchList.move should return false if the child should be moved before an item that does not exist")
 	}
 
 	public void function Move_Should_ReturnFalse_IfMovedBeforeItself() {
@@ -68,7 +68,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Move_Should_ReturnFalse_IfNotExists() {
-		assertFalse(variables.branchList.move(new BranchStub(), variables.child1), "branchList.move should return false if the child to be moved is not in the list")
+		assertFalse(variables.branchList.move(mockBranch(), variables.child1), "branchList.move should return false if the child to be moved is not in the list")
 	}
 
 	public void function Remove_Should_ReturnTrue_IfExists() {
@@ -79,15 +79,15 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Remove_Should_ReturnFalse_IfNotExists() {
-		assertFalse(variables.branchList.remove(new BranchStub()), "branchList.remove should return false if the child does not exist")
+		assertFalse(variables.branchList.remove(mockBranch()), "branchList.remove should return false if the child does not exist")
 	}
 
 	public void function ToArray_Should_ReturnCorrectOrderAfterAdd() {
 		var array = variables.branchList.toArray()
 		assertEquals(3, array.len(), "array should have 3 items")
-		assertEquals(array[1], variables.child1, "child1 should be at index 1")
-		assertEquals(array[2], variables.child2, "child2 should be at index 2")
-		assertEquals(array[3], variables.child3, "child3 should be at index 3")
+		assertSame(array[1], variables.child1, "child1 should be at index 1")
+		assertSame(array[2], variables.child2, "child2 should be at index 2")
+		assertSame(array[3], variables.child3, "child3 should be at index 3")
 	}
 
 	public void function ToArray_Should_ReturnCorrectOrderAfterMove() {
@@ -95,29 +95,34 @@ component extends="mxunit.framework.TestCase" {
 		variables.branchList.move(variables.child3, variables.child2)
 		var array = variables.branchList.toArray()
 		assertEquals(3, array.len(), "array should have 3 items")
-		assertEquals(array[1], variables.child3, "child3 should be at index 1")
-		assertEquals(array[2], variables.child2, "child2 should be at index 2")
-		assertEquals(array[3], variables.child1, "child1 should be at index 3")
+		assertSame(array[1], variables.child3, "child3 should be at index 1")
+		assertSame(array[2], variables.child2, "child2 should be at index 2")
+		assertSame(array[3], variables.child1, "child1 should be at index 3")
 	}
 
 	public void function ToArray_Should_ReturnCorrectOrderAfterRemove() {
 		variables.branchList.remove(variables.child2)
 		var array = variables.branchList.toArray()
 		assertEquals(2, array.len(), "array should have 2 items")
-		assertEquals(array[1], variables.child1, "child1 should be at index 1")
-		assertEquals(array[2], variables.child3, "child3 should be at index 2")
+		assertSame(array[1], variables.child1, "child1 should be at index 1")
+		assertSame(array[2], variables.child3, "child3 should be at index 2")
 	}
 
 	public void function Select_Should_ReturnItemThatMatches() {
 
 		var selected = variables.branchList.select(function (child) {
-			return arguments.child.getId() == variables.child1.getId()
+			return arguments.child === variables.child1
 		})
-		assertEquals(selected, variables.child1, "branchList.select should return child1")
+		assertSame(selected, variables.child1, "branchList.select should return child1")
+		var noChild = mockBranch()
 		var selected = branchList.select(function (child) {
-			return arguments.child.getId() == CreateGUID()
+			return arguments.child === noChild
 		})
 		assertTrue(IsNull(selected), "branchlist.select should return null if the predicate is not met")
+	}
+
+	private Branch function mockBranch() {
+		return mock(new BranchStub()).hasParent().returns(false)
 	}
 
 }

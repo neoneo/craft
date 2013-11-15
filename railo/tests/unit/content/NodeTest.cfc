@@ -6,10 +6,10 @@ component extends="mxunit.framework.TestCase" {
 		variables.node = new Node()
 	}
 
-	public void function GetParent_Should_ThrowNoSuchElementException_When_NoParent() {
+	public void function parent_Should_ThrowNoSuchElementException_When_NoParent() {
 		try {
-			var parent = variables.node.getParent()
-			fail("getParent should throw NoSuchElementException")
+			var parent = variables.node.parent()
+			fail("parent should throw NoSuchElementException")
 		} catch (Any e) {
 			assertEquals("NoSuchElementException", e.type)
 		}
@@ -18,7 +18,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function GetSetParent_Should_Work() {
 		var composite = new Composite()
 		variables.node.setParent(composite)
-		var parent = variables.node.getParent()
+		var parent = variables.node.parent()
 
 		assertEquals(composite, parent)
 	}

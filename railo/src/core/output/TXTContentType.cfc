@@ -1,10 +1,10 @@
 component extends="ContentType" {
 
-	public String function getName() {
+	public String function name() {
 		return "txt"
 	}
 
-	public String function getMimeType() {
+	public String function mimeType() {
 		return "text/plain"
 	}
 

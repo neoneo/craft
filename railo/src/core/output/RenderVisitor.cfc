@@ -34,15 +34,15 @@ component implements="Visitor" accessors="true" {
 	}
 
 	public void function visitTemplate(required Template template) {
-		arguments.template.getSection().accept(this)
+		arguments.template.section().accept(this)
 	}
 
 	public void function visitDocument(required Document document) {
 
 		// Pick up the sections / placeholders that this document is filling.
-		variables.sections.append(arguments.document.getSections())
+		variables.sections.append(arguments.document.sections())
 
-		arguments.document.getTemplate().accept(this)
+		arguments.document.template().accept(this)
 	}
 
 	public void function visitLeaf(required Leaf leaf) {
@@ -128,7 +128,7 @@ component implements="Visitor" accessors="true" {
 	public void function visitPlaceholder(required Placeholder placeholder) {
 
 		// The placeholder is filled if its ref exists as a key in the sections struct.
-		var ref = arguments.placeholder.getRef()
+		var ref = arguments.placeholder.ref()
 
 		if (variables.sections.keyExists(ref)) {
 			variables.sections[ref].accept(this)
@@ -137,7 +137,9 @@ component implements="Visitor" accessors="true" {
 	}
 
 	public void function visitSection(required Section section) {
-		arguments.section.getNode().accept(this)
+		for (var node in arguments.section.nodes()) {
+			node.accept(this)
+		}
 	}
 
 }

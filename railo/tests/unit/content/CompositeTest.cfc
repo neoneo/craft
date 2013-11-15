@@ -16,17 +16,13 @@ component extends="mxunit.framework.TestCase" {
 	public void function Traverse_Should_InvokeVisitorForAllChildren() {
 		var visitor = mock(new VisitorStub())
 
-		// Could not mock nodes due to NPE in Mighty Mock.
-		// Use placeholders, because they have a property that makes them unique.
-		var node1 = new Placeholder("ref1")
-		var node2 = new Placeholder("ref2")
-		var node3 = new Placeholder("ref3")
+		var node1 = mock(CreateObject("Placeholder"))
+		var node2 = mock(CreateObject("Placeholder"))
+		var node3 = mock(CreateObject("Placeholder"))
 
-		visitor
-			.visitPlaceholder(node1)
-			.visitPlaceholder(node2)
-			.visitPlaceholder(node3)
-
+		visitor.visitLeaf(node1)
+			.visitLeaf(node2)
+			.visitLeaf(node3)
 
 		variables.composite.addChild(node1)
 		variables.composite.addChild(node2)
@@ -34,9 +30,9 @@ component extends="mxunit.framework.TestCase" {
 
 		variables.composite.traverse(visitor)
 
-		visitor.verify().visitPlaceholder(node1)
-		visitor.verify().visitPlaceholder(node2)
-		visitor.verify().visitPlaceholder(node3)
+		visitor.verify().visitLeaf(node1)
+		visitor.verify().visitLeaf(node2)
+		visitor.verify().visitLeaf(node3)
 
 	}
 

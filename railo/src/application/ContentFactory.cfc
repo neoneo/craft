@@ -43,7 +43,7 @@ component {
 		return content
 	}
 
-	public void function registerNodeFactory(required craft.dsl.factory.NodeFactory nodeFactory, required String xmlNamespace) {
+	public void function registerNodeFactory(required craft.xml.factory.NodeFactory nodeFactory, required String xmlNamespace) {
 		variables.nodeFactories[arguments.xmlNamespace] = arguments.nodeFactory
 	}
 
@@ -66,7 +66,7 @@ component {
 		return node
 	}
 
-	private craft.dsl.factory.NodeFactory function getNodeFactory(required String xmlNamespace) {
+	private craft.xml.factory.NodeFactory function getNodeFactory(required String xmlNamespace) {
 
 		if (!variables.nodeFactories.keyExists(arguments.xmlNamespace)) {
 			Throw("No node factory registered for xml namespace #arguments.xmlNamespace#")

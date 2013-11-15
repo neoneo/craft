@@ -6,8 +6,8 @@ component extends="mxunit.framework.TestCase" {
 		variables.placeholder = new Placeholder("ref")
 	}
 
-	public void function GetRef_Should_Return_Ref() {
-		assertEquals("ref", variables.placeholder.getRef())
+	public void function Ref_Should_Return_Ref() {
+		assertEquals("ref", variables.placeholder.ref())
 	}
 
 	public void function Accept_Should_InvokeVisitor() {

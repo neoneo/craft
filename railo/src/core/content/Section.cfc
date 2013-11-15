@@ -3,28 +3,34 @@
  */
 component accessors="true" {
 
-	property Node node;
+	variables._nodes = []
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitSection(this)
 	}
 
-	public Array function getPlaceholders() {
-		return getPlaceholdersFromNode(getNode())
+	public Array function placeholders() {
+		return placeholdersFromNodes(variables._nodes)
 	}
 
-	private Array function getPlaceholdersFromNode(required Node node) {
+	public void function addNode(required Node node) {
+		variables._nodes.append(arguments.node)
+	}
+
+	public Array function nodes() {
+		return variables._nodes
+	}
+
+	private Array function placeholdersFromNodes(required Array nodes) {
 
 		var placeholders = []
-		if (arguments.node.hasChildren()) {
-			arguments.node.getChildren().each(function (child) {
-				if (IsInstanceOf(arguments.child, "Placeholder")) {
-					placeholders.append(arguments.child)
-				} else {
-					placeholders.append(getPlaceholdersFromNode(arguments.child), true)
-				}
-			})
-		}
+		arguments.nodes.each(function (node) {
+			if (IsInstanceOf(arguments.node, "Placeholder")) {
+				placeholders.append(arguments.node)
+			} else if (arguments.node.hasChildren()) {
+				placeholders.append(placeholdersFromNodes(arguments.node.children()), true)
+			}
+		})
 
 		return placeholders
 	}

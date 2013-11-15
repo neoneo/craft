@@ -1,6 +1,12 @@
 component extends="Node" accessors="true" {
 
-	property String ref;
+	public void function init(required String ref) {
+		variables._ref = arguments.ref
+	}
+
+	public String function ref() {
+		return variables._ref
+	}
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitPlaceholder(this)

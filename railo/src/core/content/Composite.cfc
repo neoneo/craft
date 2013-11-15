@@ -7,7 +7,7 @@ import craft.core.util.ScopeBranchList;
  */
 component extends="Node" {
 
-	variables.children = new ScopeBranchList(this)
+	variables._children = new ScopeBranchList(this)
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitComposite(this)
@@ -15,7 +15,7 @@ component extends="Node" {
 
 	public void function traverse(required Visitor visitor) {
 
-		for (var child in getChildren()) {
+		for (var child in children()) {
 			child.accept(arguments.visitor)
 		}
 
@@ -25,25 +25,25 @@ component extends="Node" {
 	 * Returns whether the `Component` contains `Node`s.
 	 **/
 	public Boolean function hasChildren() {
-		return !variables.children.isEmpty()
+		return !variables._children.isEmpty()
 	}
 
-	public Array function getChildren() {
-		return variables.children.toArray()
+	public Array function children() {
+		return variables._children.toArray()
 	}
 
 	/**
 	 * Adds a `Node` to this `Composite`.
 	 **/
 	public void function addChild(required Node child, Node beforeChild) {
-		variables.children.add(argumentCollection: ArrayToStruct(arguments))
+		variables._children.add(argumentCollection: ArrayToStruct(arguments))
 	}
 
 	/**
 	 * Removes the `Node` from this `Composite`.
 	 **/
 	public void function removeChild(required Node child) {
-		variables.children.remove(arguments.child)
+		variables._children.remove(arguments.child)
 	}
 
 	/**
@@ -51,7 +51,7 @@ component extends="Node" {
 	 * The optional `beforeNode` argument specifies where to move the `Node`. If `beforeNode` is null, the `Node` is moved to the end.
 	 **/
 	public void function moveChild(required Node child, Node beforeChild) {
-		variables.children.move(argumentCollection: ArrayToStruct(arguments))
+		variables._children.move(argumentCollection: ArrayToStruct(arguments))
 	}
 
 }

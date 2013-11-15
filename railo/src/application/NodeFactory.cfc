@@ -1,7 +1,7 @@
 import craft.core.layout.Node
-import craft.dsl.transformer.Transformer
+import craft.xml.transformer.Transformer
 
-component implements="craft.dsl.factory.NodeFactory" {
+component implements="craft.xml.factory.NodeFactory" {
 
 	variables.definitions = {}
 	variables.transformers = {}
