@@ -1,3 +1,5 @@
+import craft.core.content.DocumentTemplate;
+
 component extends="DocumentElement" tag="documenttemplate" {
 
 	property String extends;

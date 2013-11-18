@@ -1,17 +1,17 @@
 import craft.core.content.Template;
 
 import craft.core.xml.Element;
+import craft.core.xml.Reader;
 
 component extends="Element" tag="template" {
 
-	public void function construct(required Director director) {
+	public void function construct(required Reader reader) {
 
 		var ref = getRef()
 
-		if (arguments.director.childrenReady(ref)) {
-			var children = arguments.director.children(ref)
+		if (childrenReady()) {
 			var section = new Section()
-			for (var child in children) {
+			for (var child in children()) {
 				section.addNode(child.product())
 			})
 
