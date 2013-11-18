@@ -4,8 +4,8 @@ component implements="Cache" {
 		return CacheGet(arguments.key)
 	}
 
-	public void function put(required String key, required any object) {
-		CachePut(arguments.key, arguments.object)
+	public void function put(required String key, required Any value) {
+		CachePut(arguments.key, arguments.value)
 	}
 
 	public void function remove(required String key) {

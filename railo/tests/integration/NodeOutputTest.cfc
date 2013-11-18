@@ -21,7 +21,7 @@ component extends="mxunit.framework.TestCase" {
 
 		variables.visitor.visitLeaf(leaf)
 
-		var content = variables.visitor.getContent()
+		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 		var expected = {"node": "leaf"}
 
@@ -31,7 +31,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function RenderComposite() {
 		variables.visitor.visitComposite(simpleComposite())
 
-		var content = variables.visitor.getContent()
+		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 		var expected = {
 			"node": "composite",
@@ -50,7 +50,7 @@ component extends="mxunit.framework.TestCase" {
 
 		variables.visitor.visitComposite(composite)
 
-		var content = variables.visitor.getContent()
+		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 		var expected = {
 			"node": "composite1",
@@ -72,13 +72,14 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function RenderDocument() {
 		var composite = nestedComposite()
-		var section = new Section(composite)
+		var section = new Section()
+		section.addNode(composite)
 		var template = new Template(section)
 		var document = new Document(template)
 
 		variables.visitor.visitDocument(document)
 
-		var content = variables.visitor.getContent()
+		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
@@ -100,19 +101,22 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function RenderDocumentWithPlaceholders() {
-		var section = new Section(nestedComposite(true)) // With placeholders.
+		var section = new Section() // With placeholders.
+		section.addNode(nestedComposite(true))
 		var template = new Template(section)
 		var document = new Document(template)
 
-		var p1Section = new Section(simpleComposite())
-		document.addSection(p1Section, new Placeholder("p1"))
+		var p1Section = new Section()
+		p1Section.addNode(simpleComposite())
+		document.addSection(p1Section, "p1")
 
-		var p3Section = new Section(simpleComposite())
-		document.addSection(p3Section, new Placeholder("p3"))
+		var p3Section = new Section()
+		p3Section.addNode(simpleComposite())
+		document.addSection(p3Section, "p3")
 
 		variables.visitor.visitDocument(document)
 
-		var content = variables.visitor.getContent()
+		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
@@ -154,34 +158,39 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function RenderNestedDocument() {
 
-		var section = new Section(nestedComposite(true))
+		var section = new Section()
+		section.addNode(nestedComposite(true))
 		var template = new Template(section)
 
 		var documentTemplate1 = new DocumentTemplate(template)
-		var p1Section = new Section(simpleComposite(true))
-		documentTemplate1.addSection(p1Section, new Placeholder("p1"))
+		var p1Section = new Section()
+		p1Section.addNode(simpleComposite(true))
+		documentTemplate1.addSection(p1Section, "p1")
 
 		// The available placeholders in the document template should now be: p, p2, p3.
 
 		var documentTemplate2 = new DocumentTemplate(documentTemplate1)
-		var pSection = new Section(new stubs.Leaf("p"))
-		documentTemplate2.addSection(pSection, new Placeholder("p"))
+		var pSection = new Section()
+		pSection.addNode(new stubs.Leaf("p"))
+		documentTemplate2.addSection(pSection, "p")
 
-		var p2Section = new Section(new stubs.Leaf("p2"))
-		documentTemplate2.addSection(p2Section, new Placeholder("p2"))
+		var p2Section = new Section()
+		p2Section.addNode(new stubs.Leaf("p2"))
+		documentTemplate2.addSection(p2Section, "p2")
 
 		// Now remains only placeholder p3.
 
 		var documentTemplate3 = new DocumentTemplate(documentTemplate2)
-		var p3Section = new Section(new stubs.Leaf("p3"))
-		documentTemplate3.addSection(p3Section, new Placeholder("p3"))
+		var p3Section = new Section()
+		p3Section.addNode(new stubs.Leaf("p3"))
+		documentTemplate3.addSection(p3Section, "p3")
 
 		var document = new Document(documentTemplate3)
 
 		// Start the actual test.
 		variables.visitor.visitDocument(document)
 
-		var content = variables.visitor.getContent()
+		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
@@ -218,32 +227,39 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function UseTemplate_Should_KeepMatchingContent() {
-		var section1 = new Section(nestedComposite(true))
+		var section1 = new Section()
+		section1.addNode(nestedComposite(true))
 		var template1 = new Template(section1)
 
 		// For this test, only include p1 en p2 in the second template.
 		var composite = new stubs.Composite("composite")
 		composite.addChild(new Placeholder("p1"))
 		composite.addChild(new Placeholder("p2"))
-		var section2 = new Section(composite)
+		var section2 = new Section()
+		section2.addNode(composite)
 		var template2 = new Template(section2)
 
 		// Create a document based on template 1.
 		var document = new Document(template1)
 		// Fill all placeholders p1, p2 and p3.
-		var p1Section = new Section(new stubs.Leaf("p1"))
-		document.addSection(p1Section, new Placeholder("p1"))
-		var p2Section = new Section(new stubs.Leaf("p2"))
-		document.addSection(p2Section, new Placeholder("p2"))
-		var p3Section = new Section(new stubs.Leaf("p3"))
-		document.addSection(p3Section, new Placeholder("p3"))
+		var p1Section = new Section()
+		p1Section.addNode(new stubs.Leaf("p1"))
+		document.addSection(p1Section, "p1")
+
+		var p2Section = new Section()
+		p2Section.addNode(new stubs.Leaf("p2"))
+		document.addSection(p2Section, "p2")
+
+		var p3Section = new Section()
+		p3Section.addNode(new stubs.Leaf("p3"))
+		document.addSection(p3Section, "p3")
 
 		// Actual test.
 		document.useTemplate(template2)
 
 		variables.visitor.visitDocument(document)
 
-		var content = variables.visitor.getContent()
+		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
@@ -260,7 +276,7 @@ component extends="mxunit.framework.TestCase" {
 		document.useTemplate(template1)
 		variables.visitor.visitDocument(document)
 
-		var content = variables.visitor.getContent()
+		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
@@ -306,7 +322,7 @@ component extends="mxunit.framework.TestCase" {
 		// Actual test.
 		variables.visitor.visitComposite(root)
 
-		var content = variables.visitor.getContent()
+		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {

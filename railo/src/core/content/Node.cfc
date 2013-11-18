@@ -1,12 +1,11 @@
 import craft.core.layout.Context;
 
-import craft.core.util.Branch;
-
 /**
  * Base class for the composite pattern.
+ *
  * @abstract
  **/
-component implements="Branch,Content" {
+component implements="Content" {
 
 	public void function accept(required Visitor visitor) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")

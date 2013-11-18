@@ -3,7 +3,6 @@ component extends="craft.core.content.Leaf" accessors="true" {
 	property String name;
 
 	public void function init(required String name) {
-		super.init()
 		setName(arguments.name)
 	}
 

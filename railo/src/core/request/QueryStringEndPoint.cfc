@@ -8,19 +8,18 @@ component extends="EndPoint" {
 			// Part of the path is relative, but this could be somewhere in the middle.
 			// Get the current path (without the file name if present).
 			if (!path.startsWith("/")) {
-				path = REReplace(getPath(), "/([^/.]+\.[^/.]+)?$", "") & "/" & path
+				path = REReplace(this.path(), "/([^/.]+\.[^/.]+)?$", "") & "/" & path
 			}
-			var position = 1
-			while (position > 0) {
-				position = Find("../", path)
+			do {
+				var position = Find("../", path)
 				if (position > 0) {
 					// Split the path where the ../ is found.
 					var absolutePath = position > 1 ? Left(path, position - 1) : "/"
 					var relativePath = Mid(path, position)
 					// Remove the last list item from the current path and the first from the relative path.
-					path = REReplace(absolutePath, "/[^/]+/$", "") & "/" & ListRest(relativePath, "/")
+					path = ListDeleteAt(absolutePath, ListLen(absolutePath, "/"), "/") & "/" & ListRest(relativePath, "/")
 				}
-			}
+			} while (position > 0)
 			path = Replace(path, "./", "", "all")
 		}
 
@@ -36,7 +35,7 @@ component extends="EndPoint" {
 		return "index.cfm?" & queryString
 	}
 
-	public String function getPath() {
+	public String function path() {
 		return url.path ?: "/"
 	}
 

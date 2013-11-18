@@ -2,12 +2,17 @@ import craft.core.content.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	public void function GetNode_Should_Work() {
-		var node1 = mock(CreateObject("Node"))
-		var node2 = mock(CreateObject("Node"))
-		var section = new Section()
-		section.addNode(node1)
-		section.addNode(node2)
+	public void function setUp() {
+		variables.section = new Section()
+	}
+
+	public void function Nodes_Should_ReturnNodes() {
+		// Adding a mocked method makes the object unique for equals().
+		var node1 = mock(CreateObject("Leaf")).unique()
+		var node2 = mock(CreateObject("Leaf")).unique()
+
+		variables.section.addNode(node1)
+		variables.section.addNode(node2)
 
 		// Test.
 		var nodes = section.nodes()
@@ -19,29 +24,43 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var node = mock(CreateObject("Node"))
-		var section = new Section(node)
-		var visitor = mock(new VisitorStub()).visitSection(section)
+		var visitor = mock(new VisitorStub()).visitSection(variables.section)
 
 		// Actual test.
-		section.accept(visitor)
+		variables.section.accept(visitor)
 
 		// Verify.
-		visitor.verify().visitSection(section)
+		visitor.verify().visitSection(variables.section)
+	}
+
+	public void function Traverse_Should_CallAcceptOnAllChildren() {
+		var visitor = mock(new VisitorStub())
+
+		var node1 = mock(CreateObject("Leaf")).accept(visitor)
+		var node2 = mock(CreateObject("Leaf")).accept(visitor)
+		var node3 = mock(CreateObject("Leaf")).accept(visitor)
+
+		variables.section.addNode(node1)
+		variables.section.addNode(node2)
+		variables.section.addNode(node3)
+
+		variables.section.traverse(visitor)
+
+		node1.verify().accept(visitor)
+		node2.verify().accept(visitor)
+		node3.verify().accept(visitor)
 	}
 
 	public void function Placeholders_Should_ReturnPlaceholderDescendants() {
 
 		// Build a tree with placeholders at several levels.
 		// TODO: use mock objects.
-		var section = new Section()
-
-		section.addNode(new Placeholder("p1"))
-		section.addNode(new Composite())
+		variables.section.addNode(new Placeholder("p1"))
+		variables.section.addNode(new Composite())
 
 		var level1 = new Composite()
 		level1.addChild(new Leaf())
-		section.addNode(level1)
+		variables.section.addNode(level1)
 
 		var level2 = new Composite()
 		level2.addChild(new Placeholder("p3"))

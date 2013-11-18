@@ -1,22 +1,19 @@
 import craft.core.content.Content;
 
-import craft.core.util.Branch;
-import craft.core.util.ScopeBranchList;
+import craft.core.util.ScopeCollection;
 
 /**
  * PathSegment
  **/
-component implements="Branch" accessors="true" {
-
-	property String parameterName setter="false"; // The name of the parameter that corresponds to this path segment.
+component {
 
 	public void function init(required PathMatcher pathMatcher, String parameterName) {
 
-		variables.pathMatcher = arguments.pathMatcher
-		variables.parameterName = arguments.parameterName ?: null
+		variables._pathMatcher = arguments.pathMatcher
+		variables._parameterName = arguments.parameterName ?: null
 
-		variables.content = {}
-		variables.children = new ScopeBranchList(this)
+		variables._content = {}
+		variables._children = new ScopeCollection(this)
 
 	}
 
@@ -24,12 +21,12 @@ component implements="Branch" accessors="true" {
 	 * Sets the content for the given content type.
 	 **/
 	public void function setContent(required String type, required Content content) {
-		variables.content[arguments.type] = arguments.content
+		variables._content[arguments.type] = arguments.content
 	}
 
-	public Content function getContent(required String type) {
+	public Content function content(required String type) {
 
-		var content = variables.content[arguments.type] ?: null
+		var content = variables._content[arguments.type] ?: null
 		if (IsNull(content)) {
 			Throw("No content of type #arguments.type# found", "ContentNotFoundException")
 		}
@@ -37,35 +34,37 @@ component implements="Branch" accessors="true" {
 		return content
 	}
 
-	public Numeric function match(required Array path) {
-		return variables.pathMatcher.match(arguments.path)
+	public Any function parameterName() {
+		return variables._parameterName
 	}
 
-	// Branch IMPLEMENTATION ======================================================================
+	public Numeric function match(required Array path) {
+		return variables._pathMatcher.match(arguments.path)
+	}
 
-	public Array function getChildren() {
-		return variables.children.toArray()
+	public Array function children() {
+		return variables._children.toArray()
 	}
 
 	public void function addChild(required PathSegment child, PathSegment beforeChild) {
 		// TODO: implement check for duplicates
-		variables.children.add(argumentCollection: ArrayToStruct(arguments))
+		variables._children.add(argumentCollection: ArrayToStruct(arguments))
 	}
 
 	public Boolean function removeChild(required PathSegment child) {
-		return variables.children.remove(arguments.child)
+		return variables._children.remove(arguments.child)
 	}
 
 	public Boolean function hasParent() {
-		return StructKeyExists(variables, "parent")
+		return !IsNull(variables._parent)
 	}
 
-	public PathSegment function getParent() {
-		return variables.parent
+	public PathSegment function parent() {
+		return variables._parent
 	}
 
 	public void function setParent(required PathSegment parent) {
-		variables.parent = arguments.parent
+		variables._parent = arguments.parent
 	}
 
 }

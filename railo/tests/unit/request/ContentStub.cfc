@@ -1,5 +1,4 @@
-import craft.core.content.Content;
-import craft.core.content.Visitor;
+import craft.core.content.*;
 
 component implements="Content" accessors="true" {
 

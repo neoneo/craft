@@ -15,7 +15,6 @@ component extends="mxunit.framework.TestCase" {
 		var pathMatcher = new EntirePathMatcher()
 		assertEquals(variables.path1.len(), pathMatcher.match(variables.path1))
 		assertEquals(variables.path2.len(), pathMatcher.match(variables.path2))
-
 	}
 
 	public void function Fixed() {
@@ -34,13 +33,17 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Remaining() {
-		var trueStub = new PathMatcherStub(true)
-		var pathMatcher = new RemainingPathMatcher(trueStub)
+		var stub = mock(CreateObject("PathMatcherStub"))
+			.match(variables.path1).returns(1)
+			.match(variables.path2).returns(1)
+		var pathMatcher = new RemainingPathMatcher(stub)
 		assertEquals(variables.path1.len(), pathMatcher.match(variables.path1), "remaining path matcher should match the complete path if the decorated path matcher matches")
 		assertEquals(variables.path2.len(), pathMatcher.match(variables.path2), "remaining path matcher should match the complete path if the decorated path matcher matches")
 
-		var falseStub = new PathMatcherStub(false)
-		var pathMatcher = new RemainingPathMatcher(falseStub)
+		var stub = mock(CreateObject("PathMatcherStub"))
+			.match(variables.path1).returns(0)
+			.match(variables.path2).returns(0)
+		var pathMatcher = new RemainingPathMatcher(stub)
 		assertEquals(0, pathMatcher.match(variables.path1), "remaining path matcher should not match if the decorated path matcher does not match")
 		assertEquals(0, pathMatcher.match(variables.path2), "remaining path matcher should not match if the decorated path matcher does not match")
 	}

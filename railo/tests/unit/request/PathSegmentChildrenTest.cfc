@@ -3,22 +3,22 @@ import craft.core.request.PathSegment;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.pathMatcher = new PathMatcherStub(true)
+		variables.pathMatcher = mock(CreateObject("PathMatcherStub"))
 		variables.root = createPathSegment("root")
 	}
 
 	public void function Children_Should_BeEmptyArray() {
-		assertTrue(variables.root.getChildren().isEmpty())
+		assertTrue(variables.root.children().isEmpty())
 	}
 
 	public void function AddChild_Should_AppendChild() {
 		variables.root.addChild(createPathSegment("test1"))
 		variables.root.addChild(createPathSegment("test2"))
 
-		var children = variables.root.getChildren()
+		var children = variables.root.children()
 		assertEquals(2, children.len())
-		assertEquals("test1", children[1].getParameterName())
-		assertEquals("test2", children[2].getParameterName())
+		assertEquals("test1", children[1].parameterName())
+		assertEquals("test2", children[2].parameterName())
 	}
 
 	public void function AddChildBefore_Should_InsertChild() {
@@ -30,9 +30,9 @@ component extends="mxunit.framework.TestCase" {
 
 		// actual test
 		variables.root.addChild(test2, test3)
-		var children = variables.root.getChildren()
+		var children = variables.root.children()
 		assertEquals(3, children.len())
-		assertEquals("test2", children[2].getParameterName())
+		assertEquals("test2", children[2].parameterName())
 	}
 
 	public void function RemoveChild_Should_ReturnRemovedChild() {
@@ -47,18 +47,18 @@ component extends="mxunit.framework.TestCase" {
 		var removed = variables.root.removeChild(test2)
 		assertFalse(removed);
 
-		var children = variables.root.getChildren()
+		var children = variables.root.children()
 		assertEquals(1, children.len())
-		assertEquals("test1", children[1].getParameterName())
+		assertEquals("test1", children[1].parameterName())
 	}
 
-	public void function GetParent_Should_ReturnParentIfExists() {
+	public void function Parent_Should_ReturnParent_IfExists() {
 		var test = createPathSegment("test")
 		assertFalse(test.hasParent())
 
 		test.setParent(variables.root)
 		assertTrue(test.hasParent())
-		assertEquals(variables.root, test.getParent())
+		assertEquals(variables.root, test.parent())
 	}
 
 	private PathSegment function createPathSegment(required String name) {

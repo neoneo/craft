@@ -1,4 +1,4 @@
-import craft.core.util.ScopeBranchList;
+import craft.core.util.ScopeCollection;
 
 /**
  * A `Composite` is a `Node` that contains other `Node`s.
@@ -7,7 +7,7 @@ import craft.core.util.ScopeBranchList;
  */
 component extends="Node" {
 
-	variables._children = new ScopeBranchList(this)
+	variables._children = new ScopeCollection()
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitComposite(this)
@@ -36,7 +36,10 @@ component extends="Node" {
 	 * Adds a `Node` to this `Composite`.
 	 **/
 	public void function addChild(required Node child, Node beforeChild) {
-		variables._children.add(argumentCollection: ArrayToStruct(arguments))
+		var added = variables._children.add(argumentCollection: ArrayToStruct(arguments))
+		if (added) {
+			arguments.child.setParent(this)
+		}
 	}
 
 	/**

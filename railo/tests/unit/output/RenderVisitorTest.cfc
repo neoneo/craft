@@ -8,13 +8,13 @@ component extends="mxunit.framework.TestCase" {
 		variables.contentType = mock(CreateObject("ContentType"))
 		variables.context = mock(CreateObject("Context"))
 			.getRequestMethod().returns("get")
-			.getContentType().returns(variables.contentType)
+			.contentType().returns(variables.contentType)
 		variables.renderer = mock(new RendererStub())
 
 		variables.visitor = new RenderVisitor(variables.renderer, variables.context)
 	}
 
-	public void function VisitLeaf_Should_CallRenderer() {
+	public void function VisitLeaf_Should_CallModelAndView() {
 		var model = {key: 1}
 		var leaf = mock(CreateObject("Leaf"))
 			.model("{any}", "{struct}").returns(model) // Don't know why I can't pass in variables.context as the first argument..
@@ -34,10 +34,10 @@ component extends="mxunit.framework.TestCase" {
 			.render("{+}")
 
 		// The visitor should make the rendered output ('done') available.
-		assertEquals("done", variables.visitor.getContent())
+		assertEquals("done", variables.visitor.content())
 	}
 
-	public void function VisitComposite_Should_CallRenderer() {
+	public void function VisitComposite_Should_CallModelViewAndTraverse() {
 		var model = {key: 1}
 		var composite = mock(CreateObject("Composite"))
 			.model("{any}", "{struct}").returns(model)
@@ -60,7 +60,7 @@ component extends="mxunit.framework.TestCase" {
 		variables.renderer.verify()
 			.render("{+}")
 
-		assertEquals("done", variables.visitor.getContent())
+		assertEquals("done", variables.visitor.content())
 	}
 
 	public void function VisitTemplate_Should_CallSectionAccept() {
@@ -116,15 +116,12 @@ component extends="mxunit.framework.TestCase" {
 		section.verify().accept(variables.visitor)
 	}
 
-	public void function VisitSection_Should_CallAcceptOnNodes() {
-		var node1 = mock(CreateObject("Node")).accept(variables.visitor)
-		var node2 = mock(CreateObject("Node")).accept(variables.visitor)
-		var section = mock(CreateObject("Section")).nodes().returns([node1, node2])
+	public void function VisitSection_Should_CallTraverse() {
+		var section = mock(CreateObject("Section")).traverse(variables.visitor)
 
 		variables.visitor.visitSection(section)
 
-		node1.verify().accept(variables.visitor)
-		node2.verify().accept(variables.visitor)
+		section.verify().traverse(variables.visitor)
 	}
 
 }

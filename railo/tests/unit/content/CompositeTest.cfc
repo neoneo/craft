@@ -13,16 +13,12 @@ component extends="mxunit.framework.TestCase" {
 		visitor.verify().visitComposite(variables.composite)
 	}
 
-	public void function Traverse_Should_InvokeVisitorForAllChildren() {
+	public void function Traverse_Should_CallAcceptOnAllChildren() {
 		var visitor = mock(new VisitorStub())
 
-		var node1 = mock(CreateObject("Placeholder"))
-		var node2 = mock(CreateObject("Placeholder"))
-		var node3 = mock(CreateObject("Placeholder"))
-
-		visitor.visitLeaf(node1)
-			.visitLeaf(node2)
-			.visitLeaf(node3)
+		var node1 = mock(CreateObject("Leaf")).accept(visitor)
+		var node2 = mock(CreateObject("Leaf")).accept(visitor)
+		var node3 = mock(CreateObject("Leaf")).accept(visitor)
 
 		variables.composite.addChild(node1)
 		variables.composite.addChild(node2)
@@ -30,10 +26,9 @@ component extends="mxunit.framework.TestCase" {
 
 		variables.composite.traverse(visitor)
 
-		visitor.verify().visitLeaf(node1)
-		visitor.verify().visitLeaf(node2)
-		visitor.verify().visitLeaf(node3)
-
+		node1.verify().accept(visitor)
+		node2.verify().accept(visitor)
+		node3.verify().accept(visitor)
 	}
 
 	// TODO: tests for addChild, removeChild, moveChild.

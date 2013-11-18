@@ -18,8 +18,7 @@ component {
 
 	public Struct function parsePath() {
 
-		var path = getPath()
-		var segments = ListToArray(path, "/")
+		var segments = ListToArray(path(), "/")
 		var contentType = variables.extensions.first() // The default content type.
 
 		if (!segments.isEmpty()) {
@@ -46,15 +45,15 @@ component {
 		}
 	}
 
-	public Struct function getRequestParameters() {
+	public Struct function requestParameters() {
 		return variables.parameters
 	}
 
-	public String function getRequestMethod() {
+	public String function requestMethod() {
 		return cgi.request_method
 	}
 
-	public String function getPath() {
+	public String function path() {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
@@ -73,7 +72,7 @@ component {
 		if (!arguments.path.isEmpty()) {
 			result = NullValue()
 
-			var children = arguments.pathSegment.getChildren()
+			var children = arguments.pathSegment.children()
 			var count = children.len()
 			var i = 1
 			while (IsNull(result) && i <= count) {
@@ -85,7 +84,7 @@ component {
 
 					if (!IsNull(result)) {
 						// The complete path is traversed so the current path segment is part of the tree.
-						var parameterName = child.getParameterName()
+						var parameterName = child.parameterName()
 						if (!IsNull(parameterName)) {
 							// Get the part of the path that was actually matched by the current path segment.
 							variables.parameters[parameterName] = arguments.path.mid(1, segmentCount).toList("/")

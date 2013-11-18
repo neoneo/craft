@@ -53,9 +53,9 @@ component {
 
 	private Struct function get(required String view, required String requestMethod, required ContentType contentType) {
 
-		var key = arguments.view & "." & arguments.requestMethod & "." & arguments.contentType.getName()
+		var key = arguments.view & "." & arguments.requestMethod & "." & arguments.contentType.name()
 		if (!variables.cache.keyExists(key)) {
-			var contentTypes = ([arguments.contentType]).merge(arguments.contentType.getFallbacks()) // First look for the most specific template.
+			var contentTypes = ([arguments.contentType]).merge(arguments.contentType.fallbacks()) // First look for the most specific template.
 			// Search for files with or without the request method (in that order).
 			var names = [
 				arguments.view & "." & arguments.requestMethod,
@@ -65,7 +65,7 @@ component {
 			search:for (var contentType in contentTypes) {
 				for (var name in names) {
 					for (var mapping in variables.mappings) {
-						var filename = name & "." & contentType.getName() & variables.fileContentType
+						var filename = name & "." & contentType.name() & variables.fileContentType
 						if (FileExists(mapping.directory & "/" & filename)) {
 							variables.cache[key] = {
 								template = mapping.path & "/" & filename,
@@ -78,7 +78,7 @@ component {
 				}
 			}
 			if (!found) {
-				Throw("View '#arguments.view# for contentType #arguments.contentType.getName()#' not found", "ViewNotFoundException")
+				Throw("View '#arguments.view# for contentType #arguments.contentType.name()#' not found", "ViewNotFoundException")
 			}
 		}
 
