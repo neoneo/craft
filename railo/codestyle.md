@@ -1,9 +1,15 @@
 Style
 =====
 * No getters except for properties with accessors. Hardcoded getter functions have the name of the property, for instance: `parent()` instead of `getParent()`.
-* Private members have names that start with _. This avoids name clashes with getters.
 * Private members are treated private to the component that defines them. If a subclass needs access, a private getter is provided.
 * For all functions containing 3 or more lines, the function starts with an empty line. The last line is a return statement, or an empty line if the returntype is void.
+
+Naming
+======
+* Components Pascal cased.
+* Methods camel cased.
+* Builtin functions Pascal cased. This makes it clearer that this is not a method of the component.
+* Private members have names that start with _. This avoids name clashes with getters.
 
 Railo specifics usage
 =====================
@@ -17,6 +23,8 @@ Features
 --------
 * Member functions wherever possible except for scopes.
 * Break out of current and parent loops using break [loop name].
+* === operator to compare objects for equality. For other comparisons this operator could be used too, but its meaning is less clear.
+	For strings, the comparison is case sensitive, but this is not clear from the syntax (or the difference could be missed). Numeric comparisons may fail if the instances are not of the same type. Functions like Len return an integer, while all numerics are doubles. Therefore, Len("a") === 1 fails.
 
 Administrator settings
 ----------------------

@@ -11,8 +11,9 @@ component accessors="true" {
 
 	property String ref;
 
-	variables._product = null
+	variables._parent = null
 	variables._children = []
+	variables._product = null
 
 	public Boolean function ready() {
 		return !IsNull(variables._product)
@@ -41,6 +42,18 @@ component accessors="true" {
 		return variables._product
 	}
 
+	public Boolean function hasParent() {
+		return !IsNull(variables._parent)
+	}
+
+	public void function setParent(required Element parent) {
+		variables._parent = arguments.parent
+	}
+
+	public Element function parent() {
+		return variables._parent
+	}
+
 	public void function add(required Element element) {
 		variables._children.append(arguments.element)
 	}
@@ -52,7 +65,7 @@ component accessors="true" {
 	public Boolean function childrenReady() {
 
 		var ready = true
-		for (var child in variables._children) {
+		for (var child in children()) {
 			if (!child.ready()) {
 				ready = false
 				break;
@@ -60,6 +73,16 @@ component accessors="true" {
 		}
 
 		return ready
+	}
+
+	public Array function siblings() {
+		return hasParent() ? parent().children().filter(function (element) {
+			return arguments.element !== this
+		}) : []
+	}
+
+	public Numeric function siblingIndex() {
+		return hasParent() ? parent().children().find(this) : 0
 	}
 
 }
