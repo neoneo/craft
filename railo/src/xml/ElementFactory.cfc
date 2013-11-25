@@ -1,6 +1,6 @@
 component {
 
-	variables.mappings = {} // Maps an xml namespace to a mapping.
+	variables._mappings = {} // Maps an xml namespace to a mapping.
 
 	/**
 	 * Registers any `Element`s found in the mapping. A settings.ini file must be present in order for any components to be inspected.
@@ -20,7 +20,7 @@ component {
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
-			variables.mappings[namespace] = {
+			variables._mappings[namespace] = {
 				mapping: arguments.mapping
 			}
 
@@ -54,7 +54,7 @@ component {
 						metadata = metadata.extends ?: null
 					} while (!IsNull(metadata))
 
-					variables.mappings[namespace][tagName] = data
+					variables._mappings[namespace][tagName] = data
 				}
 			})
 		} else {
@@ -67,6 +67,10 @@ component {
 			})
 		}
 
+	}
+
+	public Struct function mappings() {
+		return variables._mappings
 	}
 
 	/**
@@ -90,11 +94,11 @@ component {
 	 */
 	public Element function create(required String namespace, required String tagName, Struct attributes = {}) {
 
-		if (!variables.mappings.keyExists(arguments.namespace)) {
+		if (!variables._mappings.keyExists(arguments.namespace)) {
 			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException")
 		}
 
-		var mappings = variables.mappings[arguments.namespace]
+		var mappings = variables._mappings[arguments.namespace]
 		if (!mappings.keyExists(arguments.tagName)) {
 			Throw("Element '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException")
 		}
