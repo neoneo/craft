@@ -1,7 +1,7 @@
 import craft.core.content.Template;
 
-import craft.core.xml.Element;
-import craft.core.xml.Reader;
+import craft.xml.Element;
+import craft.xml.Reader;
 
 component extends="Element" tag="template" {
 

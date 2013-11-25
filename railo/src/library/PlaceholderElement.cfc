@@ -1,6 +1,6 @@
 import craft.core.content.Placeholder;
 
-import craft.core.xml.Reader;
+import craft.xml.Reader;
 
 component extends="NodeElement" tag="placeholder" {
 

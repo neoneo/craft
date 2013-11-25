@@ -1,8 +1,8 @@
 import craft.core.content.Document;
 import craft.core.content.TemplateContent;
 
-import craft.core.xml.Element;
-import craft.core.xml.Reader;
+import craft.xml.Element;
+import craft.xml.Reader;
 
 /**
  * @abstract

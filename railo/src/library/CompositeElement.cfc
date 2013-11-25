@@ -1,6 +1,6 @@
 import craft.core.content.Composite;
 
-import craft.core.xml.Reader;
+import craft.xml.Reader;
 
 /**
  * Base implementation of an element that produces a `Composite`.

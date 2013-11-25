@@ -1,5 +1,3 @@
-import craft.core.xml.Element;
-
 component {
 
 	variables.mappings = {} // Maps an xml namespace to a mapping.
@@ -26,7 +24,7 @@ component {
 				mapping: arguments.mapping
 			}
 
-			// Pick up all cfc's in this directory (recursively) and keep the ones that implement Element.
+			// Pick up all cfc's in this directory (recursively) and keep the ones that extend Element.
 			DirectoryList(path, true, "path", "*.cfc").each(function (filePath) {
 				// Construct the component name. First replace the directory with the mapping, then make that a dot delimited path.
 				var componentName = ListChangeDelims(Replace(arguments.filePath, path, mapping), ".", "/", false)
@@ -78,7 +76,7 @@ component {
 
 		var metadata = arguments.metadata
 
-		var result = arguments.metadata.name == "craft.core.xml.Element"
+		var result = arguments.metadata.name == "craft.xml.Element"
 
 		if (!result && metadata.keyExists("extends")) {
 			result = extendsElement(metadata.extends)

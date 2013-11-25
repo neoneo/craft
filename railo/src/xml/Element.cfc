@@ -9,7 +9,7 @@ import craft.core.content.Content;
 
 component accessors="true" {
 
-	property String ref;
+	property String ref; // All elements may have a 'ref' attribute.
 
 	variables._parent = null
 	variables._children = []
@@ -20,11 +20,12 @@ component accessors="true" {
 	}
 
 	/**
-	 * Constructs the `Content` instance. The `Director` provides access to the other `Element`s in the document.
-	 * If construction can be completed, `setProduct()` should be called. This will be the case in most situations. However, an `Element`'s
-	 * dependencies may not be ready yet. In this case, do not call `setProduct()` so the `Director` will retry later.
+	 * Constructs the `Content` instance. The `Reader` provides access to the other `Element`s in the document.
+	 * If construction can be completed, `setProduct()` should be called with the created `Content` instance as its argument.
+	 * This will be the case in most situations. However, an `Element`'s dependencies may not be ready yet. In this case,
+	 * do not call `setProduct()` so the `Reader` will retry later.
 	 */
-	public void function construct(required Director director) {
+	public void function construct(required Reader reader) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 
@@ -56,6 +57,7 @@ component accessors="true" {
 
 	public void function add(required Element element) {
 		variables._children.append(arguments.element)
+		arguments.element.setParent(this)
 	}
 
 	public Array function children() {

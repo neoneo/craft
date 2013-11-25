@@ -1,7 +1,7 @@
 import craft.core.content.Content;
 
 /**
- * A `Reader` traverses the elements in an xml document and creates the corresponding tree of `Node`s that is used to generate the content.
+ * A `Reader` traverses the elements in an xml document and creates the corresponding tree of `Element`s that is used to create the `Content`.
  * In terms of the builder pattern, the `Reader` is the director.
  */
 component {
