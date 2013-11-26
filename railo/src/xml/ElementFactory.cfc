@@ -24,39 +24,53 @@ component {
 				mapping: arguments.mapping
 			}
 
-			// Pick up all cfc's in this directory (recursively) and keep the ones that extend Element.
-			DirectoryList(path, true, "path", "*.cfc").each(function (filePath) {
-				// Construct the component name. First replace the directory with the mapping, then make that a dot delimited path.
-				var componentName = ListChangeDelims(Replace(arguments.filePath, path, mapping), ".", "/", false)
-				// Finally remove the .cfc extension.
-				componentName = ListDeleteAt(componentName, ListLen(componentName, "."), ".")
+			if (ListFind(sections.craft, "directories") > 0) {
+				// The directories key contains a comma separated list of directories that should exist below the current one.
+				var registerPaths = []
+				ListToArray(sections.craft.directories).each(function (directory) {
+					var separator = Left(arguments.directory, 1) == "/" ? "" : "/"
+					registerPaths.append(path & separator & arguments.directory)
+				})
+			} else {
+				var registerPaths = [path]
+			}
 
-				var metadata = GetComponentMetaData(componentName)
+			registerPaths.each(function (registerPath)) {
+				var registerPath = arguments.registerPath
+				// Pick up all cfc's in this directory (recursively) and keep the ones that extend Element.
+				DirectoryList(registerPath, true, "path", "*.cfc").each(function (filePath) {
+					// Construct the component name. First replace the directory with the mapping, then make that a dot delimited path.
+					var componentName = ListChangeDelims(Replace(arguments.filePath, registerPath, mapping), ".", "/", false)
+					// Finally remove the .cfc extension.
+					componentName = ListDeleteAt(componentName, ListLen(componentName, "."), ".")
 
-				// Ignore components with the abstract annotation.
-				var abstract = metadata.abstract ?: false
-				if (!abstract && extendsElement(metadata)) {
-					// If a tag annotation is present, that will be the tag name. Otherwise we take the fully qualified component name.
-					var tagName = metadata.tag ?: metadata.name
-					var data = {
-						name: metadata.name,
-						attributes: []
+					var metadata = GetComponentMetaData(componentName)
+
+					// Ignore components with the abstract annotation.
+					var abstract = metadata.abstract ?: false
+					if (!abstract && extendsElement(metadata)) {
+						// If a tag annotation is present, that will be the tag name. Otherwise we take the fully qualified component name.
+						var tagName = metadata.tag ?: metadata.name
+						var data = {
+							name: metadata.name,
+							attributes: []
+						}
+
+						do {
+							// Filter the properties for those that can be attributes.
+							var attributes = metadata.properties.filter(function (property) {
+								// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
+								return property.attribute ?: true
+							})
+							data.attributes.append(attributes, true)
+
+							metadata = metadata.extends ?: null
+						} while (!IsNull(metadata))
+
+						variables._mappings[namespace][tagName] = data
 					}
-
-					do {
-						// Filter the properties for those that can be attributes.
-						var attributes = metadata.properties.filter(function (property) {
-							// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
-							return property.attribute ?: true
-						})
-						data.attributes.append(attributes, true)
-
-						metadata = metadata.extends ?: null
-					} while (!IsNull(metadata))
-
-					variables._mappings[namespace][tagName] = data
-				}
-			})
+				})
+			}
 		} else {
 			// Call again for each subdirectory.
 			var mapping = arguments.mapping
