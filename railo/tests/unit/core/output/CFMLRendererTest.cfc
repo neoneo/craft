@@ -6,7 +6,7 @@ component extends="mxunit.framework.TestCase" {
 		variables.json = mock(CreateObject("ContentType"))
 			.getName().returns("json")
 		variables.viewFinder = mock(CreateObject("ViewFinder"))
-			.template("renderer", "get", variables.json).returns("/craft/../tests/unit/output/viewstubs/renderer.json.cfm")
+			.template("renderer", "get", variables.json).returns("/crafttest/unit/core/output/viewstubs/renderer.json.cfm")
 			.contentType("renderer", "get", variables.json).returns(variables.json)
 	}
 

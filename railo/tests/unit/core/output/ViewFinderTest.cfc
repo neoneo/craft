@@ -17,7 +17,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp(){
 	  variables.viewFinder = new ViewFinder("cfm")
-	  variables.viewFinder.addMapping("/craft/../tests/unit/output/viewstubs/dir1")
+	  variables.viewFinder.addMapping("/crafttest/unit/core/output/viewstubs/dir1")
 	}
 
 	public void function GetView_Should_ReturnFileName_When_FileExists() {
@@ -65,7 +65,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function GetView_Should_LocateMostSpecificView_When_MultipleMappingsAreUsed() {
-		variables.viewFinder.addMapping("/craft/../tests/unit/output/viewstubs/dir2")
+		variables.viewFinder.addMapping("/crafttest/unit/output/viewstubs/dir2")
 
 		var template = variables.viewFinder.template("view2", "get", ext2) // OK: from dir1
 		assertTrue(template.endsWith("/dir1/view2.ext2.cfm"), "template view2.ext2.cfm should be found in dir1")

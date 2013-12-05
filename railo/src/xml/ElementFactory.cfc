@@ -28,8 +28,9 @@ component {
 				// The directories key contains a comma separated list of directories that should exist below the current one.
 				var registerPaths = []
 				ListToArray(sections.craft.directories).each(function (directory) {
-					var separator = Left(arguments.directory, 1) == "/" ? "" : "/"
-					registerPaths.append(path & separator & arguments.directory)
+					var directory = Trim(arguments.directory)
+					var separator = Left(directory, 1) == "/" ? "" : "/"
+					registerPaths.append(path & separator & directory)
 				})
 			} else {
 				var registerPaths = [path]
@@ -83,8 +84,15 @@ component {
 
 	}
 
-	public Struct function mappings() {
-		return variables._mappings
+	public Struct function tags() {
+
+		var tags = {}
+		variables._mappings.each(function (namespace, metadata) {
+			// The metadata argument is a struct where the keys are tag names.
+			tags[arguments.namespace] = arguments.metadata.keyArray()
+		})
+
+		return tags
 	}
 
 	/**

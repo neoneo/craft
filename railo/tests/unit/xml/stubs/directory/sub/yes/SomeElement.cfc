@@ -1,6 +1,6 @@
 /**
  * This element should be registered.
  */
-component extends="craft.xml.Element" {
+component extends="craft.xml.Element" tag="subyes" {
 
 }

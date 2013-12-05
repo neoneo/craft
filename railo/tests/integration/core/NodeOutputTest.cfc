@@ -10,7 +10,7 @@ component extends="mxunit.framework.TestCase" {
 			.getRequestMethod().returns("get")
 			.getContentType().returns(variables.contentType)
 		var viewFinder = new ViewFinder("cfm")
-		viewFinder.addMapping("/craft/../tests/integration/views")
+		viewFinder.addMapping("/crafttest/integration/core/views")
 		var renderer = new CFMLRenderer(viewFinder)
 
 		variables.visitor = new RenderVisitor(renderer, context)

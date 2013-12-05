@@ -42,7 +42,7 @@ component {
 
 		// Loop through the deferred elements until there are none left. Each turn should diminish the size of the array.
 		while (!deferred.isEmpty()) {
-			// Create an empty array to append elements that need to be deferred still longer.
+			// Create an empty array to keep elements that need to be deferred still longer.
 			var remaining = []
 			for (var element in deferred) {
 				element.construct(this)
