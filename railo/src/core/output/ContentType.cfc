@@ -33,7 +33,7 @@ component {
 		variables.fallbacks.delete(arguments.contentType)
 	}
 
-	public Array function fallbacks() {
+	public ContentType[] function fallbacks() {
 		return variables.fallbacks
 	}
 

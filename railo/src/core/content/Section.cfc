@@ -1,7 +1,7 @@
 import craft.core.util.ScopeCollection;
 
 /**
- * Represents an isolated node tree.
+ * Represents an isolated component tree.
  */
 component accessors="true" {
 
@@ -11,7 +11,7 @@ component accessors="true" {
 		letting section extend composite.
 	*/
 
-	variables._nodes = new ScopeCollection()
+	variables._components = new ScopeCollection()
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitSection(this)
@@ -19,40 +19,40 @@ component accessors="true" {
 
 	public void function traverse(required Visitor visitor) {
 
-		for (var node in nodes()) {
-			node.accept(arguments.visitor)
+		for (var component in components()) {
+			component.accept(arguments.visitor)
 		}
 
 	}
 
-	public Array function placeholders() {
-		return placeholdersFromNodes(nodes())
+	public Placeholder[] function placeholders() {
+		return placeholdersFromComponents(components())
 	}
 
-	public Array function nodes() {
-		return variables._nodes.toArray()
+	public Component[] function components() {
+		return variables._components.toArray()
 	}
 
-	public void function addNode(required Node node, Node node) {
-		variables._nodes.add(argumentCollection: ArrayToStruct(arguments))
+	public void function addComponent(required Component component, Component component) {
+		variables._components.add(argumentCollection: ArrayToStruct(arguments))
 	}
 
-	public void function removeNode(required Node node) {
-		variables._nodes.remove(arguments.node)
+	public void function removeComponent(required Component component) {
+		variables._components.remove(arguments.component)
 	}
 
-	public void function moveNode(required Node node, Node beforeNode) {
-		variables._nodes.move(argumentCollection: ArrayToStruct(arguments))
+	public void function moveComponent(required Component component, Component beforeComponent) {
+		variables._components.move(argumentCollection: ArrayToStruct(arguments))
 	}
 
-	private Array function placeholdersFromNodes(required Array nodes) {
+	private Placeholder[] function placeholdersFromComponents(required Component[] components) {
 
 		var placeholders = []
-		arguments.nodes.each(function (node) {
-			if (IsInstanceOf(arguments.node, "Placeholder")) {
-				placeholders.append(arguments.node)
-			} else if (arguments.node.hasChildren()) {
-				placeholders.append(placeholdersFromNodes(arguments.node.children()), true)
+		arguments.components.each(function (component) {
+			if (IsInstanceOf(arguments.component, "Placeholder")) {
+				placeholders.append(arguments.component)
+			} else if (arguments.component.hasChildren()) {
+				placeholders.append(placeholdersFromComponents(arguments.component.children()), true)
 			}
 		})
 

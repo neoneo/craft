@@ -10,7 +10,7 @@ component extends="mxunit.framework.TestCase" {
 			.getRequestMethod().returns("get")
 			.getContentType().returns(variables.contentType)
 		var viewFinder = new ViewFinder("cfm")
-		viewFinder.addMapping("/crafttest/integration/core/views")
+		viewFinder.addMapping("/crafttests/integration/core/views")
 		var renderer = new CFMLRenderer(viewFinder)
 
 		variables.visitor = new RenderVisitor(renderer, context)
@@ -23,7 +23,7 @@ component extends="mxunit.framework.TestCase" {
 
 		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
-		var expected = {"node": "leaf"}
+		var expected = {"component": "leaf"}
 
 		assertEquals(expected, output)
 	}
@@ -34,11 +34,11 @@ component extends="mxunit.framework.TestCase" {
 		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 		var expected = {
-			"node": "composite",
+			"component": "composite",
 			"content": [
-				{"node": "leaf1"},
-				{"node": "leaf2"},
-				{"node": "leaf3"}
+				{"component": "leaf1"},
+				{"component": "leaf2"},
+				{"component": "leaf3"}
 			]
 		}
 
@@ -53,17 +53,17 @@ component extends="mxunit.framework.TestCase" {
 		var content = variables.visitor.content()
 		var output = DeserializeJSON(variables.contentType.write(content))
 		var expected = {
-			"node": "composite1",
+			"component": "composite1",
 			"content": [
-				{"node": "leaf1"},
+				{"component": "leaf1"},
 				{
-					"node": "composite2",
+					"component": "composite2",
 					"content": [
-						{"node": "leaf2"},
-						{"node": "leaf3"}
+						{"component": "leaf2"},
+						{"component": "leaf3"}
 					]
 				},
-				{"node": "leaf4"}
+				{"component": "leaf4"}
 			]
 		}
 
@@ -73,7 +73,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function RenderDocument() {
 		var composite = nestedComposite()
 		var section = new Section()
-		section.addNode(composite)
+		section.addComponent(composite)
 		var template = new Template(section)
 		var document = new Document(template)
 
@@ -83,17 +83,17 @@ component extends="mxunit.framework.TestCase" {
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
-			"node": "composite1",
+			"component": "composite1",
 			"content": [
-				{"node": "leaf1"},
+				{"component": "leaf1"},
 				{
-					"node": "composite2",
+					"component": "composite2",
 					"content": [
-						{"node": "leaf2"},
-						{"node": "leaf3"}
+						{"component": "leaf2"},
+						{"component": "leaf3"}
 					]
 				},
-				{"node": "leaf4"}
+				{"component": "leaf4"}
 			]
 		}
 
@@ -102,16 +102,16 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function RenderDocumentWithPlaceholders() {
 		var section = new Section() // With placeholders.
-		section.addNode(nestedComposite(true))
+		section.addComponent(nestedComposite(true))
 		var template = new Template(section)
 		var document = new Document(template)
 
 		var p1Section = new Section()
-		p1Section.addNode(simpleComposite())
+		p1Section.addComponent(simpleComposite())
 		document.addSection(p1Section, "p1")
 
 		var p3Section = new Section()
-		p3Section.addNode(simpleComposite())
+		p3Section.addComponent(simpleComposite())
 		document.addSection(p3Section, "p3")
 
 		variables.visitor.visitDocument(document)
@@ -120,34 +120,34 @@ component extends="mxunit.framework.TestCase" {
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
-			"node": "composite1",
+			"component": "composite1",
 			"content": [
-				{"node": "leaf1"},
+				{"component": "leaf1"},
 				// p1Section:
 				{
-					"node": "composite",
+					"component": "composite",
 					"content": [
-						{"node": "leaf1"},
-						{"node": "leaf2"},
-						{"node": "leaf3"}
+						{"component": "leaf1"},
+						{"component": "leaf2"},
+						{"component": "leaf3"}
 					]
 				},
 				{
-					"node": "composite2",
+					"component": "composite2",
 					"content": [
 						// p2Section: not filled.
-						{"node": "leaf2"},
-						{"node": "leaf3"}
+						{"component": "leaf2"},
+						{"component": "leaf3"}
 					]
 				},
-				{"node": "leaf4"},
+				{"component": "leaf4"},
 				// p3Section:
 				{
-					"node": "composite",
+					"component": "composite",
 					"content": [
-						{"node": "leaf1"},
-						{"node": "leaf2"},
-						{"node": "leaf3"}
+						{"component": "leaf1"},
+						{"component": "leaf2"},
+						{"component": "leaf3"}
 					]
 				}
 			]
@@ -159,30 +159,30 @@ component extends="mxunit.framework.TestCase" {
 	public void function RenderNestedDocument() {
 
 		var section = new Section()
-		section.addNode(nestedComposite(true))
+		section.addComponent(nestedComposite(true))
 		var template = new Template(section)
 
 		var documentTemplate1 = new DocumentTemplate(template)
 		var p1Section = new Section()
-		p1Section.addNode(simpleComposite(true))
+		p1Section.addComponent(simpleComposite(true))
 		documentTemplate1.addSection(p1Section, "p1")
 
 		// The available placeholders in the document template should now be: p, p2, p3.
 
 		var documentTemplate2 = new DocumentTemplate(documentTemplate1)
 		var pSection = new Section()
-		pSection.addNode(new stubs.Leaf("p"))
+		pSection.addComponent(new stubs.Leaf("p"))
 		documentTemplate2.addSection(pSection, "p")
 
 		var p2Section = new Section()
-		p2Section.addNode(new stubs.Leaf("p2"))
+		p2Section.addComponent(new stubs.Leaf("p2"))
 		documentTemplate2.addSection(p2Section, "p2")
 
 		// Now remains only placeholder p3.
 
 		var documentTemplate3 = new DocumentTemplate(documentTemplate2)
 		var p3Section = new Section()
-		p3Section.addNode(new stubs.Leaf("p3"))
+		p3Section.addComponent(new stubs.Leaf("p3"))
 		documentTemplate3.addSection(p3Section, "p3")
 
 		var document = new Document(documentTemplate3)
@@ -194,32 +194,32 @@ component extends="mxunit.framework.TestCase" {
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
-			"node": "composite1",
+			"component": "composite1",
 			"content": [
-				{"node": "leaf1"},
+				{"component": "leaf1"},
 				// Placeholder p1:
 				{
-					"node": "composite",
+					"component": "composite",
 					"content": [
-						{"node": "leaf1"},
+						{"component": "leaf1"},
 						// Placeholder p:
-						{"node": "p"},
-						{"node": "leaf2"},
-						{"node": "leaf3"}
+						{"component": "p"},
+						{"component": "leaf2"},
+						{"component": "leaf3"}
 					]
 				},
 				{
-					"node": "composite2",
+					"component": "composite2",
 					"content": [
 						// Placeholder p2:
-						{"node": "p2"},
-						{"node": "leaf2"},
-						{"node": "leaf3"}
+						{"component": "p2"},
+						{"component": "leaf2"},
+						{"component": "leaf3"}
 					]
 				},
-				{"node": "leaf4"},
+				{"component": "leaf4"},
 				// Placeholder p3:
-				{"node": "p3"}
+				{"component": "p3"}
 			]
 		}
 
@@ -228,7 +228,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function UseTemplate_Should_KeepMatchingContent() {
 		var section1 = new Section()
-		section1.addNode(nestedComposite(true))
+		section1.addComponent(nestedComposite(true))
 		var template1 = new Template(section1)
 
 		// For this test, only include p1 en p2 in the second template.
@@ -236,22 +236,22 @@ component extends="mxunit.framework.TestCase" {
 		composite.addChild(new Placeholder("p1"))
 		composite.addChild(new Placeholder("p2"))
 		var section2 = new Section()
-		section2.addNode(composite)
+		section2.addComponent(composite)
 		var template2 = new Template(section2)
 
 		// Create a document based on template 1.
 		var document = new Document(template1)
 		// Fill all placeholders p1, p2 and p3.
 		var p1Section = new Section()
-		p1Section.addNode(new stubs.Leaf("p1"))
+		p1Section.addComponent(new stubs.Leaf("p1"))
 		document.addSection(p1Section, "p1")
 
 		var p2Section = new Section()
-		p2Section.addNode(new stubs.Leaf("p2"))
+		p2Section.addComponent(new stubs.Leaf("p2"))
 		document.addSection(p2Section, "p2")
 
 		var p3Section = new Section()
-		p3Section.addNode(new stubs.Leaf("p3"))
+		p3Section.addComponent(new stubs.Leaf("p3"))
 		document.addSection(p3Section, "p3")
 
 		// Actual test.
@@ -263,10 +263,10 @@ component extends="mxunit.framework.TestCase" {
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
-			"node": "composite",
+			"component": "composite",
 			"content": [
-				{"node": "p1"},
-				{"node": "p2"}
+				{"component": "p1"},
+				{"component": "p2"}
 			]
 		}
 
@@ -280,19 +280,19 @@ component extends="mxunit.framework.TestCase" {
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
-			"node": "composite1",
+			"component": "composite1",
 			"content": [
-				{"node": "leaf1"},
-				{"node": "p1"},
+				{"component": "leaf1"},
+				{"component": "p1"},
 				{
-					"node": "composite2",
+					"component": "composite2",
 					"content": [
-						{"node": "p2"},
-						{"node": "leaf2"},
-						{"node": "leaf3"}
+						{"component": "p2"},
+						{"component": "leaf2"},
+						{"component": "leaf3"}
 					]
 				},
-				{"node": "leaf4"}
+				{"component": "leaf4"}
 				// No p3.
 			]
 		}
@@ -302,7 +302,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function ParentModel_Should_Propagate() {
 		var root = new stubs.RootComposite()
-		// Create a non-predictable constant that should be passed down the hierarchy of nodes unchanged.
+		// Create a non-predictable constant that should be passed down the hierarchy of components unchanged.
 		var constant = CreateGUID()
 		root.setConstant(constant)
 
@@ -326,46 +326,46 @@ component extends="mxunit.framework.TestCase" {
 		var output = DeserializeJSON(variables.contentType.write(content))
 
 		var expected = {
-			"node": "root",
+			"component": "root",
 			"depth": 1,
 			"constant": constant,
 			"content": [
 				{
-					"node": "before1",
+					"component": "before1",
 					"depth": 2,
 					"constant": constant
 				},
 				{
-					"node": "composite1",
+					"component": "composite1",
 					"depth": 2,
 					"constant": constant,
 					"content": [
 						{
-							"node": "before2",
+							"component": "before2",
 							"depth": 3,
 							"constant": constant
 						},
 						{
-							"node": "composite2",
+							"component": "composite2",
 							"depth": 3,
 							"constant": constant,
 							"content": [
 								{
-									"node": "bottom",
+									"component": "bottom",
 									"depth": 4,
 									"constant": constant
 								}
 							]
 						},
 						{
-							"node": "after2",
+							"component": "after2",
 							"depth": 3,
 							"constant": constant
 						}
 					]
 				},
 				{
-					"node": "after1",
+					"component": "after1",
 					"depth": 2,
 					"constant": constant
 				}

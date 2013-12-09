@@ -7,7 +7,7 @@ import craft.xml.Reader;
  *
  * @abstract
  */
-component extends="NodeElement" {
+component extends="ComponentElement" {
 
 	public void function construct(required Reader reader) {
 

@@ -64,7 +64,7 @@ component {
 		return arguments.root.product()
 	}
 
-	private Array function construct(required Element element) {
+	private Element[] function construct(required Element element) {
 
 		var deferred = []
 		// Construct the tree depth first. Most of the time, parent elements need their children to be ready.

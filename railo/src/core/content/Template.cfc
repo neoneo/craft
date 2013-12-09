@@ -12,7 +12,7 @@ component implements="TemplateContent" accessors="true" {
 		return variables._section
 	}
 
-	public Array function placeholders() {
+	public Placeholder[] function placeholders() {
 		return variables._section.placeholders()
 	}
 

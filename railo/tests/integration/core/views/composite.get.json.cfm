@@ -1,6 +1,6 @@
 <cfoutput>
 	{
-		"node": #SerializeJSON(node)#,
+		"component": #SerializeJSON(component)#,
 		"content": [#__content__#]
 	}
 </cfoutput>

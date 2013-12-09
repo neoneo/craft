@@ -16,19 +16,19 @@ component extends="mxunit.framework.TestCase" {
 	public void function Traverse_Should_CallAcceptOnAllChildren() {
 		var visitor = mock(new VisitorStub())
 
-		var node1 = mock(CreateObject("Leaf")).accept(visitor)
-		var node2 = mock(CreateObject("Leaf")).accept(visitor)
-		var node3 = mock(CreateObject("Leaf")).accept(visitor)
+		var component1 = mock(CreateObject("Leaf")).accept(visitor)
+		var component2 = mock(CreateObject("Leaf")).accept(visitor)
+		var component3 = mock(CreateObject("Leaf")).accept(visitor)
 
-		variables.composite.addChild(node1)
-		variables.composite.addChild(node2)
-		variables.composite.addChild(node3)
+		variables.composite.addChild(component1)
+		variables.composite.addChild(component2)
+		variables.composite.addChild(component3)
 
 		variables.composite.traverse(visitor)
 
-		node1.verify().accept(visitor)
-		node2.verify().accept(visitor)
-		node3.verify().accept(visitor)
+		component1.verify().accept(visitor)
+		component2.verify().accept(visitor)
+		component3.verify().accept(visitor)
 	}
 
 	// TODO: tests for addChild, removeChild, moveChild.

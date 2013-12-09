@@ -17,7 +17,7 @@ component implements="Content" {
 
 	public Composite function parent() {
 		if (!hasParent()) {
-			Throw("Node has no parent", "NoSuchElementException")
+			Throw("Component has no parent", "NoSuchElementException")
 		}
 
 		return variables._parent

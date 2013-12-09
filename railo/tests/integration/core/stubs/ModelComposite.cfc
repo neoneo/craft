@@ -10,7 +10,7 @@ component extends="craft.core.content.Composite" accessors="true" {
 		var depth = arguments.parentModel.keyExists("depth") ? arguments.parentModel.depth + 1 : 1;
 
 		return {
-			node: getName(),
+			component: getName(),
 			depth: depth
 		}
 	}

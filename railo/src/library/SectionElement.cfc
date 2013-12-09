@@ -9,8 +9,8 @@ component extends="Element" tag="section" {
 			var section = new Section()
 
 			// Now add the child elements to the section.
-			for (var nodeElement in sectionElement.children()) {
-				section.addNode(nodeElement.product())
+			for (var componentElement in sectionElement.children()) {
+				section.addComponent(componentElement.product())
 			}
 
 			setProduct(section)
@@ -18,7 +18,7 @@ component extends="Element" tag="section" {
 
 	}
 
-	public void function add(required Node element) {
+	public void function add(required Component element) {
 		super.add(arguments.element)
 	}
 

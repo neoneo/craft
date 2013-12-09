@@ -6,21 +6,21 @@ component extends="mxunit.framework.TestCase" {
 		variables.section = new Section()
 	}
 
-	public void function Nodes_Should_ReturnNodes() {
+	public void function Components_Should_ReturnComponents() {
 		// Adding a mocked method makes the object unique for equals().
-		var node1 = mock(CreateObject("Leaf")).unique()
-		var node2 = mock(CreateObject("Leaf")).unique()
+		var component1 = mock(CreateObject("Leaf")).unique()
+		var component2 = mock(CreateObject("Leaf")).unique()
 
-		variables.section.addNode(node1)
-		variables.section.addNode(node2)
+		variables.section.addComponent(component1)
+		variables.section.addComponent(component2)
 
 		// Test.
-		var nodes = section.nodes()
+		var components = section.components()
 
 		// Assert.
-		assertEquals(2, nodes.len())
-		assertSame(nodes[1], node1)
-		assertSame(nodes[2], node2)
+		assertEquals(2, components.len())
+		assertSame(components[1], component1)
+		assertSame(components[2], component2)
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
@@ -36,31 +36,31 @@ component extends="mxunit.framework.TestCase" {
 	public void function Traverse_Should_CallAcceptOnAllChildren() {
 		var visitor = mock(new VisitorStub())
 
-		var node1 = mock(CreateObject("Leaf")).accept(visitor)
-		var node2 = mock(CreateObject("Leaf")).accept(visitor)
-		var node3 = mock(CreateObject("Leaf")).accept(visitor)
+		var component1 = mock(CreateObject("Leaf")).accept(visitor)
+		var component2 = mock(CreateObject("Leaf")).accept(visitor)
+		var component3 = mock(CreateObject("Leaf")).accept(visitor)
 
-		variables.section.addNode(node1)
-		variables.section.addNode(node2)
-		variables.section.addNode(node3)
+		variables.section.addComponent(component1)
+		variables.section.addComponent(component2)
+		variables.section.addComponent(component3)
 
 		variables.section.traverse(visitor)
 
-		node1.verify().accept(visitor)
-		node2.verify().accept(visitor)
-		node3.verify().accept(visitor)
+		component1.verify().accept(visitor)
+		component2.verify().accept(visitor)
+		component3.verify().accept(visitor)
 	}
 
 	public void function Placeholders_Should_ReturnPlaceholderDescendants() {
 
 		// Build a tree with placeholders at several levels.
 		// TODO: use mock objects.
-		variables.section.addNode(new Placeholder("p1"))
-		variables.section.addNode(new Composite())
+		variables.section.addComponent(new Placeholder("p1"))
+		variables.section.addComponent(new Composite())
 
 		var level1 = new Composite()
 		level1.addChild(new Leaf())
-		variables.section.addNode(level1)
+		variables.section.addComponent(level1)
 
 		var level2 = new Composite()
 		level2.addChild(new Placeholder("p3"))

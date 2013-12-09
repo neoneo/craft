@@ -4,7 +4,7 @@ component extends="craft.core.content.Composite" accessors="true" {
 
 	public Struct function model(required Context context, required Struct parentModel) {
 		return {
-			node: "root",
+			component: "root",
 			depth: 1, // This variable will be incremented with each level in the hierarchy.
 			constant: getConstant() // This exact instance should be passed down the hierarchy unchanged.
 		}

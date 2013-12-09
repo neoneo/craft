@@ -4,7 +4,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
 		variables.factory = new ElementFactory()
-		variables.mapping = "/crafttest/unit/xml/stubs"
+		variables.mapping = "/crafttests/unit/xml/stubs"
 	}
 
 	public void function RegisterWithNoSettings_ShouldNot_RegisterAnything() {
@@ -57,7 +57,7 @@ component extends="mxunit.framework.TestCase" {
 		// There are 2 directories, with 1 element each.
 		assertEquals(2, tagNames.len())
 		// SomeElement has no tag annotation, so the fully qualified name should be returned.
-		assertTrue(sameContents(["crafttest.unit.xml.recursive.dir1.SomeElement", "dir1sub"], tagNames), "found tag names '#tagNames.toList()#'")
+		assertTrue(sameContents(["crafttests.unit.xml.recursive.dir1.SomeElement", "dir1sub"], tagNames), "found tag names '#tagNames.toList()#'")
 	}
 
 	public void function Register_Should_RegisterMultipleNamespaces() {

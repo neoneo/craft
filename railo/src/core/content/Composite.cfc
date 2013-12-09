@@ -1,11 +1,11 @@
 import craft.core.util.ScopeCollection;
 
 /**
- * A `Composite` is a `Node` that contains other `Node`s.
+ * A `Composite` is a `Component` that contains other `Component`s.
  *
  * @abstract
  */
-component extends="Node" {
+component extends="Component" {
 
 	variables._children = new ScopeCollection()
 
@@ -22,20 +22,20 @@ component extends="Node" {
 	}
 
 	/**
-	 * Returns whether the `Component` contains `Node`s.
+	 * Returns whether the `Component` contains `Component`s.
 	 **/
 	public Boolean function hasChildren() {
 		return !variables._children.isEmpty()
 	}
 
-	public Array function children() {
+	public Component[] function children() {
 		return variables._children.toArray()
 	}
 
 	/**
-	 * Adds a `Node` to this `Composite`.
+	 * Adds a `Component` to this `Composite`.
 	 **/
-	public void function addChild(required Node child, Node beforeChild) {
+	public void function addChild(required Component child, Component beforeChild) {
 		var added = variables._children.add(argumentCollection: ArrayToStruct(arguments))
 		if (added) {
 			arguments.child.setParent(this)
@@ -43,17 +43,17 @@ component extends="Node" {
 	}
 
 	/**
-	 * Removes the `Node` from this `Composite`.
+	 * Removes the `Component` from this `Composite`.
 	 **/
-	public void function removeChild(required Node child) {
+	public void function removeChild(required Component child) {
 		variables._children.remove(arguments.child)
 	}
 
 	/**
-	 * Moves the `Node` to another position among its siblings.
-	 * The optional `beforeNode` argument specifies where to move the `Node`. If `beforeNode` is null, the `Node` is moved to the end.
+	 * Moves the `Component` to another position among its siblings.
+	 * The optional `beforeComponent` argument specifies where to move the `Component`. If `beforeComponent` is null, the `Component` is moved to the end.
 	 **/
-	public void function moveChild(required Node child, Node beforeChild) {
+	public void function moveChild(required Component child, Component beforeChild) {
 		variables._children.move(argumentCollection: ArrayToStruct(arguments))
 	}
 

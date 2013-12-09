@@ -8,7 +8,7 @@ component extends="craft.core.content.Composite" accessors="true" {
 
 	public Struct function model(required Context context, required Struct parentModel) {
 		return {
-			node: getName()
+			component: getName()
 		}
 	}
 

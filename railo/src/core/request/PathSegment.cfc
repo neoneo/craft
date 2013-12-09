@@ -42,7 +42,7 @@ component {
 		return variables._pathMatcher.match(arguments.path)
 	}
 
-	public Array function children() {
+	public PathSegment[] function children() {
 		return variables._children.toArray()
 	}
 

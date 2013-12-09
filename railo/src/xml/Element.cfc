@@ -60,7 +60,7 @@ component accessors="true" {
 		arguments.element.setParent(this)
 	}
 
-	public Array function children() {
+	public Element[] function children() {
 		return variables._children
 	}
 
@@ -77,7 +77,7 @@ component accessors="true" {
 		return ready
 	}
 
-	public Array function siblings() {
+	public Element[] function siblings() {
 		return hasParent() ? parent().children().filter(function (element) {
 			return arguments.element !== this
 		}) : []

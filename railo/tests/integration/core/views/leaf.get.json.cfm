@@ -1,1 +1,1 @@
-<cfoutput>{"node": #SerializeJSON(node)#}</cfoutput>
+<cfoutput>{"component": #SerializeJSON(component)#}</cfoutput>

@@ -15,7 +15,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function Ready_Should_ReturnTrue_IfProductSet() {
 		makePublic(variables.element, "setProduct")
 
-		var product = mock(CreateObject("Node"))
+		var product = mock(CreateObject("Component"))
 		variables.element.setProduct(product)
 
 		assertSame(product, variables.element.product())
@@ -63,7 +63,7 @@ component extends="mxunit.framework.TestCase" {
 
 		assertFalse(variables.element.childrenReady(), "if both children are not ready, childrenReady() should return false")
 
-		var product = mock(CreateObject("Node"))
+		var product = mock(CreateObject("Component"))
 		child1.setProduct(product)
 		assertTrue(child1.ready())
 		assertFalse(variables.element.childrenReady(), "if one of the children is not ready, childrenReady() should return false")

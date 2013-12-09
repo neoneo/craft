@@ -12,7 +12,7 @@ component extends="Element" tag="template" {
 		if (childrenReady()) {
 			var section = new Section()
 			for (var child in children()) {
-				section.addNode(child.product())
+				section.addComponent(child.product())
 			})
 
 			setProduct(new Template(section))

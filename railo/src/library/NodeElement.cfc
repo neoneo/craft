@@ -1,4 +1,4 @@
-import craft.core.content.Node;
+import craft.core.content.Component;
 
 import craft.xml.Element;
 
@@ -8,9 +8,9 @@ import craft.xml.Element;
 component extends="Element" {
 
 	/**
-	 * The product of a `NodeElement` can only be a `Node`.
+	 * The product of a `ComponentElement` can only be a `Component`.
 	 */
-	public Node function product() {
+	public Component function product() {
 		return super.product()
 	}
 

@@ -112,7 +112,7 @@ component {
 	}
 
 	/**
-	 * Creates `Element` instances based on the namespace, node name and optional attributes.
+	 * Creates `Element` instances based on namespace, tag name and optional attributes.
 	 */
 	public Element function create(required String namespace, required String tagName, Struct attributes = {}) {
 
@@ -120,14 +120,14 @@ component {
 			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException")
 		}
 
-		var mappings = variables._mappings[arguments.namespace]
-		if (!mappings.keyExists(arguments.tagName)) {
+		var tags = variables._mappings[arguments.namespace]
+		if (!tags.keyExists(arguments.tagName)) {
 			Throw("Element '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException")
 		}
 
 		// Loop over the attributes defined in the component, and pick them up from the attributes that were passed in.
 		// This means that any attributes not defined in the component are ignored.
-		var data = mappings[arguments.tagName]
+		var data = tags[arguments.tagName]
 		var constructorArguments = {}
 		// Make some arguments available in the closure.
 		var tagName = arguments.tagName
