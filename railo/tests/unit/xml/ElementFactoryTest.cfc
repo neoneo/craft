@@ -30,7 +30,7 @@ component extends="mxunit.framework.TestCase" {
 		}
 	}
 
-	public void function RegisterWithSimpleSettings_Should_RegisterNonAbstractElements() {
+	public void function RegisterWithSimpleSettings_Should_RegisterOnlyNonAbstractElements() {
 		variables.factory.register(variables.mapping & "/recursive/dir2/sub")
 
 		var tags = variables.factory.tags()
@@ -38,8 +38,6 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir2"), "there should be a key for the namespace as defined in settings.ini")
 		tagNames = tags["http://neoneo.nl/craft/dir2"]
 
-		// There are precisely 3 elements that are not abstract.
-		assertEquals(3, tagNames.len())
 		assertFalse(tagNames.find("noelement") > 0, "if a component does not extend Element, it should not be registered")
 		assertFalse(tagNames.find("abstractelement") > 0, "if a component has the 'abstract' annotation, it should not be registered")
 		assertTrue(sameContents(["some", "extendssome", "extendsextendssome"], tagNames), "found tag names '#tagNames.toList()#'")
@@ -57,7 +55,7 @@ component extends="mxunit.framework.TestCase" {
 		// There are 2 directories, with 1 element each.
 		assertEquals(2, tagNames.len())
 		// SomeElement has no tag annotation, so the fully qualified name should be returned.
-		assertTrue(sameContents(["crafttests.unit.xml.recursive.dir1.SomeElement", "dir1sub"], tagNames), "found tag names '#tagNames.toList()#'")
+		assertTrue(sameContents(["crafttests.unit.xml.stubs.recursive.dir1.SomeElement", "dir1sub"], tagNames), "found tag names '#tagNames.toList()#'")
 	}
 
 	public void function Register_Should_RegisterMultipleNamespaces() {
@@ -74,10 +72,9 @@ component extends="mxunit.framework.TestCase" {
 
 		var tags = variables.factory.tags()
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/directory"))
-		tagNames = tags["http://neoneo.nl/craft/dir1"]
+		tagNames = tags["http://neoneo.nl/craft/directory"]
 
 		// There are 3 directories that should be inspected, with 1 element each.
-		assertEquals(3, tagNames.len())
 		assertTrue(sameContents(["yes", "yessub", "subyes"], tagNames), "found tag names '#tagNames.toList()#'")
 	}
 

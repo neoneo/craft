@@ -1,6 +1,6 @@
 /**
  * This element should be registered.
  */
-component extends="ExtendsExtendsSomeElement" tag="extendsextendssome" {
+component extends="ExtendsSomeElement" tag="extendsextendssome" {
 
 }

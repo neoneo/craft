@@ -8,7 +8,8 @@ component {
 	 */
 	public void function register(required String mapping) {
 
-		var path = ExpandPath(arguments.mapping)
+		var mapping = arguments.mapping
+		var path = ExpandPath(mapping)
 
 		// See if there is a settings.ini here.
 		var settingsFile = path & "/settings.ini"
@@ -20,14 +21,13 @@ component {
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
-			variables._mappings[namespace] = {
-				mapping: arguments.mapping
-			}
+			variables._mappings[namespace] = {}
 
 			if (ListFind(sections.craft, "directories") > 0) {
 				// The directories key contains a comma separated list of directories that should exist below the current one.
 				var registerPaths = []
-				ListToArray(sections.craft.directories).each(function (directory) {
+				var directories = GetProfileString(settingsFile, "craft", "directories")
+				ListToArray(directories).each(function (directory) {
 					var directory = Trim(arguments.directory)
 					var separator = Left(directory, 1) == "/" ? "" : "/"
 					registerPaths.append(path & separator & directory)
@@ -36,12 +36,13 @@ component {
 				var registerPaths = [path]
 			}
 
-			registerPaths.each(function (registerPath)) {
+			registerPaths.each(function (registerPath) {
 				var registerPath = arguments.registerPath
+				var subdirectory = Replace(registerPath, path, "")
 				// Pick up all cfc's in this directory (recursively) and keep the ones that extend Element.
 				DirectoryList(registerPath, true, "path", "*.cfc").each(function (filePath) {
 					// Construct the component name. First replace the directory with the mapping, then make that a dot delimited path.
-					var componentName = ListChangeDelims(Replace(arguments.filePath, registerPath, mapping), ".", "/", false)
+					var componentName = ListChangeDelims(Replace(arguments.filePath, registerPath, mapping & subdirectory), ".", "/", false)
 					// Finally remove the .cfc extension.
 					componentName = ListDeleteAt(componentName, ListLen(componentName, "."), ".")
 
@@ -71,7 +72,7 @@ component {
 						variables._mappings[namespace][tagName] = data
 					}
 				})
-			}
+			})
 		} else {
 			// Call again for each subdirectory.
 			var mapping = arguments.mapping
