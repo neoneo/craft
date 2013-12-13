@@ -82,4 +82,87 @@ component extends="mxunit.framework.TestCase" {
 		return arguments.array1.containsAll(arguments.array2) && arguments.array2.containsAll(arguments.array1)
 	}
 
+	// The following tests are integration tests, strictly speaking.
+
+	public void function Create_Should_ThrowException_When_NonExistentNamespace() {
+		variables.factory.register(variables.mapping & "/create")
+
+		try {
+			var element = variables.factory.create("http://doesnotexist", "tagelement")
+			fail("create should have thrown an exception")
+		} catch (any e) {
+			assertEquals("NoSuchElementException", e.type, "if a non-existent namespace is referenced, a NoSuchElementException should be thrown")
+		}
+	}
+
+	public void function Create_Should_ThrowException_When_NonExistentTag() {
+		variables.factory.register(variables.mapping & "/create")
+
+		try {
+			var element = variables.factory.create("http://neoneo.nl/craft", "doesnotexist")
+			fail("create should have thrown an exception")
+		} catch (any e) {
+			assertEquals("NoSuchElementException", e.type, "if a non-existent tag is referenced, a NoSuchElementException should be thrown")
+		}
+	}
+
+	public void function Create_Should_ReturnElement_When_Tag() {
+		variables.factory.register(variables.mapping & "/create")
+
+		var element = variables.factory.create("http://neoneo.nl/craft", "tagelement")
+
+		assertTrue(IsInstanceOf(element, "create.TagElement"))
+	}
+
+	public void function Create_Should_ReturnElementWithAttributes_When_TagAndAttributes() {
+		variables.factory.register(variables.mapping & "/create")
+
+		var attributes = {
+			id: CreateUniqueId()
+			name: CreateGUID()
+		}
+		var element = variables.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
+
+		assertTrue(IsInstanceOf(element, "create.TagElement"))
+		assertEquals(attributes.id, element.getId())
+		assertEquals(attributes.name, element.getName())
+	}
+
+	public void function Create_Should_ReturnElement_When_Component() {
+		variables.factory.register(variables.mapping & "/create")
+
+		var element = variables.factory.create("http://neoneo.nl/craft", "crafttest.unit.xml.stubs.create.NoTagElement")
+
+		assertTrue(IsInstanceOf(element, "create.NoTagElement"))
+	}
+
+	public void function Create_Should_ReturnElementWithAttributes_When_ComponentAndAttributes() {
+		variables.factory.register(variables.mapping & "/create")
+
+		var attributes = {
+			id: CreateUniqueId()
+			name: CreateGUID()
+		}
+		var element = variables.factory.create("http://neoneo.nl/craft", "crafttest.unit.xml.stubs.create.NoTagElement", attributes)
+
+		assertTrue(IsInstanceOf(element, "create.NoTagElement"))
+		assertEquals(attributes.id, element.getId())
+		assertEquals(attributes.name, element.getName())
+	}
+
+	public void function Create_Should_ReturnElementWithoutAttributes_When_TagAndUndefinedAttributes() {
+		variables.factory.register(variables.mapping & "/create")
+
+		var attributes = {
+			foo: CreateUniqueId()
+			bar: CreateGUID(),
+			id: CreateUniqueId()
+		}
+		var element = variables.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
+
+		assertTrue(IsInstanceOf(element, "create.TagElement"))
+		assertTrue(attributes.id, element.getId())
+		assertTrue(IsNull(element.getName()))
+	}
+
 }
