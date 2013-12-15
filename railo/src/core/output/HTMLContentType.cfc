@@ -1,4 +1,4 @@
-component extends="ContentType" {
+component implements="ContentType" {
 
 	public String function name() {
 		return "html"

@@ -1,4 +1,4 @@
-component extends="ContentType" {
+component implements="ContentType" {
 
 	public String function name() {
 		return "xml"
@@ -25,7 +25,7 @@ component extends="ContentType" {
 	public String function write(required String content) {
 
 		if (!IsXML(arguments.content)) {
-			Throw("Content is not valid XML", "IllegalContentException")
+			Throw("Content is not valid XML", "IllegalContentException", arguments.content)
 		}
 
 		return arguments.content

@@ -1,4 +1,4 @@
-component extends="ContentType" {
+component implements="ContentType" {
 
 	public String function name() {
 		return "json"
@@ -17,7 +17,7 @@ component extends="ContentType" {
 				// Although a string shouldn't be serialized by itself, this effectively makes the string safe for JSON.
 				string = SerializeJSON(string)
 			}
-
+			// Concatenate the strings like a JSON array (comma separated).
 			result = ListAppend(result, string)
 		}
 
@@ -28,7 +28,7 @@ component extends="ContentType" {
 
 		var content = Trim(arguments.content)
 		if (!isValidJSON(content)) {
-			Throw("Content is not valid JSON", "IllegalContentException")
+			Throw("Content is not valid JSON", "IllegalContentException", arguments.content)
 		}
 
 		return content

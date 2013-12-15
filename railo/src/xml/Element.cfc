@@ -1,15 +1,15 @@
+import craft.core.content.Content;
+
 /**
  * Represents an XML element.
- * An `Element` constructs a `Content` instance. It takes the role of the builder in the builder pattern.
+ * An `Element` constructs a `Content` instance.
  *
  * @abstract
  */
-
-import craft.core.content.Content;
-
 component accessors="true" {
 
-	property String ref; // All elements may have a 'ref' attribute.
+	// All elements may have a 'ref' attribute.
+	property String ref;
 
 	variables._parent = null
 	variables._children = []

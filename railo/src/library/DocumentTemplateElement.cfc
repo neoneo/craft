@@ -1,6 +1,6 @@
 import craft.core.content.DocumentTemplate;
 
-component extends="DocumentElement" tag="documenttemplate" {
+component extends="AbstractDocumentElement" tag="documenttemplate" {
 
 	property String extends;
 

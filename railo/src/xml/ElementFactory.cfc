@@ -97,7 +97,7 @@ component {
 	}
 
 	/**
-	 * Returns whether the component extends `Element`.
+	 * Returns whether `Element` is in the inheritance chain of the given metadata.
 	 */
 	private Boolean function extendsElement(required Struct metadata) {
 

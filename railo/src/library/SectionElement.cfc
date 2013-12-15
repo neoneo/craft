@@ -18,7 +18,7 @@ component extends="Element" tag="section" {
 
 	}
 
-	public void function add(required Component element) {
+	public void function add(required ComponentElement element) {
 		super.add(arguments.element)
 	}
 
