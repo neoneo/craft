@@ -5,9 +5,9 @@ import craft.core.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.contentType = mock(CreateObject("ContentType"))
+		variables.contentType = mock(new ContentTypeStub())
 		variables.context = mock(CreateObject("Context"))
-			.getRequestMethod().returns("get")
+			.requestMethod().returns("get")
 			.contentType().returns(variables.contentType)
 		variables.renderer = mock(new RendererStub())
 

@@ -1,31 +1,41 @@
-import craft.core.output.Renderer;
-
 /**
- * Context
+ * The `Context` is passed to `Component`s to provide access to items and parameters pertaining to the request, as well
+ * as some convenience methods.
  *
  * @transient
  **/
-component accessors="true" {
-
-	property PathSegment pathSegment setter="false";
-	property Struct parameters setter="false";
-	property ContentType contentType setter="false";
-	property String requestMethod setter="false";
+component {
 
 	public void function init(required EndPoint endPoint) {
 
-		variables.endPoint = arguments.endPoint
+		variables._endPoint = arguments.endPoint
 
 		var info = arguments.endPoint.parsePath()
-		variables.pathSegment = info.pathSegment
-		variables.contentType = info.contentType
-		variables.requestMethod = arguments.endPoint.getRequestMethod()
-		variables.parameters = arguments.endPoint.getRequestParameters()
+		variables._pathSegment = info.pathSegment
+		variables._contentType = info.contentType
+		variables._requestMethod = arguments.endPoint.requestMethod()
+		variables._parameters = arguments.endPoint.requestParameters()
 
 	}
 
+	public PathSegment function pathSegment() {
+		return variables._pathSegment
+	}
+
+	public Struct function parameters() {
+		return variables._parameters
+	}
+
+	public ContentType function contentType() {
+		return variables._contentType
+	}
+
+	public String function requestMethod() {
+		return variables._requestMethod
+	}
+
 	public String function createUrl(required String path, Struct parameters, String extensionName) {
-		return variables.endPoint.createUrl(argumentCollection: ArrayToStruct(arguments))
+		return variables._endPoint.createUrl(argumentCollection: ArrayToStruct(arguments))
 	}
 
 }

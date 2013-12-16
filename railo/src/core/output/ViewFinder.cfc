@@ -51,7 +51,7 @@ component {
 		return variables._cache[key]
 	}
 
-	private Any locate(required String view, required String requestMethod, required ContentType contentType) {
+	private Any function locate(required String view, required String requestMethod, required ContentType contentType) {
 
 		var result = null
 		// Search for files with or without the request method (in that order).

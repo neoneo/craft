@@ -3,8 +3,8 @@ import craft.core.output.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
-		variables.json = mock(CreateObject("ContentType"))
-			.getName().returns("json")
+		variables.json = mock(CreateObject("ContentTypeStub"))
+			.name().returns("json")
 		variables.viewFinder = mock(CreateObject("ViewFinder"))
 			.template("renderer", "get", variables.json).returns("/crafttests/unit/core/output/viewstubs/renderer.json.cfm")
 			.contentType("renderer", "get", variables.json).returns(variables.json)
