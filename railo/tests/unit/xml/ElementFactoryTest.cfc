@@ -111,42 +111,42 @@ component extends="mxunit.framework.TestCase" {
 
 		var element = variables.factory.create("http://neoneo.nl/craft", "tagelement")
 
-		assertTrue(IsInstanceOf(element, "create.TagElement"))
+		assertTrue(IsInstanceOf(element, "TagElement"))
 	}
 
 	public void function Create_Should_ReturnElementWithAttributes_When_TagAndAttributes() {
 		variables.factory.register(variables.mapping & "/create")
 
 		var attributes = {
-			id: CreateUniqueId()
+			ref: CreateUniqueId(),
 			name: CreateGUID()
 		}
 		var element = variables.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
 
-		assertTrue(IsInstanceOf(element, "create.TagElement"))
-		assertEquals(attributes.id, element.getId())
+		assertTrue(IsInstanceOf(element, "TagElement"))
+		assertEquals(attributes.ref, element.getRef())
 		assertEquals(attributes.name, element.getName())
 	}
 
 	public void function Create_Should_ReturnElement_When_Component() {
 		variables.factory.register(variables.mapping & "/create")
 
-		var element = variables.factory.create("http://neoneo.nl/craft", "crafttest.unit.xml.stubs.create.NoTagElement")
+		var element = variables.factory.create("http://neoneo.nl/craft", "crafttests.unit.xml.stubs.create.NoTagElement")
 
-		assertTrue(IsInstanceOf(element, "create.NoTagElement"))
+		assertTrue(IsInstanceOf(element, "NoTagElement"))
 	}
 
 	public void function Create_Should_ReturnElementWithAttributes_When_ComponentAndAttributes() {
 		variables.factory.register(variables.mapping & "/create")
 
 		var attributes = {
-			id: CreateUniqueId()
+			ref: CreateUniqueId(),
 			name: CreateGUID()
 		}
-		var element = variables.factory.create("http://neoneo.nl/craft", "crafttest.unit.xml.stubs.create.NoTagElement", attributes)
+		var element = variables.factory.create("http://neoneo.nl/craft", "crafttests.unit.xml.stubs.create.NoTagElement", attributes)
 
-		assertTrue(IsInstanceOf(element, "create.NoTagElement"))
-		assertEquals(attributes.id, element.getId())
+		assertTrue(IsInstanceOf(element, "NoTagElement"))
+		assertEquals(attributes.ref, element.getRef())
 		assertEquals(attributes.name, element.getName())
 	}
 
@@ -154,14 +154,14 @@ component extends="mxunit.framework.TestCase" {
 		variables.factory.register(variables.mapping & "/create")
 
 		var attributes = {
-			foo: CreateUniqueId()
+			foo: CreateUniqueId(),
 			bar: CreateGUID(),
-			id: CreateUniqueId()
+			ref: CreateUniqueId()
 		}
 		var element = variables.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
 
-		assertTrue(IsInstanceOf(element, "create.TagElement"))
-		assertTrue(attributes.id, element.getId())
+		assertTrue(IsInstanceOf(element, "TagElement"))
+		assertEquals(attributes.ref, element.getRef())
 		assertTrue(IsNull(element.getName()))
 	}
 

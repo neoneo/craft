@@ -43,7 +43,7 @@ component extends="mxunit.framework.TestCase" {
 			.model("{any}", "{struct}").returns(model)
 			.view(variables.context).returns("composite")
 			.traverse(variables.visitor)
-		// Mock contentType.convert(. The visitor calls it to convert the output of the children (an empty array at this point).
+		// Mock contentType.convert. The visitor calls it to convert the output of the children (an empty array at this point).
 		variables.contentType.convert("{array}").returns("")
 
 		variables.renderer
