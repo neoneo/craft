@@ -11,7 +11,7 @@ component extends="ComponentElement" {
 
 	public void function construct(required Reader reader) {
 
-		if (childrenReady()) {
+		if (!hasChildren() || childrenReady()) {
 			var composite = createComposite(arguments.reader)
 
 			for (var child in children()) {

@@ -30,11 +30,15 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function ChildRelationship() {
+		assertFalse(variables.element.hasChildren())
+
 		var child1 = new Element()
 		var child2 = new Element()
 
 		variables.element.add(child1)
 		variables.element.add(child2)
+
+		assertTrue(variables.element.hasChildren())
 
 		var children = variables.element.children()
 		assertEquals(2, children.len())

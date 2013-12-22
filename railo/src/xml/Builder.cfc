@@ -13,7 +13,7 @@ component {
 
 		var element = XmlParse(FileRead(getRootFolder() & arguments.path))
 
-		return getContentFactory().create(element)
+		return factory().create(element)
 	}
 
 	/**
@@ -73,7 +73,7 @@ component {
 							var content = buildContent(arguments.path & "/" & listing.name)
 
 							// determine the content type
-							// the content type is the part before the contentType, which should always be present
+							// the content type is the part before the extension, which should always be present
 							var contentType = ListGetAt(listing.name, ListLen(listing.name, ".") - 1, ".")
 							childPathSegment.setContent(contentType, content)
 

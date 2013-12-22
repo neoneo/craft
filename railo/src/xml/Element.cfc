@@ -64,6 +64,10 @@ component accessors="true" {
 		return variables._children
 	}
 
+	public Boolean function hasChildren() {
+		return !variables._children.isEmpty()
+	}
+
 	public Boolean function childrenReady() {
 
 		var ready = true

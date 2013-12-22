@@ -21,10 +21,10 @@ component {
 	/**
 	 * Creates a tree of `Element`s that represents the given xml node tree.
 	 */
-	private Element function parse(required XML node) {
+	public Element function parse(required XML node) {
 
 		var element = variables._factory.create(arguments.node.xmlNsURI, arguments.node.xmlName, arguments.node.xmlAttributes)
-		for (var child in element.xmlChildren) {
+		for (var child in arguments.node.xmlChildren) {
 			element.add(parse(child))
 		}
 		if (!IsNull(element.getRef())) {
@@ -81,7 +81,7 @@ component {
 		return deferred
 	}
 
-	public void function hasElement(required String ref) {
+	public Boolean function hasElement(required String ref) {
 		return variables._elements.keyExists(arguments.ref)
 	}
 
