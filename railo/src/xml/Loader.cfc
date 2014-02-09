@@ -1,21 +1,23 @@
 import craft.core.content.Content;
 
 /**
- * A `Reader` traverses the elements in an xml document and creates the corresponding tree of `Element`s that is used to create the `Content`.
+ * A `Loader` traverses the elements in an xml document and creates the corresponding tree of `Element`s that is used to create the `Content`.
  */
 component {
 
-	public void function init(required ElementFactory factory) {
+	public void function init(required ElementFactory factory, Struct elements) {
 		variables._factory = arguments.factory
-		// Create a repository of elements that we can look up by ref.
-		variables._elements = {}
+		// If an elements collection is passed in, make a shallow copy of it.
+		variables._elements = IsNull(arguments.elements) ? {} : Duplicate(arguments.elements, false)
 	}
 
-	public Element function read(required String path) {
+	public Content function load(required String path) {
 
 		var root = XMLParse(FileRead(arguments.path)).xmlRoot
 
-		return parse(root)
+		var element = build(parse(root))
+
+		return element.product()
 	}
 
 	/**
@@ -34,10 +36,14 @@ component {
 		return element
 	}
 
-	public Content function build(required Element root) {
+	public void function build(required Element root) {
 
 		// construct() returns an array of elements whose construction could not complete in one go.
 		var deferred = construct(arguments.root)
+		// If the root itself could not be constructed, it is the last element in deferred. Remove it.
+		if (!deferred.isEmpty() && deferred.last() === arguments.root) {
+			deferred.deleteAt(deferred.len())
+		}
 
 		// Loop through the deferred elements until there are none left. Each turn should diminish the size of the array.
 		while (!deferred.isEmpty()) {
@@ -60,7 +66,7 @@ component {
 		}
 
 		// Construction is done. Return the product.
-		return arguments.root.product()
+		//return arguments.root.product()
 	}
 
 	private Element[] function construct(required Element element) {
@@ -68,8 +74,11 @@ component {
 		var deferred = []
 		// Construct the tree depth first. Most of the time, parent elements need their children to be ready.
 		for (var child in arguments.element.children()) {
-			// Construct the child element and append the elements that could not be constructed.
-			deferred.append(construct(child), true)
+			// The element could have been deferred before, in which case the child may have been constructed already.
+			if (!child.ready()) {
+				// Construct the child element and append the elements that could not be constructed.
+				deferred.append(construct(child), true)
+			}
 		}
 
 		arguments.element.construct(this)
@@ -86,7 +95,16 @@ component {
 	}
 
 	public Element function element(required String ref) {
+
+		if (!hasElement(arguments.ref)) {
+			Throw("Element '#arguments.ref#' not found", "NoSuchElementException")
+		}
+
 		return variables._elements[arguments.ref]
+	}
+
+	public Struct function elements() {
+		return variables._elements
 	}
 
 }

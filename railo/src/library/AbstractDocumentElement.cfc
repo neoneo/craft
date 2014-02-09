@@ -2,18 +2,18 @@ import craft.core.content.Document;
 import craft.core.content.TemplateContent;
 
 import craft.xml.Element;
-import craft.xml.Reader;
+import craft.xml.Loader;
 
 /**
  * @abstract
  */
 component extends="Element" {
 
-	public void function construct(required Reader reader) {
+	public void function construct(required Loader loader) {
 
 		var templateRef = templateRef()
-		if (arguments.reader.hasElement(templateRef)) {
-			var template = arguments.reader.element(templateRef)
+		if (arguments.loader.hasElement(templateRef)) {
+			var template = arguments.loader.element(templateRef)
 
 			if (template.ready() && childrenReady()) {
 				var document = createDocument(template.product())

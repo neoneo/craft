@@ -1,11 +1,11 @@
 import craft.core.content.Template;
 
 import craft.xml.Element;
-import craft.xml.Reader;
+import craft.xml.Loader;
 
 component extends="Element" tag="template" {
 
-	public void function construct(required Reader reader) {
+	public void function construct(required Loader loader) {
 
 		var ref = getRef()
 
