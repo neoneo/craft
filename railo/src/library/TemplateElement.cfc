@@ -3,11 +3,11 @@ import craft.core.content.Template;
 import craft.xml.Element;
 import craft.xml.Loader;
 
-component extends="Element" tag="template" {
+component extends="Element" accessors="true" tag="template" {
+
+	property String ref required="true";
 
 	public void function construct(required Loader loader) {
-
-		var ref = getRef()
 
 		if (childrenReady()) {
 			var section = new Section()

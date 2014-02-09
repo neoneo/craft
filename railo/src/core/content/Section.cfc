@@ -3,7 +3,7 @@ import craft.core.util.ScopeCollection;
 /**
  * Represents an isolated component tree.
  */
-component accessors="true" {
+component {
 
 	/*
 		A section has functional overlap with a composite, but it is not the same thing.

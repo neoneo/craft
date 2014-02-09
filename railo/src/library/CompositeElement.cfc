@@ -11,7 +11,7 @@ component extends="ComponentElement" {
 
 	public void function construct(required Loader loader) {
 
-		if (!hasChildren() || childrenReady()) {
+		if (childrenReady()) {
 			var composite = createComposite(arguments.loader)
 
 			for (var child in children()) {

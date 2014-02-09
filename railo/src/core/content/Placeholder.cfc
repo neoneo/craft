@@ -1,4 +1,4 @@
-component extends="Component" accessors="true" {
+component extends="Component" {
 
 	public void function init(required String ref) {
 		variables._ref = arguments.ref

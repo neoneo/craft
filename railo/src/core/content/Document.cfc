@@ -1,4 +1,4 @@
-component implements="Content" accessors="true" {
+component implements="Content" {
 
 	variables._sections = {}
 

@@ -1,6 +1,8 @@
+import craft.xml.Element;
+
 component {
 
-	variables._mappings = {} // Maps an xml namespace to a mapping.
+	variables._tags = {} // Keeps metadata of tags per namespace.
 
 	/**
 	 * Registers any `Element`s found in the mapping. A settings.ini file must be present in order for any components to be inspected.
@@ -21,7 +23,7 @@ component {
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
-			variables._mappings[namespace] = {}
+			var namespaceTags = variables._tags[namespace] = {}
 
 			if (ListFind(sections.craft, "directories") > 0) {
 				// The directories key contains a comma separated list of directories that should exist below the current one.
@@ -39,14 +41,14 @@ component {
 			registerPaths.each(function (registerPath) {
 				var registerPath = arguments.registerPath
 				var subdirectory = Replace(registerPath, path, "")
-				// Pick up all cfc's in this directory (recursively) and keep the ones that extend Element.
+				// Pick up all components in this directory (recursively) and keep the ones that extend Element.
 				DirectoryList(registerPath, true, "path", "*.cfc").each(function (filePath) {
 					// Construct the component name. First replace the directory with the mapping, then make that a dot delimited path.
 					var componentName = ListChangeDelims(Replace(arguments.filePath, registerPath, mapping & subdirectory), ".", "/", false)
 					// Finally remove the .cfc extension.
 					componentName = ListDeleteAt(componentName, ListLen(componentName, "."), ".")
 
-					var metadata = GetComponentMetaData(componentName)
+					var metadata = GetComponentMetadata(componentName)
 
 					// Ignore components with the abstract annotation.
 					var abstract = metadata.abstract ?: false
@@ -55,21 +57,10 @@ component {
 						var tagName = metadata.tag ?: metadata.name
 						var data = {
 							name: metadata.name,
-							attributes: []
+							attributes: collectAttributes(metadata)
 						}
-
-						do {
-							// Filter the properties for those that can be attributes.
-							var attributes = metadata.properties.filter(function (property) {
-								// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
-								return property.attribute ?: true
-							})
-							data.attributes.append(attributes, true)
-
-							metadata = metadata.extends ?: null
-						} while (!IsNull(metadata))
-
-						variables._mappings[namespace][tagName] = data
+						// Store the tag data.
+						namespaceTags[tagName] = data
 					}
 				})
 			})
@@ -88,7 +79,7 @@ component {
 	public Struct function tags() {
 
 		var tags = {}
-		variables._mappings.each(function (namespace, metadata) {
+		variables._tags.each(function (namespace, metadata) {
 			// The metadata argument is a struct where the keys are tag names.
 			tags[arguments.namespace] = arguments.metadata.keyArray()
 		})
@@ -103,7 +94,7 @@ component {
 
 		var metadata = arguments.metadata
 
-		var result = arguments.metadata.name == "craft.xml.Element"
+		var result = arguments.metadata.name == GetComponentMetadata("Element").name
 
 		if (!result && metadata.keyExists("extends")) {
 			result = extendsElement(metadata.extends)
@@ -117,30 +108,68 @@ component {
 	 */
 	public Element function create(required String namespace, required String tagName, Struct attributes = {}) {
 
-		if (!variables._mappings.keyExists(arguments.namespace)) {
+		if (!variables._tags.keyExists(arguments.namespace)) {
 			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException")
 		}
 
-		var tags = variables._mappings[arguments.namespace]
+		var tags = variables._tags[arguments.namespace]
 		if (!tags.keyExists(arguments.tagName)) {
-			Throw("Element '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException")
+			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException")
 		}
 
+		var data = tags[arguments.tagName]
+		// Create an argument collection for the constructor. Passing this in will call setters for each argument.
+		var constructorArguments = {}
 		// Loop over the attributes defined in the component, and pick them up from the attributes that were passed in.
 		// This means that any attributes not defined in the component are ignored.
-		var data = tags[arguments.tagName]
-		var constructorArguments = {}
-		// Make some arguments available in the closure.
-		var tagName = arguments.tagName
-		var attributes = arguments.attributes
+		// Make the attribute values available in the closure.
+		var values = arguments.attributes
 		data.attributes.each(function (attribute) {
-			var name = arguments.attribute.name
-			if (attributes.keyExists(name)) {
-				constructorArguments[name] = attributes[name]
+			var name = arguments..attribute.name
+			var value = values[name] ?: arguments.attribute.default ?: null
+
+			if (IsNull(value) && (arguments.attribute.required ?: false)) {
+				Throw("Attribute '#name#' is required", "IllegalArgumentException")
 			}
+
+			// Assuming we'll only encounter simple values here, we can use IsValid. We also assume that the property type is specified.
+			if (!IsValid(arguments.attribute.type, value)) {
+				Throw("Invalid value '#value#' for attribute '#name#': #arguments.attribute.type# expected", "IllegalArgumentException")
+			}
+
+			constructorArguments[name] = value
 		})
 
 		return new "#data.name#"(argumentCollection: constructorArguments)
+	}
+
+	private Struct[] function collectProperties(required Struct metadata) {
+
+		var properties = []
+		var names = []
+		var metadata = arguments.metadata
+
+		do {
+			for (var property in metadata.properties) {
+				// Let a property in a subclass take precedence over one of the same name in a superclass.
+				if (names.find(property.name) == 0) {
+					properties.append(property)
+					names.append(property.name)
+				}
+			}
+
+			metadata = metadata.extends ?: null
+		} while (!IsNull(metadata))
+
+		return properties
+	}
+
+	private Struct[] function collectAttributes(required Struct metadata) {
+		// Filter the properties for those that can be attributes.
+		return collectProperties(arguments.metadata).filter(function (property) {
+			// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
+			return arguments.property.attribute ?: true
+		})
 	}
 
 }

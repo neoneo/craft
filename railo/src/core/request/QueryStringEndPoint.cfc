@@ -25,7 +25,7 @@ component extends="EndPoint" {
 
 		var queryString = "path=" & UrlEncodedFormat(path)
 
-		if (StructKeyExists(arguments, "parameters")) {
+		if (!IsNull(arguments.parameters)) {
 			// Put the parameters on the query string.
 			for (var name in arguments.parameters) {
 				queryString = ListAppend(queryString, name & "=" & UrlEncodedFormat(arguments.parameters[name]), "&")

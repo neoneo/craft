@@ -1,7 +1,9 @@
 import craft.xml.Element;
 import craft.xml.Loader;
 
-component extends="Element" tag="section" {
+component extends="Element" accessors="true" tag="section" {
+
+	property String ref required="true";
 
 	public void function construct(required Loader loader) {
 

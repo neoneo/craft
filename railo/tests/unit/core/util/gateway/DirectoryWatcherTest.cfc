@@ -17,7 +17,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function tearDown() {
-		if (StructKeyExists(variables, "watcher")) {
+		if (!IsNull(variables.watcher)) {
 			variables.watcher.close()
 		}
 		DirectoryDelete(variables.directory, true)

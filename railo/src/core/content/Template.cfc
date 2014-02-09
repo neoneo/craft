@@ -1,4 +1,4 @@
-component implements="TemplateContent" accessors="true" {
+component implements="TemplateContent" {
 
 	public void function init(required Section section) {
 		variables._section = arguments.section

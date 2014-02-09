@@ -36,7 +36,7 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(IsJSON(output), "the output should be a valid JSON string")
 		var deserialized = DeserializeJSON(output)
 		for (var key in model) {
-			assertTrue(StructKeyExists(deserialized, key), "key '#key#' should exist in the returned JSON string")
+			assertTrue(deserialized.keyExists(key), "key '#key#' should exist in the returned JSON string")
 			assertTrue(deserialized[key] == model[key], "key '#key#' should be the same in the model and the returned JSON string")
 		}
 	}

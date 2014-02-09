@@ -1,4 +1,4 @@
-component extends="DocumentElement" tag="document" {
+component extends="AbstractDocumentElement" accessors="true" tag="document" {
 
 	property String template;
 
