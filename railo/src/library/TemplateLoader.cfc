@@ -6,27 +6,32 @@ import craft.xml.Loader;
 
 component extends="Loader" {
 
-	public Element[] function load(required String path) {
+	public Struct function load(required String path) {
 
-		var elements = []
+		var contents = {}
 
-		var nodes = []
+		var nodes = {}
 		DirectoryList(arguments.path, true, "path", "*.xml").each(function (path) {
-			nodes.append(XMLParse(FileRead(arguments.path)).xmlRoot)
+			// Only include templates.
+			var node = XMLParse(FileRead(arguments.path)).xmlRoot
+			if (isTemplate(node)) {
+				nodes[arguments.path] = node
+			}
 		})
 
 		while (!nodes.isEmpty()) {
-			deferred = []
+			deferred = {}
 
-			for (var node in nodes) {
+			for (var path in nodes) {
+				var node = nodes[path]
 				if (!node.xmlAttributes.keyExists("extends") || hasElement(node.xmlAttributes.extends)) {
 					var loader = new ElementLoader(factory(), this)
 					var element = loader.load(node)[1]
-					// All elements should be templates, with a required ref.
+					// All elements should be templates, with a required ref. We keep all of them available.
 					keep(element)
-					elements.append(element)
+					contents[path] = element.product()
 				} else {
-					deferred.append(node)
+					deferred[path] = node
 				}
 			}
 
@@ -37,7 +42,11 @@ component extends="Loader" {
 			nodes = deferred
 		}
 
-		return elements
+		return contents
+	}
+
+	private Boolean function isTemplate(required XML node) {
+		return arguments.node.xmlName == "template" || arguments.node.xmlName == "documenttemplate"
 	}
 
 }

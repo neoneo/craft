@@ -30,7 +30,11 @@ component {
 		}
 	}
 
-	public Element[] function load(required String path) {
+	/**
+	 * Reads one or more XML files located at the given path, and builds the corresponding `Content` instance.
+	 * Each key of the returned struct is a path to an XML file, the value is the associated `Content` instance.
+	 */
+	public Struct function load(required String path) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
 	}
 

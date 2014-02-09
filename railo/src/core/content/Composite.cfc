@@ -34,6 +34,7 @@ component extends="Component" {
 
 	/**
 	 * Adds a `Component` to this `Composite`.
+	 * The optional `beforeChild` argument specifies where to move the `Component`. If `beforeChild` is null, the `Component` is moved to the end.
 	 **/
 	public void function addChild(required Component child, Component beforeChild) {
 		var added = variables._children.add(argumentCollection: ArrayToStruct(arguments))
@@ -51,7 +52,7 @@ component extends="Component" {
 
 	/**
 	 * Moves the `Component` to another position among its siblings.
-	 * The optional `beforeComponent` argument specifies where to move the `Component`. If `beforeComponent` is null, the `Component` is moved to the end.
+	 * The optional `beforeChild` argument specifies where to move the `Component`. If `beforeChild` is null, the `Component` is moved to the end.
 	 **/
 	public void function moveChild(required Component child, Component beforeChild) {
 		variables._children.move(argumentCollection: ArrayToStruct(arguments))

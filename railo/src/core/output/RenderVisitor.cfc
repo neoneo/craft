@@ -61,7 +61,7 @@ component implements="Visitor" {
 
 	public void function visitComposite(required Composite composite) {
 
-		// Copy state in local variables._
+		// Copy state in local variables.
 		var model = variables._model
 		var contentType = variables._contentType
 		var contents = variables._contents
@@ -75,6 +75,7 @@ component implements="Visitor" {
 		variables._contentType = variables._renderer.contentType(view, variables._requestMethod, variables._contentType)
 		variables._contents = []
 
+		// During traversal, the contents of the children will be appended to the _contents array.
 		arguments.composite.traverse(this)
 
 		// Put the content on the model so the view can include it.

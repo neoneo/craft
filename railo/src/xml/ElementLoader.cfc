@@ -5,13 +5,13 @@ import craft.core.content.Content;
  */
 component extends="Loader" {
 
-	public Element[] function load(required String path) {
+	public Struct function load(required String path) {
 
 		var node = XMLParse(FileRead(arguments.path)).xmlRoot
 
-		var element = build(parse(node))
+		var content = build(parse(node))
 
-		return [element]
+		return {"#arguments.path#": content}
 	}
 
 	/**
