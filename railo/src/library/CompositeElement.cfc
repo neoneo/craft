@@ -29,7 +29,7 @@ component extends="ComponentElement" {
 	 * method is an extension to the `construct()` method.
 	 */
 	private Composite function createComposite(required Loader loader) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
 }

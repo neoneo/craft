@@ -26,7 +26,7 @@ component accessors="true" {
 	 * do not call `setProduct()` so the `Loader` will retry later.
 	 */
 	public void function construct(required Loader loader) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
 	/**

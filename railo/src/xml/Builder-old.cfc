@@ -19,7 +19,7 @@ component {
 	/**
 	 * Builds the content of the application recursively, starting at the given path.
 	 * If no path is specified, the complete application is built from the root.
-	 **/
+	 */
 	public PathSegment function build(String path = "") {
 
 		var pathSegment = createPathSegment(ListLast(arguments.path, "/"))

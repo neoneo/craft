@@ -4,7 +4,7 @@ import craft.core.util.ScopeCollection;
 
 /**
  * PathSegment
- **/
+ */
 component {
 
 	public void function init(required PathMatcher pathMatcher, String parameterName) {
@@ -19,7 +19,7 @@ component {
 
 	/**
 	 * Sets the content for the given content type.
-	 **/
+	 */
 	public void function setContent(required String type, required Content content) {
 		variables._content[arguments.type] = arguments.content
 	}

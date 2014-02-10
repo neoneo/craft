@@ -6,7 +6,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
 		var root = mock(CreateObject("PathSegment"))
-		var contentType = mock(CreateObject("ContentType")).name().returns("test")
+		var contentType = mock(CreateObject("ContentTypeStub")).name().returns("test")
 		variables.endPoint = new QueryStringEndPoint(root, [contentType])
 	}
 

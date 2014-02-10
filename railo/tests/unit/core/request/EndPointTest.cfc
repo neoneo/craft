@@ -6,7 +6,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
 		variables.root = mock(CreateObject("PathSegment"))
-		variables.contentTypes = [mock(CreateObject("ContentType")).name().returns("test")]
+		variables.contentTypes = [mock(CreateObject("ContentTypeStub")).name().returns("test")]
 		variables.endPoint = new EndPoint(variables.root, variables.contentTypes)
 	}
 

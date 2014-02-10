@@ -6,7 +6,7 @@ component extends="Document" implements="TemplateContent" {
 
 	/**
 	 * Returns an array containing all placeholders that are not filled.
-	 **/
+	 */
 	public Placeholder[] function placeholders() {
 
 		var placeholders = []

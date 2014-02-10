@@ -8,7 +8,7 @@ component implements="ContentType" {
 		return "application/xml"
 	}
 
-	public String function convert(required Array strings) {
+	public String function merge(required Array strings) {
 
 		var result = ""
 		for (var string in arguments.strings) {

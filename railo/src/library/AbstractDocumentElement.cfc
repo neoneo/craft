@@ -35,11 +35,11 @@ component extends="Element" {
 	}
 
 	private String function templateRef() {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
 	private Document function createDocument(required TemplateContent templateContent) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
 }

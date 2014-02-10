@@ -3,7 +3,7 @@
  * as some convenience methods.
  *
  * @transient
- **/
+ */
 component {
 
 	public void function init(required EndPoint endPoint) {

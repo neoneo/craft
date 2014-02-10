@@ -6,8 +6,7 @@ component extends="mxunit.framework.TestCase" {
 		variables.json = mock(CreateObject("ContentTypeStub"))
 			.name().returns("json")
 		variables.viewFinder = mock(CreateObject("ViewFinder"))
-			.template("renderer", "get", variables.json).returns("/crafttests/unit/core/output/viewstubs/renderer.json.cfm")
-			.contentType("renderer", "get", variables.json).returns(variables.json)
+			.get("renderer", variables.json).returns("/crafttests/unit/core/output/viewstubs/renderer.json.cfm")
 	}
 
 	public void function setUp() {
@@ -15,14 +14,9 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Render_Should_ReturnOutputString() {
-		var output = variables.renderer.render("renderer", {}, "get", variables.json)
-		variables.viewFinder.verify().template("renderer", "get", variables.json)
+		var output = variables.renderer.render("renderer", {}, variables.json)
+		variables.viewFinder.verify().get("renderer", variables.json)
 		assertTrue(IsSimpleValue(output), "output should be a string")
-	}
-
-	public void function ContentType_Should_ReturnUsedContentType() {
-		var contentType = variables.renderer.contentType("renderer", "get", variables.json)
-		assertSame(variables.json, contentType)
 	}
 
 	public void function Render_Should_ReturnOutputContainingSerializedModel() {
@@ -32,7 +26,7 @@ component extends="mxunit.framework.TestCase" {
 			boolean: true,
 			date: Now()
 		}
-		var output = variables.renderer.render("renderer", model, "get", variables.json)
+		var output = variables.renderer.render("renderer", model, variables.json)
 		assertTrue(IsJSON(output), "the output should be a valid JSON string")
 		var deserialized = DeserializeJSON(output)
 		for (var key in model) {

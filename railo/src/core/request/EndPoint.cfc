@@ -54,18 +54,18 @@ component {
 	}
 
 	public String function path() {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
 	public String function createURL(required String path, Struct parameters, String extensionName) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NotImplementedException")
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
 	// PRIVATE ====================================================================================
 
 	/**
 	 * Traverses the path to find the applicable path segment. If no path segment is found, returns null.
-	 **/
+	 */
 	private any function traverse(required Array path, required PathSegment pathSegment) {
 
 		var result = arguments.pathSegment

@@ -8,7 +8,7 @@ component implements="ContentType" {
 		return "text/plain"
 	}
 
-	public String function convert(required Array strings) {
+	public String function merge(required Array strings) {
 		return arguments.strings.toList("")
 	}
 

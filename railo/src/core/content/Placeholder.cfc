@@ -16,12 +16,12 @@ component extends="Component" {
 		return false
 	}
 
-	public Struct function model(required Context context, required Struct parentModel) {
-		Throw("Not supported", "NotSupportedException")
-	}
+	// public Struct function model(required Context context, required Struct parentModel) {
+	// 	Throw("Not supported", "UnsupportedOperationException")
+	// }
 
-	public String function view(required Context context) {
-		Throw("Not supported", "NotSupportedException")
-	}
+	// public String function view(required Context context) {
+	// 	Throw("Not supported", "UnsupportedOperationException")
+	// }
 
 }

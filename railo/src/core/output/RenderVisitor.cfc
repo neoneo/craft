@@ -15,11 +15,9 @@ component implements="Visitor" {
 
 		variables._renderer = arguments.renderer
 		variables._context = arguments.context
-		variables._requestMethod = variables._context.getRequestMethod()
+		variables._contentType = variables._context.contentType()
 
 		// Define state. The following state variables will be modified during component traversal.
-		// The contentType will contain the content type that the parent can render for the request content type. This will be the request content type itself, or a fallback content type.
-		variables._contentType = variables._context.getContentType()
 		// The combined model of all ancestors is available to every child.
 		variables._model = {}
 		// The sections in Document instances are kept, so that Placeholder instances can pick them up.
@@ -54,7 +52,7 @@ component implements="Visitor" {
 		currentModel.append(variables._model, false)
 		var view = arguments.leaf.view(variables._context)
 
-		variables._content = variables._renderer.render(view, currentModel, variables._requestMethod, variables._contentType)
+		variables._content = variables._renderer.render(view, currentModel, variables._contentType)
 		variables._contents.append(variables._content)
 
 	}
@@ -63,7 +61,6 @@ component implements="Visitor" {
 
 		// Copy state in local variables.
 		var model = variables._model
-		var contentType = variables._contentType
 		var contents = variables._contents
 
 		var currentModel = arguments.composite.model(variables._context, variables._model)
@@ -72,20 +69,18 @@ component implements="Visitor" {
 
 		// Overwrite state.
 		variables._model = currentModel
-		variables._contentType = variables._renderer.contentType(view, variables._requestMethod, variables._contentType)
 		variables._contents = []
 
 		// During traversal, the contents of the children will be appended to the _contents array.
 		arguments.composite.traverse(this)
 
 		// Put the content on the model so the view can include it.
-		currentModel.__content__ = variables._contentType.convert(variables._contents)
+		currentModel.__content__ = variables._contentType.merge(variables._contents)
 
-		variables._content = variables._renderer.render(view, currentModel, variables._requestMethod, variables._contentType)
+		variables._content = variables._renderer.render(view, currentModel, variables._contentType)
 
 		// Revert state.
 		variables._contents = contents
-		variables._contentType = contentType
 		variables._model = model
 
 		variables._contents.append(variables._content)

@@ -43,8 +43,8 @@ component extends="mxunit.framework.TestCase" {
 			.model("{any}", "{struct}").returns(model)
 			.view(variables.context).returns("composite")
 			.traverse(variables.visitor)
-		// Mock contentType.convert. The visitor calls it to convert the output of the children (an empty array at this point).
-		variables.contentType.convert("{array}").returns("")
+		// Mock contentType.merge. The visitor calls it to merge the output of the children (an empty array at this point).
+		variables.contentType.merge("{array}").returns("")
 
 		variables.renderer
 			.render("{+}").returns("done")
@@ -56,7 +56,7 @@ component extends="mxunit.framework.TestCase" {
 			.model("{any}", "{struct}")
 			.view(variables.context)
 			.traverse(variables.visitor)
-		variables.contentType.verify().convert("{array}")
+		variables.contentType.verify().merge("{array}")
 		variables.renderer.verify()
 			.render("{+}")
 
