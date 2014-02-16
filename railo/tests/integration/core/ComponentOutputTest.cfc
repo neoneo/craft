@@ -7,8 +7,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function setUp() {
 		variables.contentType = new JSONContentType()
 		var context = mock(CreateObject("Context"))
-			.getRequestMethod().returns("get")
-			.getContentType().returns(variables.contentType)
+			.contentType().returns(variables.contentType)
 		var viewFinder = new ViewFinder("cfm")
 		viewFinder.addMapping("/crafttests/integration/core/views")
 		var renderer = new CFMLRenderer(viewFinder)
