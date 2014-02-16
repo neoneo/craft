@@ -25,14 +25,19 @@ component {
 	}
 
 	private void function keep(required Element element) {
-		if (!IsNull(arguments.element.getRef())) {
-			variables._elements[arguments.element.getRef()] = arguments.element
+		var ref = arguments.element.getRef()
+		if (!IsNull(ref)) {
+			if (hasElement(ref)) {
+				Throw("Element '#ref#' already exists", "AlreadyBoundException")
+			}
+			variables._elements[ref] = arguments.element
 		}
 	}
 
 	/**
-	 * Reads one or more XML files located at the given path, and builds the corresponding `Content` instance.
-	 * Each key of the returned struct is a path to an XML file, the value is the associated `Content` instance.
+	 * Reads one or more XML files located at the given path, and builds the corresponding `Element` instance.
+	 * Each key of the returned struct is a path to an XML file, the value is the associated `Element` instance.
+	 * All `Element`s should be `ready()`.
 	 */
 	public Struct function load(required String path) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")

@@ -8,10 +8,10 @@ component extends="Loader" {
 	public Struct function load(required String path) {
 
 		var node = XMLParse(FileRead(arguments.path)).xmlRoot
+		var element = parse(node)
+		build(element)
 
-		var content = build(parse(node))
-
-		return {"#arguments.path#": content}
+		return {"#arguments.path#": element}
 	}
 
 	/**
@@ -27,7 +27,7 @@ component extends="Loader" {
 		return element
 	}
 
-	public Content function build(required Element root) {
+	public void function build(required Element root) {
 
 		// construct() returns an array of elements whose construction could not complete in one go.
 		var deferred = construct(arguments.root)
@@ -50,14 +50,14 @@ component extends="Loader" {
 			// If no elements could be constructed in this loop, we have elements pointing to each other.
 			if (remaining.len() == deferred.len()) {
 				// TODO: put the list in the exception in a meaningful way.
-				Throw("Could not construct all elements", "ConstructionException")
+				Throw("Could not construct all elements", "InstantiationException")
 			}
 
 			deferred = remaining
 		}
 
 		// Construction is done. Return the product.
-		return arguments.root.product()
+		// return arguments.root.product()
 	}
 
 	private Element[] function construct(required Element element) {
