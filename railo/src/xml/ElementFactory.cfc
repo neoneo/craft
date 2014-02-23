@@ -138,7 +138,7 @@ component {
 		// Make the attribute values available in the closure.
 		var values = arguments.attributes
 		data.attributes.each(function (attribute) {
-			var name = arguments..attribute.name
+			var name = arguments.attribute.name
 			var value = values[name] ?: arguments.attribute.default ?: null
 
 			if (IsNull(value) && (arguments.attribute.required ?: false)) {

@@ -1,22 +1,23 @@
 import craft.core.content.Content;
 
+import craft.xml.Builder;
 import craft.xml.Element;
-import craft.xml.ElementLoader;
-import craft.xml.Loader;
+import craft.xml.ElementFactory;
+import craft.xml.Repository;
 
 component {
 
 	public void function init(required ElementFactory factory, required Repository repository) {
 		variables._factory = arguments.factory
 		variables._repository = arguments.repository
+		variables._builder = new Builder(variables._repository)
 	}
 
 	public Struct function load(required String path) {
 
-		var contents = {}
-
-		// Templates can extend one another. First compile a struct with all the template documents.
 		var elements = {}
+
+		// Templates can extend one another. First fill elements with all the template documents.
 		DirectoryList(arguments.path, true, "path", "*.xml").each(function (path) {
 			var node = XMLParse(FileRead(arguments.path)).xmlRoot
 			/*
@@ -29,16 +30,16 @@ component {
 			}
 		})
 
-		// Keep traversing the elements until all have been constructed successfully. With every cycle, the struct should become smaller.
-		while (!elements.isEmpty()) {
+		// Keep traversing the elements until all have been constructed successfully. With every iteration, the struct should become smaller.
+		var remaining = Duplicate(elements, false)
+		while (!remaining.isEmpty()) {
 			deferred = {}
 
-			for (var path in elements) {
-				var element = elements[path]
+			for (var path in remaining) {
+				var element = remaining[path]
 				if (canLoad(element)) {
-					var loader = new ElementLoader(variables._factory, variables._repository)
-					loader.build(element)
-					// All elements should be templates, with a required ref. We keep all of them available.
+					builder.build(element)
+					// All elements are templates, with a required ref. We keep all of them available.
 					variables._repository.store(element)
 					contents[path] = element
 				} else {
@@ -46,14 +47,14 @@ component {
 				}
 			}
 
-			if (elements.len() == deferred.len()) {
+			if (remaining.len() == deferred.len()) {
 				Throw("Could not construct all elements", "ConstructionException")
 			}
 
-			elements = deferred
+			remaining = deferred
 		}
 
-		return contents
+		return elements
 	}
 
 	/**
