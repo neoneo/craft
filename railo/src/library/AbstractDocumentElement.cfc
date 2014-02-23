@@ -9,11 +9,11 @@ import craft.xml.Loader;
  */
 component extends="Element" {
 
-	public void function construct(required Loader loader) {
+	public void function construct(required Repository repository) {
 
 		var templateRef = templateRef()
-		if (arguments.loader.hasElement(templateRef)) {
-			var template = arguments.loader.element(templateRef)
+		if (arguments.repository.hasElement(templateRef)) {
+			var template = arguments.repository.element(templateRef)
 
 			if (template.ready() && childrenReady()) {
 				var document = createDocument(template.product())

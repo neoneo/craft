@@ -3,26 +3,22 @@ import craft.core.content.Content;
 /**
  * This `Loader` traverses the elements in an xml document and creates the corresponding tree of `Element`s that is used to create the `Content`.
  */
-component extends="Loader" {
+component {
 
-	public Struct function load(required String path) {
-
-		var node = XMLParse(FileRead(arguments.path)).xmlRoot
-		var element = parse(node)
-		build(element)
-
-		return {"#arguments.path#": element}
+	public void function init(required ElementFactory factory, required Repository repository) {
+		variables._factory = arguments.factory
+		/*
+			Create a repository for local elements. We will store elements from this document in it, but we don't want elements from outside
+			this document to be able to refer to inside elements. The parent repository contains only root elements.
+		*/
+		variables._repository = new Repository(arguments.repository)
 	}
 
-	/**
-	 * Creates a tree of `Element`s that represents the given xml node tree.
-	 */
-	public Element function parse(required XML node) {
+	public Element function load(required String path) {
 
-		var element = factory().create(arguments.node.xmlNsURI, arguments.node.xmlName, arguments.node.xmlAttributes)
-		for (var child in arguments.node.xmlChildren) {
-			element.add(parse(child))
-		}
+		var node = XMLParse(FileRead(arguments.path)).xmlRoot
+		var element = variables._factory.construct(node)
+		build(element)
 
 		return element
 	}
@@ -41,7 +37,7 @@ component extends="Loader" {
 			// Create an empty array to keep elements that need to be deferred still longer.
 			var remaining = []
 			for (var element in deferred) {
-				element.construct(this)
+				element.construct(variables._repository)
 				if (!element.ready()) {
 					remaining.append(element)
 				}
@@ -56,8 +52,6 @@ component extends="Loader" {
 			deferred = remaining
 		}
 
-		// Construction is done. Return the product.
-		// return arguments.root.product()
 	}
 
 	private Element[] function construct(required Element element) {
@@ -72,12 +66,12 @@ component extends="Loader" {
 			}
 		}
 
-		arguments.element.construct(this)
+		arguments.element.construct(variables._repository)
 
 		if (!arguments.element.ready()) {
 			deferred.append(arguments.element)
 		} else {
-			keep(arguments.element)
+			variables._repository.store(arguments.element)
 		}
 
 		return deferred

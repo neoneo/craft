@@ -7,7 +7,7 @@ component extends="Element" accessors="true" tag="template" {
 
 	property String ref required="true";
 
-	public void function construct(required Loader loader) {
+	public void function construct(required Repository repository) {
 
 		if (childrenReady()) {
 			var section = new Section()

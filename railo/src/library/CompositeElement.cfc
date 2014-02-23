@@ -9,7 +9,7 @@ import craft.xml.Loader;
  */
 component extends="ComponentElement" {
 
-	public void function construct(required Loader loader) {
+	public void function construct(required Repository repository) {
 
 		if (childrenReady()) {
 			var composite = createComposite(arguments.loader)

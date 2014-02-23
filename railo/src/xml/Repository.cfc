@@ -1,7 +1,6 @@
 component {
 
-	public void function init(required ElementFactory factory, Loader parent) {
-		variables._factory = arguments.factory
+	public void function init(Repository parent) {
 		variables._parent = arguments.parent ?: null
 		variables._elements = {}
 	}
@@ -16,15 +15,11 @@ component {
 			Throw("Element '#arguments.ref#' not found", "NoSuchElementException")
 		}
 
-		// The element exists, so if it does not exist in this loader, we know there is a parent that has it.
+		// The element exists, so if it does not exist in this repository, we know there is a parent that has it.
 		return variables._elements.keyExists(arguments.ref) ? variables._elements[arguments.ref] : variables._parent.element(arguments.ref)
 	}
 
-	private ElementFactory function factory() {
-		return variables._factory
-	}
-
-	private void function keep(required Element element) {
+	public void function store(required Element element) {
 		var ref = arguments.element.getRef()
 		if (!IsNull(ref)) {
 			if (hasElement(ref)) {
@@ -32,15 +27,6 @@ component {
 			}
 			variables._elements[ref] = arguments.element
 		}
-	}
-
-	/**
-	 * Reads one or more XML files located at the given path, and builds the corresponding `Element` instance.
-	 * Each key of the returned struct is a path to an XML file, the value is the associated `Element` instance.
-	 * All `Element`s should be `ready()`.
-	 */
-	public Struct function load(required String path) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
 }
