@@ -27,9 +27,9 @@ component extends="EndPoint" {
 
 		if (!IsNull(arguments.parameters)) {
 			// Put the parameters on the query string.
-			for (var name in arguments.parameters) {
-				queryString = ListAppend(queryString, name & "=" & UrlEncodedFormat(arguments.parameters[name]), "&")
-			}
+			queryString = arguments.parameters.reduce(function (queryString, name, value) {
+				return ListAppend(arguments.queryString, arguments.name & "=" & URLEncodedFormat(value), "&")
+			}, queryString)
 		}
 
 		return "index.cfm?" & queryString

@@ -69,16 +69,9 @@ component accessors="true" {
 	}
 
 	public Boolean function childrenReady() {
-
-		var ready = true
-		for (var child in children()) {
-			if (!child.ready()) {
-				ready = false
-				break;
-			}
-		}
-
-		return ready
+		return children().every(function (child) {
+			return arguments.child.ready()
+		})
 	}
 
 	public Element[] function siblings() {

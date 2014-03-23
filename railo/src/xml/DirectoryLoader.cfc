@@ -6,13 +6,13 @@ component {
 
 	public Struct function load(required String path) {
 
-		var contents = {}
+		var elements = {}
 
 		DirectoryList(arguments.path, false, "path", "*.xml").each(function (path) {
-			contents[arguments.path] = variables._fileLoader.load(arguments.path)
+			elements[arguments.path] = variables._fileLoader.load(arguments.path)
 		})
 
-		return contents
+		return elements
 	}
 
 }

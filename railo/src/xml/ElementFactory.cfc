@@ -27,12 +27,11 @@ component {
 
 			if (ListFind(sections.craft, "directories") > 0) {
 				// The directories key contains a comma separated list of directories that should exist below the current one.
-				var registerPaths = []
 				var directories = GetProfileString(settingsFile, "craft", "directories")
-				ListToArray(directories).each(function (directory) {
+				var registerPaths = ListToArray(directories).map(function (directory) {
 					var directory = Trim(arguments.directory)
 					var separator = Left(directory, 1) == "/" ? "" : "/"
-					registerPaths.append(path & separator & directory)
+					return path & separator & directory
 				})
 			} else {
 				var registerPaths = [path]
