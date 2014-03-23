@@ -1,13 +1,13 @@
 component extends="AbstractDocumentElement" accessors="true" tag="document" {
 
-	property String template;
+	property String layout;
 
-	private String function templateRef() {
-		return getTemplate()
+	private String function layoutRef() {
+		return getLayout()
 	}
 
-	private Document function createDocument(required TemplateContent templateContent) {
-		return new Document(arguments.templateContent)
+	private Document function createDocument(required LayoutContent layoutContent) {
+		return new Document(arguments.layoutContent)
 	}
 
 }

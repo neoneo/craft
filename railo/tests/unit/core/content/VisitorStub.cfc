@@ -23,7 +23,7 @@ component implements="Visitor" {
 	public void function visitSection(required Section section) {
 	}
 
-	public void function visitTemplate(required Template template) {
+	public void function visitLayout(required Layout layout) {
 	}
 
 }

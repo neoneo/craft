@@ -2,12 +2,12 @@ component implements="Content" {
 
 	variables._sections = {}
 
-	public void function init(required TemplateContent template) {
-		variables._template = arguments.template
+	public void function init(required LayoutContent layout) {
+		variables._layout = arguments.layout
 	}
 
-	public TemplateContent function template() {
-		return variables._template
+	public LayoutContent function layout() {
+		return variables._layout
 	}
 
 	public Struct function sections() {
@@ -22,11 +22,11 @@ component implements="Content" {
 
 		var ref = arguments.ref
 
-		var placeholders = variables._template.placeholders()
+		var placeholders = variables._layout.placeholders()
 		if (placeholders.find(function (placeholder) {
 			return arguments.placeholder.ref() == ref
 		}) == 0) {
-			Throw("Template has no placeholder with ref '#ref#'", "NoSuchElementException")
+			Throw("Layout has no placeholder with ref '#ref#'", "NoSuchElementException")
 		}
 
 		if (!variables._sections.keyExists(ref)) {
@@ -43,15 +43,15 @@ component implements="Content" {
 	}
 
 	/**
-	 * Replaces the current template with the given template.
-	 * Content in placeholders is retained, if the placeholders in the new template have the same ref.
+	 * Replaces the current layout with the given layout.
+	 * Content in placeholders is retained, if the placeholders in the new layout have the same ref.
 	 */
-	public void function useTemplate(required TemplateContent template) {
+	public void function useLayout(required LayoutContent layout) {
 
-		// Check if the new template has placeholders compatible with the old one.
-		var newPlaceholders = arguments.template.placeholders()
+		// Check if the new layout has placeholders compatible with the old one.
+		var newPlaceholders = arguments.layout.placeholders()
 		// Loop over all current placeholders, and remove the section if there is no compatible new placeholder.
-		variables._template.placeholders().each(
+		variables._layout.placeholders().each(
 			function (placeholder) {
 				var ref = arguments.placeholder.ref()
 				var index = newPlaceholders.find(function (newPlaceholder) {
@@ -64,7 +64,7 @@ component implements="Content" {
 			}
 		)
 
-		variables._template = arguments.template
+		variables._layout = arguments.layout
 
 	}
 

@@ -73,8 +73,8 @@ component extends="mxunit.framework.TestCase" {
 		var composite = nestedComposite()
 		var section = new Section()
 		section.addComponent(composite)
-		var template = new Template(section)
-		var document = new Document(template)
+		var layout = new Layout(section)
+		var document = new Document(layout)
 
 		variables.visitor.visitDocument(document)
 
@@ -102,8 +102,8 @@ component extends="mxunit.framework.TestCase" {
 	public void function RenderDocumentWithPlaceholders() {
 		var section = new Section() // With placeholders.
 		section.addComponent(nestedComposite(true))
-		var template = new Template(section)
-		var document = new Document(template)
+		var layout = new Layout(section)
+		var document = new Document(layout)
 
 		var p1Section = new Section()
 		p1Section.addComponent(simpleComposite())
@@ -159,32 +159,32 @@ component extends="mxunit.framework.TestCase" {
 
 		var section = new Section()
 		section.addComponent(nestedComposite(true))
-		var template = new Template(section)
+		var layout = new Layout(section)
 
-		var documentTemplate1 = new DocumentTemplate(template)
+		var documentLayout1 = new DocumentLayout(layout)
 		var p1Section = new Section()
 		p1Section.addComponent(simpleComposite(true))
-		documentTemplate1.addSection(p1Section, "p1")
+		documentLayout1.addSection(p1Section, "p1")
 
-		// The available placeholders in the document template should now be: p, p2, p3.
+		// The available placeholders in the document layout should now be: p, p2, p3.
 
-		var documentTemplate2 = new DocumentTemplate(documentTemplate1)
+		var documentLayout2 = new DocumentLayout(documentLayout1)
 		var pSection = new Section()
 		pSection.addComponent(new stubs.Leaf("p"))
-		documentTemplate2.addSection(pSection, "p")
+		documentLayout2.addSection(pSection, "p")
 
 		var p2Section = new Section()
 		p2Section.addComponent(new stubs.Leaf("p2"))
-		documentTemplate2.addSection(p2Section, "p2")
+		documentLayout2.addSection(p2Section, "p2")
 
 		// Now remains only placeholder p3.
 
-		var documentTemplate3 = new DocumentTemplate(documentTemplate2)
+		var documentLayout3 = new DocumentLayout(documentLayout2)
 		var p3Section = new Section()
 		p3Section.addComponent(new stubs.Leaf("p3"))
-		documentTemplate3.addSection(p3Section, "p3")
+		documentLayout3.addSection(p3Section, "p3")
 
-		var document = new Document(documentTemplate3)
+		var document = new Document(documentLayout3)
 
 		// Start the actual test.
 		variables.visitor.visitDocument(document)
@@ -225,21 +225,21 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, output)
 	}
 
-	public void function UseTemplate_Should_KeepMatchingContent() {
+	public void function UseLayout_Should_KeepMatchingContent() {
 		var section1 = new Section()
 		section1.addComponent(nestedComposite(true))
-		var template1 = new Template(section1)
+		var layout1 = new Layout(section1)
 
-		// For this test, only include p1 en p2 in the second template.
+		// For this test, only include p1 en p2 in the second layout.
 		var composite = new stubs.Composite("composite")
 		composite.addChild(new Placeholder("p1"))
 		composite.addChild(new Placeholder("p2"))
 		var section2 = new Section()
 		section2.addComponent(composite)
-		var template2 = new Template(section2)
+		var layout2 = new Layout(section2)
 
-		// Create a document based on template 1.
-		var document = new Document(template1)
+		// Create a document based on layout 1.
+		var document = new Document(layout1)
 		// Fill all placeholders p1, p2 and p3.
 		var p1Section = new Section()
 		p1Section.addComponent(new stubs.Leaf("p1"))
@@ -254,7 +254,7 @@ component extends="mxunit.framework.TestCase" {
 		document.addSection(p3Section, "p3")
 
 		// Actual test.
-		document.useTemplate(template2)
+		document.useLayout(layout2)
 
 		variables.visitor.visitDocument(document)
 
@@ -271,8 +271,8 @@ component extends="mxunit.framework.TestCase" {
 
 		assertEquals(expected, output)
 
-		// Replace the old template back. The content of p3 should have been removed earlier, and should therefore not be rendered.
-		document.useTemplate(template1)
+		// Replace the old layout back. The content of p3 should have been removed earlier, and should therefore not be rendered.
+		document.useLayout(layout1)
 		variables.visitor.visitDocument(document)
 
 		var content = variables.visitor.content()

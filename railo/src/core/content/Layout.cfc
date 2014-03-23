@@ -1,11 +1,11 @@
-component implements="TemplateContent" {
+component implements="LayoutContent" {
 
 	public void function init(required Section section) {
 		variables._section = arguments.section
 	}
 
 	public void function accept(required Visitor visitor) {
-		arguments.visitor.visitTemplate(this)
+		arguments.visitor.visitLayout(this)
 	}
 
 	public Section function section() {

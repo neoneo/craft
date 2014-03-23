@@ -6,8 +6,8 @@ component extends="mxunit.framework.TestCase" {
 		var placeholder1 = mock(CreateObject("Placeholder")).ref().returns("p1")
 		var placeholder2 = mock(CreateObject("Placeholder")).ref().returns("p2")
 
-		variables.template = mock(CreateObject("Template")).placeholders().returns([placeholder1, placeholder2])
-		variables.document = new Document(variables.template)
+		variables.layout = mock(CreateObject("Layout")).placeholders().returns([placeholder1, placeholder2])
+		variables.document = new Document(variables.layout)
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
@@ -75,14 +75,14 @@ component extends="mxunit.framework.TestCase" {
 		}
 	}
 
-	public void function UseTemplate_Should_KeepSimilarContentAndRemoveRest() {
-		var template1 = variables.document.template()
+	public void function UseLayout_Should_KeepSimilarContentAndRemoveRest() {
+		var layout1 = variables.document.layout()
 
 		var placeholder1 = mock(CreateObject("Placeholder")).ref().returns("p1")
 		var placeholder2 = mock(CreateObject("Placeholder")).ref().returns("p2")
 		var placeholder3 = mock(CreateObject("Placeholder")).ref().returns("p3")
 
-		var template2 = mock(CreateObject("Template")).placeholders().returns([placeholder1, placeholder3])
+		var layout2 = mock(CreateObject("Layout")).placeholders().returns([placeholder1, placeholder3])
 
 		// Add some content to the placeholders p1 and p2.
 		var section1 = mock(CreateObject("Section"))
@@ -90,13 +90,13 @@ component extends="mxunit.framework.TestCase" {
 		variables.document.addSection(section1, placeholder1.ref())
 		variables.document.addSection(section2, placeholder2.ref())
 
-		// Now replace by template 2.
-		variables.document.useTemplate(template2)
+		// Now replace by layout 2.
+		variables.document.useLayout(layout2)
 
 		var sections = variables.document.sections()
-		assertEquals(1, StructCount(sections), "the old and new template have one placeholder in common, so there should be one key")
+		assertEquals(1, StructCount(sections), "the old and new layout have one placeholder in common, so there should be one key")
 		assertTrue(sections.keyExists("p1"))
-		assertSame(sections.p1, section1, "the content in the old template should now be in the new template")
+		assertSame(sections.p1, section1, "the content in the old layout should now be in the new layout")
 
 		try {
 			variables.document.addSection(section2, placeholder2.ref())
@@ -109,13 +109,13 @@ component extends="mxunit.framework.TestCase" {
 		var sections = variables.document.sections()
 		assertTrue(sections.keyExists("p3"))
 
-		// Put the old template back in.
-		variables.document.useTemplate(template1)
+		// Put the old layout back in.
+		variables.document.useLayout(layout1)
 		var sections = variables.document.sections()
-		assertEquals(1, StructCount(sections), "the old and new template have one placeholder in common, so there should be one key")
+		assertEquals(1, StructCount(sections), "the old and new layout have one placeholder in common, so there should be one key")
 		assertTrue(sections.keyExists("p1"))
-		assertSame(sections.p1, section1, "the content in the old template should now be in the new template")
-		// Test again that we can't add to placeholders of the previous template, and that adding to placeholders of the new template is possible.
+		assertSame(sections.p1, section1, "the content in the old layout should now be in the new layout")
+		// Test again that we can't add to placeholders of the previous layout, and that adding to placeholders of the new layout is possible.
 		try {
 			variables.document.addSection(section2, placeholder3.ref())
 			fail("exception should have been thrown")

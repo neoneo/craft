@@ -10,13 +10,13 @@ component extends="mxunit.framework.TestCase" {
 		variables.placeholder5 = mock(CreateObject("Placeholder")).ref().returns("p5")
 		variables.placeholder6 = mock(CreateObject("Placeholder")).ref().returns("p6")
 
-		var template = mock(CreateObject("Template")).placeholders().returns([placeholder1, placeholder2])
-		variables.document = new DocumentTemplate(template)
+		var layout = mock(CreateObject("Layout")).placeholders().returns([placeholder1, placeholder2])
+		variables.document = new DocumentLayout(layout)
 	}
 
-	public void function Placeholders_Should_ReturnTemplatePlaceholders() {
+	public void function Placeholders_Should_ReturnLayoutPlaceholders() {
 		var placeholders = variables.document.placeholders()
-		assertEquals(2, placeholders.len(), "since no placeholders are filled, the placeholders of the template should be returned")
+		assertEquals(2, placeholders.len(), "since no placeholders are filled, the placeholders of the layout should be returned")
 
 		// Fill one of the placeholders.
 		var section2 = mock(CreateObject("Section")).placeholders().returns([placeholder3, placeholder4])
@@ -30,21 +30,21 @@ component extends="mxunit.framework.TestCase" {
 	public void function Placeholders_Should_ReturnPlaceholdersRecursively() {
 		// Fill placeholder2.
 		var section2 = mock(CreateObject("Section")).placeholders().returns([variables.placeholder3])
-		variables.document.addSection(section2, variables.placeholder2.ref()) // This now contains p1 (from the parent template) and p3.
+		variables.document.addSection(section2, variables.placeholder2.ref()) // This now contains p1 (from the parent layout) and p3.
 
-		var document2 = new DocumentTemplate(variables.document)
+		var document2 = new DocumentLayout(variables.document)
 		var placeholders = document2.placeholders()
 		assertEquals(2, placeholders.len(), "the number of placeholders should equal that of variables.document")
 		assertHasPlaceholders(["p1", "p3"], placeholders)
 
-		// Placeholder p1 belongs to the template.
+		// Placeholder p1 belongs to the layout.
 		var section1 = mock(CreateObject("Section")).placeholders().returns([])
 		document2.addSection(section1, variables.placeholder1.ref())
 		var placeholders = document2.placeholders()
 		assertEquals(1, placeholders.len(), "p1 is replaced by nil, so the same number of placeholders should be reduced by 1")
 		assertHasPlaceholders(["p3"], placeholders)
 
-		// Placeholder p3 belongs to the parent document template.
+		// Placeholder p3 belongs to the parent document layout.
 		var section3 = mock(CreateObject("Section")).placeholders().returns([variables.placeholder4])
 		document2.addSection(section3, variables.placeholder3.ref())
 		var placeholders = document2.placeholders()
@@ -52,7 +52,7 @@ component extends="mxunit.framework.TestCase" {
 		assertHasPlaceholders(["p4"], placeholders)
 
 		// Just to be sure, go one level deeper.
-		var document3 = new DocumentTemplate(document2)
+		var document3 = new DocumentLayout(document2)
 		var placeholders = document3.placeholders()
 		assertEquals(1, placeholders.len(), "the number of placeholders should equal that of document2")
 		assertHasPlaceholders(["p4"], placeholders)

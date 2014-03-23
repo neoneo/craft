@@ -1,5 +1,5 @@
 import craft.core.content.Document;
-import craft.core.content.TemplateContent;
+import craft.core.content.LayoutContent;
 
 import craft.xml.Element;
 import craft.xml.Loader;
@@ -11,12 +11,12 @@ component extends="Element" {
 
 	public void function construct(required Repository repository) {
 
-		var templateRef = templateRef()
-		if (arguments.repository.hasElement(templateRef)) {
-			var template = arguments.repository.element(templateRef)
+		var layoutRef = layoutRef()
+		if (arguments.repository.hasElement(layoutRef)) {
+			var layout = arguments.repository.element(layoutRef)
 
-			if (template.ready() && childrenReady()) {
-				var document = createDocument(template.product())
+			if (layout.ready() && childrenReady()) {
+				var document = createDocument(layout.product())
 
 				// The child elements are all section elements. Each section element may contain multiple child elements.
 				for (var sectionElement in children()) {
@@ -34,11 +34,11 @@ component extends="Element" {
 		super.add(arguments.element)
 	}
 
-	private String function templateRef() {
+	private String function layoutRef() {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
-	private Document function createDocument(required TemplateContent templateContent) {
+	private Document function createDocument(required LayoutContent layoutContent) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 

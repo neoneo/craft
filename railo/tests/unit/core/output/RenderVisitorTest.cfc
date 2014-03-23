@@ -63,24 +63,24 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals("done", variables.visitor.content())
 	}
 
-	public void function VisitTemplate_Should_CallSectionAccept() {
+	public void function VisitLayout_Should_CallSectionAccept() {
 		var section = mock(CreateObject("Section")).accept(variables.visitor)
-		var template = mock(CreateObject("Template")).section().returns(section)
+		var layout = mock(CreateObject("Layout")).section().returns(section)
 
-		variables.visitor.visitTemplate(template)
+		variables.visitor.visitLayout(layout)
 
 		section.verify().accept(variables.visitor)
 	}
 
-	public void function VisitDocument_Should_CallTemplateAccept() {
-		var template = mock(CreateObject("Template")).accept(variables.visitor)
+	public void function VisitDocument_Should_CallLayoutAccept() {
+		var layout = mock(CreateObject("Layout")).accept(variables.visitor)
 		var document = mock(CreateObject("Document"))
-			.template().returns(template)
+			.layout().returns(layout)
 			.sections().returns({})
 
 		variables.visitor.visitDocument(document)
 
-		template.verify().accept(variables.visitor)
+		layout.verify().accept(variables.visitor)
 	}
 
 	public void function VisitPlaceholder_ShouldNot_CallAccept_When_NoSections() {
@@ -94,12 +94,12 @@ component extends="mxunit.framework.TestCase" {
 	public void function VisitPlaceholder_Should_CallSectionAccept_When_MatchingSection() {
 		// To add sections to the visitor we have to utilize a document mock.
 		// The document will contain a section linked to placeholder 'p2'.
-		// The template is needed because the visitor will try to get it from the document while visiting.
-		var template = mock(CreateObject("Template")).accept(variables.visitor)
+		// The layout is needed because the visitor will try to get it from the document while visiting.
+		var layout = mock(CreateObject("Layout")).accept(variables.visitor)
 		var section = mock(CreateObject("Section")).accept(variables.visitor)
 		var document = mock(CreateObject("Document"))
 			.sections().returns({"p2": section})
-			.template().returns(template)
+			.layout().returns(layout)
 
 		// Add the section by visiting the document. Unfortunately the visitor does not provide another way to do this.
 		variables.visitor.visitDocument(document)

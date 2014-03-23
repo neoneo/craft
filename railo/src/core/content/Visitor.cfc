@@ -3,7 +3,7 @@ import craft.core.content.Document;
 import craft.core.content.Leaf;
 import craft.core.content.Placeholder;
 import craft.core.content.Section;
-import craft.core.content.Template;
+import craft.core.content.Layout;
 
 interface {
 
@@ -12,6 +12,6 @@ interface {
 	public void function visitLeaf(required Leaf leaf);
 	public void function visitPlaceholder(required Placeholder placeholder);
 	public void function visitSection(required Section section);
-	public void function visitTemplate(required Template template);
+	public void function visitLayout(required Layout layout);
 
 }
