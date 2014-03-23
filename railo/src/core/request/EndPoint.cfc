@@ -1,52 +1,55 @@
 component {
 
-	public void function init(required PathSegment root, required Array extensions) {
+	public void function init(required PathSegment root) {
 
-		variables.root = arguments.root
-		variables.extensions = arguments.extensions
-
-		variables.extensionNames = {}
-		for (var contentType in variables.extensions) {
-			variables.extensionNames[contentType.name()] = contentType
-		}
+		variables._root = arguments.root
 
 		// Merge the parameters from the form and url scopes.
-		variables.parameters = Duplicate(form, false)
-		variables.parameters.append(url, false)
+		variables._parameters = Duplicate(form, false)
+		variables._parameters.append(url, false)
+
+		variables._mimeTypes = {
+			html: "text/html",
+			json: "application/json",
+			xml: "application/xml",
+			pdf: "application/pdf",
+			txt: "text/plain"
+		}
 
 	}
 
-	public Struct function parsePath() {
+	public PathSegment function parsePath() {
 
 		var segments = ListToArray(path(), "/")
-		var contentType = variables.extensions.first() // The default content type.
 
 		if (!segments.isEmpty()) {
 			var lastSegment = segments.last()
-			var extensionName = ListLast(lastSegment, ".")
+			var extension = ListLast(lastSegment, ".")
 
 			// The content type cannot be the whole last segment.
-			if (extensionName != lastSegment && variables.extensionNames.keyExists(extensionName)) {
-				contentType = variables.extensionNames[extensionName]
+			if (extension != lastSegment) {
 				// Remove the content type from the last segment.
-				segments[segments.len()] = Left(lastSegment, Len(lastSegment) - Len(extensionName) - 1)
+				segments[segments.len()] = Left(lastSegment, Len(lastSegment) - Len(extension) - 1)
 			}
 		}
 
 		// Traverse the path to get the path segment that applies to this request.
-		var pathSegment = variables.root.match(segments) ? variables.root : traverse(segments, variables.root)
+		var pathSegment = variables._root.match(segments) ? variables._root : traverse(segments, variables._root)
 		if (IsNull(pathSegment)) {
-			Throw("Path segment not found", "PathSegmentNotFoundException")
+			Throw("Path segment not found", "FileNotFoundException")
 		}
 
-		return {
-			pathSegment = pathSegment,
-			contentType = contentType
-		}
+		return pathSegment
+	}
+
+	public String function extension() {
+		var extension = ListLast(path(), ".")
+
+		return variables._mimeTypes.keyExists(extension) ? extension : "html"
 	}
 
 	public Struct function requestParameters() {
-		return variables.parameters
+		return variables._parameters
 	}
 
 	public String function requestMethod() {
@@ -57,7 +60,7 @@ component {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
-	public String function createURL(required String path, Struct parameters, String extensionName) {
+	public String function createURL(required String path, Struct parameters, String extension) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
@@ -66,11 +69,12 @@ component {
 	/**
 	 * Traverses the path to find the applicable path segment. If no path segment is found, returns null.
 	 */
-	private any function traverse(required Array path, required PathSegment pathSegment) {
+	private Any function traverse(required Array path, required PathSegment pathSegment) {
 
-		var result = arguments.pathSegment
-		if (!arguments.path.isEmpty()) {
-			result = NullValue()
+		if (arguments.path.isEmpty()) {
+			return arguments.pathSegment
+		} else {
+			var result = null
 
 			var children = arguments.pathSegment.children()
 			var count = children.len()
@@ -87,16 +91,17 @@ component {
 						var parameterName = child.parameterName()
 						if (!IsNull(parameterName)) {
 							// Get the part of the path that was actually matched by the current path segment.
-							variables.parameters[parameterName] = arguments.path.mid(1, segmentCount).toList("/")
+							variables._parameters[parameterName] = arguments.path.mid(1, segmentCount).toList("/")
 						}
 					}
 				}
 
 				i += 1
 			}
+
+			return result
 		}
 
-		return result
 	}
 
 }

@@ -1,4 +1,6 @@
-import craft.core.layout.Context;
+import craft.core.output.View;
+
+import craft.core.request.Context;
 
 /**
  * Base class for the composite pattern.
@@ -31,69 +33,40 @@ component implements="Content" {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
-	public Struct function model(required Context context, required Struct parentModel) {
-		return this[arguments.context.requestMethod() & "Model"](arguments.context, arguments.parentModel)
+	public View function view(required Context context) {
+		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
-	public Struct function view(required Context context) {
-		return this[arguments.context.requestMethod() & "View"](arguments.context)
+	public Struct function model(required Context context) {
+		return Invoke(this, arguments.context.requestMethod(), [arguments.context])
 	}
 
 	/**
 	 * Collects data for a GET request.
 	 */
-	public Struct function getModel(required Context context, required Struct parentModel) {
+	public Struct function get(required Context context) {
 		Throw("Not supported", "UnsupportedOperationException")
 	}
 
 	/**
 	 * Collects data for a POST request.
 	 */
-	public Struct function postModel(required Context context, required Struct parentModel) {
+	public Struct function post(required Context context) {
 		Throw("Not supported", "UnsupportedOperationException")
 	}
 
 	/**
 	 * Collects data for a PUT request.
 	 */
-	public Struct function putModel(required Context context, required Struct parentModel) {
+	public Struct function put(required Context context) {
 		Throw("Not supported", "UnsupportedOperationException")
 	}
 
 	/**
 	 * Collects data for a DELETE request.
 	 */
-	public Struct function deleteModel(required Context context, required Struct parentModel) {
+	public Struct function delete(required Context context) {
 		Throw("Not supported", "UnsupportedOperationException")
 	}
-
-	/**
-	 * Returns the name of the view for a GET request.
-	 */
-	public String function getView(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
-	}
-
-	/**
-	 * Returns the name of the view for a POST request.
-	 */
-	public String function postView(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
-	}
-
-	/**
-	 * Returns the name of the view for a PUT request.
-	 */
-	public String function putView(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
-	}
-
-	/**
-	 * Returns the name of the view for a DELETE request.
-	 */
-	public String function deleteView(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
-	}
-
 
 }

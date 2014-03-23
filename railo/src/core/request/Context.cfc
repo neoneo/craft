@@ -10,9 +10,8 @@ component {
 
 		variables._endPoint = arguments.endPoint
 
-		var info = arguments.endPoint.parsePath()
-		variables._pathSegment = info.pathSegment
-		variables._contentType = info.contentType
+		variables._pathSegment = arguments.endPoint.parsePath()
+		variables._extension = arguments.endPoint.extension()
 		variables._requestMethod = arguments.endPoint.requestMethod()
 		variables._parameters = arguments.endPoint.requestParameters()
 
@@ -26,8 +25,8 @@ component {
 		return variables._parameters
 	}
 
-	public ContentType function contentType() {
-		return variables._contentType
+	public String function extension() {
+		return variables._extension
 	}
 
 	public String function requestMethod() {

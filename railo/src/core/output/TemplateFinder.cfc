@@ -31,27 +31,26 @@ component {
 		}
 	}
 
-	public String function get(required String view, required ContentType contentType) {
+	public String function get(required String template) {
 
-		var key = arguments.view & "." & arguments.contentType.name()
-		if (!variables._cache.keyExists(key)) {
-			var template = locate(arguments.view, arguments.contentType)
+		if (!variables._cache.keyExists(arguments.template)) {
+			var template = locate(arguments.template)
 			if (IsNull(template)) {
-				Throw("View '#arguments.view#' for contentType '#arguments.contentType.name()#' not found", "FileNotFoundException")
+				Throw("Template '#arguments.template#' not found", "FileNotFoundException")
 			}
-			variables._cache[key] = template
+			variables._cache[arguments.template] = template
 		}
 
-		return variables._cache[key]
+		return variables._cache[arguments.template]
 	}
 
-	private Any function locate(required String view, required ContentType contentType) {
+	private Any function locate(required String template) {
 
 		var template = null
 
 		for (var path in variables._locations) {
 			var directory = variables._locations[path]
-			var filename = arguments.view & "." & arguments.contentType.name() & "." & variables._extension
+			var filename = arguments.template & "." & variables._extension
 			if (FileExists(directory & "/" & filename)) {
 				template = path & "/" & filename
 				break;
@@ -61,8 +60,8 @@ component {
 		return template
 	}
 
-	public Boolean function exists(required String view, required ContentType contentType) {
-		return !IsNull(locate(arguments.view, arguments.contentType))
+	public Boolean function exists(required String template) {
+		return !IsNull(locate(arguments.template))
 	}
 
 }
