@@ -45,7 +45,7 @@ component implements="Visitor" {
 		var model = arguments.leaf.model(variables._context)
 		var view = arguments.leaf.view(variables._context)
 
-		variables._content = view.render(model, variables._context)
+		variables._content = view.render(model, variables._context.requestMethod())
 		variables._contents.append(variables._content)
 
 	}
@@ -67,7 +67,7 @@ component implements="Visitor" {
 		// Put the content on the model so the view can include it.
 		model.__content__ = variables._contents
 
-		variables._content = view.render(model, variables._context)
+		variables._content = view.render(model, variables._context.requestMethod())
 
 		// Revert state.
 		variables._contents = contents

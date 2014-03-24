@@ -38,7 +38,7 @@ component implements="Content" {
 	}
 
 	public Struct function model(required Context context) {
-		return Invoke(this, arguments.context.requestMethod(), [arguments.context])
+		return this[arguments.context.requestMethod()](arguments.context)
 	}
 
 	/**

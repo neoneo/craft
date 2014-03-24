@@ -7,19 +7,19 @@ component {
 
 	public void function clear() {
 		variables._cache = {}
-		variables._locations = StructNew("linked") // The order of the locations is important.
+		variables._mappings = StructNew("linked") // The order of the locations is important.
 	}
 
 	public void function addMapping(required String mapping) {
-		if (variables._locations.keyExists(arguments.mapping)) {
+		if (variables._mappings.keyExists(arguments.mapping)) {
 			Throw("Mapping '#arguments.mapping# already exists", "AlreadyBoundException")
 		}
-		variables._locations[arguments.mapping] = ExpandPath(arguments.mapping)
+		variables._mappings[arguments.mapping] = ExpandPath(arguments.mapping)
 	}
 
 	public void function removeMapping(required String mapping) {
-		if (variables._locations.keyExists(arguments.mapping)) {
-			variables._locations.delete(arguments.mapping)
+		if (variables._mappings.keyExists(arguments.mapping)) {
+			variables._mappings.delete(arguments.mapping)
 			// The mapping serves as the prefix for all keys to be removed from the cache.
 			var prefix = arguments.mapping
 			// Get a key array first and then delete from the cache.
@@ -46,16 +46,17 @@ component {
 
 	private Any function locate(required String template) {
 
+		var filename = arguments.template & "." & variables._extension
 		var template = null
 
-		for (var path in variables._locations) {
-			var directory = variables._locations[path]
-			var filename = arguments.template & "." & variables._extension
-			if (FileExists(directory & "/" & filename)) {
-				template = path & "/" & filename
-				break;
+		variables._mappings.some(function (mapping, directory) {
+			if (FileExists(arguments.directory & "/" & filename)) {
+				template = arguments.mapping & "/" & filename
+				return true
 			}
-		}
+
+			return false
+		});
 
 		return template
 	}
