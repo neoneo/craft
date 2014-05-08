@@ -1,6 +1,6 @@
 import craft.core.content.Composite;
 
-import craft.xml.Loader;
+import craft.markup.Loader;
 
 /**
  * Base implementation of an element that produces a `Composite`.

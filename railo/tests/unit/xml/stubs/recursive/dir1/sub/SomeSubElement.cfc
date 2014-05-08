@@ -1,6 +1,6 @@
 /**
  * This element should be registered.
  */
-component extends="craft.xml.Element" tag="dir1sub" {
+component extends="craft.markup.Element" tag="dir1sub" {
 
 }

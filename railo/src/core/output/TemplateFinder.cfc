@@ -7,7 +7,7 @@ component {
 
 	public void function clear() {
 		variables._cache = {}
-		variables._mappings = StructNew("linked") // The order of the locations is important.
+		variables._mappings = StructNew("linked") // The order of the mappings is important.
 	}
 
 	public void function addMapping(required String mapping) {
@@ -24,7 +24,7 @@ component {
 			var prefix = arguments.mapping
 			// Get a key array first and then delete from the cache.
 			variables._cache.keyArray().each(function (key) {
-				if (Left(arguments.key, Len(prefix)) == prefix) {
+				if (arguments.key.left(prefix.len()) == prefix) {
 					variables._cache.delete(arguments.key)
 				}
 			})

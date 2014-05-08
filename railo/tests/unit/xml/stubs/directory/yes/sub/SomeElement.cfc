@@ -1,6 +1,6 @@
 /**
  * This element should be registered.
  */
-component extends="craft.xml.Element" tag="yessub" {
+component extends="craft.markup.Element" tag="yessub" {
 
 }

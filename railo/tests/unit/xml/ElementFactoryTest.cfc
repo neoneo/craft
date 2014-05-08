@@ -1,4 +1,4 @@
-import craft.xml.ElementFactory;
+import craft.markup.ElementFactory;
 
 component extends="mxunit.framework.TestCase" {
 

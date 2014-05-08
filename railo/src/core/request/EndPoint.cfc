@@ -26,10 +26,10 @@ component {
 			var lastSegment = segments.last()
 			var extension = ListLast(lastSegment, ".")
 
-			// The content type cannot be the whole last segment.
+			// The extension cannot be the whole last segment.
 			if (extension != lastSegment) {
-				// Remove the content type from the last segment.
-				segments[segments.len()] = Left(lastSegment, Len(lastSegment) - Len(extension) - 1)
+				// Remove the extension from the last segment.
+				segments[segments.len()] = lastSegment.left(lastSegment.len() - extension.len() - 1)
 			}
 		}
 

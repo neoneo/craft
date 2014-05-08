@@ -1,5 +1,5 @@
-import craft.xml.Element;
-import craft.xml.Loader;
+import craft.markup.Element;
+import craft.markup.Loader;
 
 component extends="Element" accessors="true" tag="section" {
 

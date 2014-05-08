@@ -1,4 +1,4 @@
-import craft.xml.Element;
+import craft.markup.Element;
 
 component {
 

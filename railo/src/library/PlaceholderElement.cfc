@@ -1,6 +1,6 @@
 import craft.core.content.Placeholder;
 
-import craft.xml.Loader;
+import craft.markup.Loader;
 
 component extends="ComponentElement" accessors="true" tag="placeholder" {
 

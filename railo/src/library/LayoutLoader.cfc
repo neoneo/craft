@@ -1,9 +1,9 @@
 import craft.core.content.Content;
 
-import craft.xml.Builder;
-import craft.xml.Element;
-import craft.xml.ElementFactory;
-import craft.xml.Repository;
+import craft.markup.Builder;
+import craft.markup.Element;
+import craft.markup.ElementFactory;
+import craft.markup.Repository;
 
 component {
 

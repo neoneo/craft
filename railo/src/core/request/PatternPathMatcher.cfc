@@ -1,4 +1,4 @@
-component implements="PathMatcher" accessors="true" {
+component implements="PathMatcher" {
 
 	public void function init(required String pattern) {
 		variables._pattern = arguments.pattern

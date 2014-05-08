@@ -3,6 +3,6 @@
  *
  * @abstract
  */
-component extends="craft.xml.Element" tag="abstractelement" {
+component extends="craft.markup.Element" tag="abstractelement" {
 
 }

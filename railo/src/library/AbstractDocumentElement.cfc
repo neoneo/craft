@@ -1,8 +1,8 @@
 import craft.core.content.Document;
 import craft.core.content.LayoutContent;
 
-import craft.xml.Element;
-import craft.xml.Loader;
+import craft.markup.Element;
+import craft.markup.Loader;
 
 /**
  * @abstract

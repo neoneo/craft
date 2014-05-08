@@ -1,6 +1,6 @@
 import craft.core.content.Component;
 
-import craft.xml.Element;
+import craft.markup.Element;
 
 /**
  * @abstract
