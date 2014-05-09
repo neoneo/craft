@@ -34,4 +34,11 @@ component {
 		Throw("Method Not Allowed", "UnsupportedOperationException")
 	}
 
+	/**
+	 * Returns the output for a PATCH request.
+	 */
+	public Any function patch(required Struct model) {
+		Throw("Method Not Allowed", "UnsupportedOperationException")
+	}
+
 }

@@ -1,4 +1,4 @@
-component implements="Renderer" {
+component implements="TemplateRenderer" {
 
 	public void function init(required TemplateFinder templateFinder) {
 		variables._templateFinder = arguments.templateFinder

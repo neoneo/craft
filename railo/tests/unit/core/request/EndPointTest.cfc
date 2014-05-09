@@ -6,8 +6,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
 		variables.root = mock(CreateObject("PathSegment"))
-		variables.contentTypes = [mock(CreateObject("ContentTypeStub")).name().returns("test")]
-		variables.endPoint = new EndPoint(variables.root, variables.contentTypes)
+		variables.endPoint = new EndPoint(variables.root)
 	}
 
 	public void function RequestParameters_Should_ReturnMergedUrlAndFormScopes() {
@@ -20,7 +19,7 @@ component extends="mxunit.framework.TestCase" {
 		form.b = "string 1"
 
 		// We need a new end point because the merge takes place in the constructor.
-		var endPoint = new EndPoint(variables.root, variables.contentTypes)
+		var endPoint = new EndPoint(variables.root)
 
 		var parameters = endPoint.requestParameters()
 		var merged = {a: 1, b: "string 1", x: 2, y: "string 2"}

@@ -55,7 +55,7 @@ component implements="Visitor" {
 		// Copy state in local variables.
 		var contents = variables._contents
 
-		var model = arguments.composite.model(variables._context, variables._model)
+		var model = arguments.composite.model(variables._context)
 		var view = arguments.composite.view(variables._context)
 
 		// Overwrite state.

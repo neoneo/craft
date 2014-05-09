@@ -5,33 +5,28 @@ import craft.core.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.contentType = mock(new ContentTypeStub())
 		variables.context = mock(CreateObject("Context"))
 			.requestMethod().returns("get")
-			.contentType().returns(variables.contentType)
-		variables.renderer = mock(new RendererStub())
 
-		variables.visitor = new RenderVisitor(variables.renderer, variables.context)
+		variables.visitor = new RenderVisitor(variables.context)
 	}
 
 	public void function VisitLeaf_Should_CallModelAndView() {
 		var model = {key: 1}
+		var view = mock(CreateObject("TemplateView"))
+			.render("{struct}", "{string}").returns("done")
 		var leaf = mock(CreateObject("Leaf"))
-			.model("{any}", "{struct}").returns(model) // Don't know why I can't pass in variables.context as the first argument..
-			.view(variables.context).returns("leaf") // And here it seems to work.
-
-		// Add mocking to the renderer. This is the call that should happen for this leaf.
-		// Couldn't get argument matching to work properly here.
-		variables.renderer.render("{+}").returns("done")
+			.model("{any}").returns(model) // Don't know why I can't pass in variables.context as the first argument..
+			.view("{any}").returns(view)
 
 		// Call the component under test.
 		variables.visitor.visitLeaf(leaf)
 
 		leaf.verify()
-			.model("{any}", "{struct}")
-			.view(variables.context)
-		variables.renderer.verify()
-			.render("{+}")
+			.model("{any}")
+			.view("{any}")
+		view.verify()
+			.render("{struct}", "{string}")
 
 		// The visitor should make the rendered output ('done') available.
 		assertEquals("done", variables.visitor.content())
@@ -39,26 +34,21 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function VisitComposite_Should_CallModelViewAndTraverse() {
 		var model = {key: 1}
+		var view = mock(CreateObject("TemplateView"))
+			.render("{struct}", "{string}").returns("done")
 		var composite = mock(CreateObject("Composite"))
-			.model("{any}", "{struct}").returns(model)
-			.view(variables.context).returns("composite")
+			.model("{any}").returns(model)
+			.view("{any}").returns(view)
 			.traverse(variables.visitor)
-		// Mock contentType.merge. The visitor calls it to merge the output of the children (an empty array at this point).
-		variables.contentType.merge("{array}").returns("")
-
-		variables.renderer
-			.render("{+}").returns("done")
-			.contentType("{+}").returns(variables.contentType)
 
 		variables.visitor.visitComposite(composite)
 
 		composite.verify()
-			.model("{any}", "{struct}")
-			.view(variables.context)
+			.model("{any}")
+			.view("{any}")
 			.traverse(variables.visitor)
-		variables.contentType.verify().merge("{array}")
-		variables.renderer.verify()
-			.render("{+}")
+		view.verify()
+			.render("{struct}", "{string}")
 
 		assertEquals("done", variables.visitor.content())
 	}

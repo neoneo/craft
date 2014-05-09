@@ -3,19 +3,17 @@ import craft.core.output.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
-		variables.json = mock(CreateObject("ContentTypeStub"))
-			.name().returns("json")
-		variables.viewFinder = mock(CreateObject("ViewFinder"))
-			.get("renderer", variables.json).returns("/crafttests/unit/core/output/viewstubs/renderer.json.cfm")
+		variables.templateFinder = mock(CreateObject("TemplateFinder"))
+			.get("renderer").returns("/crafttest/unit/core/output/viewstubs/renderer.cfm")
 	}
 
 	public void function setUp() {
-		variables.renderer = new CFMLRenderer(variables.viewFinder)
+		variables.renderer = new CFMLRenderer(variables.templateFinder)
 	}
 
 	public void function Render_Should_ReturnOutputString() {
-		var output = variables.renderer.render("renderer", {}, variables.json)
-		variables.viewFinder.verify().get("renderer", variables.json)
+		var output = variables.renderer.render("renderer", {})
+		variables.templateFinder.verify().get("renderer")
 		assertTrue(IsSimpleValue(output), "output should be a string")
 	}
 
@@ -26,7 +24,7 @@ component extends="mxunit.framework.TestCase" {
 			boolean: true,
 			date: Now()
 		}
-		var output = variables.renderer.render("renderer", model, variables.json)
+		var output = variables.renderer.render("renderer", model)
 		assertTrue(IsJSON(output), "the output should be a valid JSON string")
 		var deserialized = DeserializeJSON(output)
 		for (var key in model) {
