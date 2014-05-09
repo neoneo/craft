@@ -1,8 +1,8 @@
 component {
 
-	public void function init(required ElementFactory factory, required Repository repository) {
+	public void function init(required ElementFactory factory, required Scope scope) {
 		variables._factory = arguments.factory
-		variables._repository = arguments.repository
+		variables._scope = arguments.scope
 		variables._builder = new Builder()
 	}
 
@@ -10,9 +10,9 @@ component {
 
 		var node = XMLParse(FileRead(arguments.path)).xmlRoot
 		var element = variables._factory.construct(node)
-		variables._builder.build(element, variables._repository)
+		variables._builder.build(element, variables._scope)
 
-		variables._repository.store(element)
+		variables._scope.store(element)
 
 		return element
 	}

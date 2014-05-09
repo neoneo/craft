@@ -9,11 +9,11 @@ import craft.markup.Loader;
  */
 component extends="Element" {
 
-	public void function construct(required Repository repository) {
+	public void function construct(required Scope scope) {
 
 		var layoutRef = layoutRef()
-		if (arguments.repository.hasElement(layoutRef)) {
-			var layout = arguments.repository.element(layoutRef)
+		if (arguments.scope.hasElement(layoutRef)) {
+			var layout = arguments.scope.element(layoutRef)
 
 			if (layout.ready() && childrenReady()) {
 				var document = createDocument(layout.product())

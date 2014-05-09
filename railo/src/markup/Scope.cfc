@@ -1,6 +1,6 @@
 component {
 
-	public void function init(Repository parent) {
+	public void function init(Scope parent) {
 		variables._parent = arguments.parent ?: null
 		variables._elements = {}
 	}
@@ -15,7 +15,7 @@ component {
 			Throw("Element '#arguments.ref#' not found", "NoSuchElementException")
 		}
 
-		// The element exists, so if it does not exist in this repository, we know there is a parent that has it.
+		// The element exists, so if it does not exist in this scope, we know there is a parent that has it.
 		return variables._elements.keyExists(arguments.ref) ? variables._elements[arguments.ref] : variables._parent.element(arguments.ref)
 	}
 

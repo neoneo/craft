@@ -20,12 +20,12 @@ component accessors="true" {
 	}
 
 	/**
-	 * Constructs the `Content` instance. The `Repository` provides access to the other `Element`s in the document.
+	 * Constructs the `Content` instance. The `Scope` provides access to the other `Element`s in the document.
 	 * If construction can be completed, `setProduct()` should be called with the created `Content` instance as its argument.
 	 * This will be the case in most situations. However, an `Element`'s dependencies may not be ready yet. In this case,
 	 * do not call `setProduct()` so construction is retried later.
 	 */
-	public void function construct(required Repository repository) {
+	public void function construct(required Scope scope) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 

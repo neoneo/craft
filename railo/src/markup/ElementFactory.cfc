@@ -29,8 +29,8 @@ component {
 				// The directories key contains a comma separated list of directories that should exist below the current one.
 				var directories = GetProfileString(settingsFile, "craft", "directories")
 				var registerPaths = ListToArray(directories).map(function (directory) {
-					var directory = Trim(arguments.directory)
-					var separator = Left(directory, 1) == "/" ? "" : "/"
+					var directory = arguments.directory.trim()
+					var separator = directory.startsWith("/") ? "" : "/"
 					return path & separator & directory
 				})
 			} else {
@@ -39,7 +39,7 @@ component {
 
 			registerPaths.each(function (registerPath) {
 				var registerPath = arguments.registerPath
-				var subdirectory = Replace(registerPath, path, "")
+				var subdirectory = registerPath.replace(path, "")
 				// Pick up all components in this directory (recursively) and keep the ones that extend Element.
 				DirectoryList(registerPath, true, "path", "*.cfc").each(function (filePath) {
 					// Construct the component name. First replace the directory with the mapping, then make that a dot delimited path.

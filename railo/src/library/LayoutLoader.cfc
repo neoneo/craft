@@ -3,13 +3,13 @@ import craft.core.content.Content;
 import craft.markup.Builder;
 import craft.markup.Element;
 import craft.markup.ElementFactory;
-import craft.markup.Repository;
+import craft.markup.Scope;
 
 component {
 
-	public void function init(required ElementFactory factory, required Repository repository) {
+	public void function init(required ElementFactory factory, required Scope scope) {
 		variables._factory = arguments.factory
-		variables._repository = arguments.repository
+		variables._scope = arguments.scope
 		variables._builder = new Builder()
 	}
 
@@ -38,9 +38,9 @@ component {
 			for (var path in remaining) {
 				var element = remaining[path]
 				if (canLoad(element)) {
-					builder.build(element, variables._repository)
+					builder.build(element, variables._scope)
 					// All elements are layouts, with a required ref. We keep all of them available.
-					variables._repository.store(element)
+					variables._scope.store(element)
 				} else {
 					deferred[path] = element
 				}
@@ -70,7 +70,7 @@ component {
 		if (IsInstanceOf(arguments.element, "LayoutElement")) {
 			return true
 		} else {
-			return IsNull(arguments.element.getExtends()) || variables._repository.hasElement(arguments.element.getExtends())
+			return IsNull(arguments.element.getExtends()) || variables._scope.hasElement(arguments.element.getExtends())
 		}
 	}
 

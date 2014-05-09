@@ -5,7 +5,7 @@ component extends="Element" accessors="true" tag="section" {
 
 	property String ref required="true";
 
-	public void function construct(required Repository repository) {
+	public void function construct(required Scope scope) {
 
 		if (childrenReady()) {
 			var section = new Section()

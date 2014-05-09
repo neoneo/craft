@@ -6,7 +6,7 @@ component extends="ComponentElement" accessors="true" tag="placeholder" {
 
 	property String ref required="true";
 
-	public void function construct(required Repository repository) {
+	public void function construct(required Scope scope) {
 		setProduct(new Placeholder(getRef()))
 	}
 

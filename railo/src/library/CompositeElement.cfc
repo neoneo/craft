@@ -9,7 +9,7 @@ import craft.markup.Loader;
  */
 component extends="ComponentElement" {
 
-	public void function construct(required Repository repository) {
+	public void function construct(required Scope scope) {
 
 		if (childrenReady()) {
 			var composite = createComposite(arguments.loader)
