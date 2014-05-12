@@ -10,9 +10,10 @@ import craft.core.request.Context;
 
 component implements="Visitor" {
 
-	public void function init(required Context context) {
+	public void function init(required Context context, required ViewFinder viewFinder) {
 
 		variables._context = arguments.context
+		variables._viewFinder = arguments.viewFinder
 
 		// Define state. The following state variables will be modified during component traversal.
 		// The sections in Document instances are kept, so that Placeholder instances can pick them up.
@@ -43,7 +44,7 @@ component implements="Visitor" {
 	public void function visitLeaf(required Leaf leaf) {
 
 		var model = arguments.leaf.model(variables._context)
-		var view = arguments.leaf.view(variables._context)
+		var view = variables._viewFinder.get(arguments.leaf.view(variables._context))
 
 		variables._content = view.render(model, variables._context.requestMethod())
 		variables._contents.append(variables._content)
@@ -56,7 +57,7 @@ component implements="Visitor" {
 		var contents = variables._contents
 
 		var model = arguments.composite.model(variables._context)
-		var view = arguments.composite.view(variables._context)
+		var view = variables._viewFinder.get(arguments.composite.view(variables._context))
 
 		// Overwrite state.
 		variables._contents = []

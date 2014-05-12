@@ -7,17 +7,20 @@ component extends="mxunit.framework.TestCase" {
 	public void function setUp() {
 		variables.context = mock(CreateObject("Context"))
 			.requestMethod().returns("get")
+		variables.viewFinder = mock(CreateObject("ViewFinder"))
 
-		variables.visitor = new RenderVisitor(variables.context)
+		variables.visitor = new RenderVisitor(variables.context, variables.viewFinder)
 	}
 
 	public void function VisitLeaf_Should_CallModelAndView() {
 		var model = {key: 1}
-		var view = mock(CreateObject("TemplateView"))
+		var view = mock(CreateObject("View"))
 			.render("{struct}", "{string}").returns("done")
 		var leaf = mock(CreateObject("Leaf"))
 			.model("{any}").returns(model) // Don't know why I can't pass in variables.context as the first argument..
-			.view("{any}").returns(view)
+			.view("{any}").returns("view")
+		variables.viewFinder
+			.get("view").returns(view)
 
 		// Call the component under test.
 		variables.visitor.visitLeaf(leaf)
@@ -25,6 +28,8 @@ component extends="mxunit.framework.TestCase" {
 		leaf.verify()
 			.model("{any}")
 			.view("{any}")
+		variables.viewFinder.verify()
+			.get("view")
 		view.verify()
 			.render("{struct}", "{string}")
 
@@ -34,12 +39,14 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function VisitComposite_Should_CallModelViewAndTraverse() {
 		var model = {key: 1}
-		var view = mock(CreateObject("TemplateView"))
+		var view = mock(CreateObject("View"))
 			.render("{struct}", "{string}").returns("done")
 		var composite = mock(CreateObject("Composite"))
 			.model("{any}").returns(model)
-			.view("{any}").returns(view)
+			.view("{any}").returns("view")
 			.traverse(variables.visitor)
+		variables.viewFinder
+			.get("view").returns(view)
 
 		variables.visitor.visitComposite(composite)
 
@@ -47,6 +54,8 @@ component extends="mxunit.framework.TestCase" {
 			.model("{any}")
 			.view("{any}")
 			.traverse(variables.visitor)
+		variables.viewFinder.verify()
+			.get("view")
 		view.verify()
 			.render("{struct}", "{string}")
 

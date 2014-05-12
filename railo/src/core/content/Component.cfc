@@ -33,10 +33,17 @@ component implements="Content" {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
-	public View function view(required Context context) {
+	/**
+	 * Returns the name of the view that renders this component.
+	 */
+	public String function view(required Context context) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 
+	/**
+	 * Returns data for the view. This method is called during tree traversal, and calls the method corresponding
+	 * to the request method. Override this method, or implement the supported methods.
+	 */
 	public Struct function model(required Context context) {
 		return this[arguments.context.requestMethod()](arguments.context)
 	}
@@ -66,6 +73,13 @@ component implements="Content" {
 	 * Collects data for a DELETE request.
 	 */
 	public Struct function delete(required Context context) {
+		Throw("Not supported", "UnsupportedOperationException")
+	}
+
+	/**
+	 * Collects data for a PATCH request.
+	 */
+	public Struct function patch(required Context context) {
 		Throw("Not supported", "UnsupportedOperationException")
 	}
 

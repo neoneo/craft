@@ -1,8 +1,8 @@
 component extends="View" {
 
-	public void function init(required TemplateRenderer renderer, required String template) {
-		variables._renderer = arguments.renderer
+	public void function init(required String template, required TemplateRenderer renderer) {
 		variables._template = arguments.template
+		variables._renderer = arguments.renderer
 	}
 
 	public Any function render(required Struct model, required String method) {

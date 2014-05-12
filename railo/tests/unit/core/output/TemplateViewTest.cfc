@@ -6,10 +6,10 @@ component extends="mxunit.framework.TestCase" {
 		variables.template = "template"
 		variables.model = {key: 1}
 
-		variables.renderer = mock(CreateObject("CFMLRenderer"))
+		variables.renderer = mock(CreateObject("TemplateRendererStub"))
 			.render(variables.template, variables.model).returns("done")
 
-		variables.view = new TemplateView(variables.renderer, variables.template)
+		variables.view = new TemplateView(variables.template, variables.renderer)
 	}
 
 	public void function Render_Should_CallRenderer() {

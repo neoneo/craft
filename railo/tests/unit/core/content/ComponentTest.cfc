@@ -9,7 +9,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function parent_Should_ThrowNoSuchElementException_When_NoParent() {
 		try {
 			var parent = variables.component.parent()
-			fail("parent should throw NoSuchElementException")
+			fail("exception should have been thrown")
 		} catch (Any e) {
 			assertEquals("NoSuchElementException", e.type)
 		}

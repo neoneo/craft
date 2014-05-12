@@ -13,5 +13,4 @@ component extends="Component" {
 		return false
 	}
 
-
 }
