@@ -25,13 +25,12 @@ component extends="mxunit.framework.TestCase" {
 		// Call the component under test.
 		variables.visitor.visitLeaf(leaf)
 
-		leaf.verify()
-			.model("{any}")
-			.view("{any}")
-		variables.viewFinder.verify()
-			.get("view")
-		view.verify()
-			.render("{struct}", "{string}")
+		leaf.verify().model("{any}")
+		leaf.verify().view("{any}")
+
+		variables.viewFinder.verify().get("view")
+
+		view.verify().render("{struct}", "{string}")
 
 		// The visitor should make the rendered output ('done') available.
 		assertEquals("done", variables.visitor.content())
@@ -44,20 +43,20 @@ component extends="mxunit.framework.TestCase" {
 		var composite = mock(CreateObject("Composite"))
 			.model("{any}").returns(model)
 			.view("{any}").returns("view")
+			.view2("{any}").returns("view")
 			.traverse(variables.visitor)
 		variables.viewFinder
 			.get("view").returns(view)
 
 		variables.visitor.visitComposite(composite)
 
-		composite.verify()
-			.model("{any}")
-			.view("{any}")
-			.traverse(variables.visitor)
-		variables.viewFinder.verify()
-			.get("view")
-		view.verify()
-			.render("{struct}", "{string}")
+		composite.verify().model("{any}")
+		composite.verify().view("{any}")
+		composite.verify().traverse(variables.visitor)
+
+		variables.viewFinder.verify().get("view")
+
+		view.verify().render("{struct}", "{string}")
 
 		assertEquals("done", variables.visitor.content())
 	}
@@ -111,7 +110,7 @@ component extends="mxunit.framework.TestCase" {
 
 		var placeholder2 = mock(CreateObject("Placeholder")).ref().returns("p2")
 		variables.visitor.visitPlaceholder(placeholder2)
-		// Now we expect a call the section.
+		// Now we expect a call to the section.
 		section.verify().accept(variables.visitor)
 	}
 

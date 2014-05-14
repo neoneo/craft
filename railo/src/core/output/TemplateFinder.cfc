@@ -24,13 +24,17 @@ component {
 			var prefix = arguments.mapping
 			// Get a key array first and then delete from the cache.
 			variables._cache.keyArray().each(function (key) {
-				if (arguments.key.left(prefix.len()) == prefix) {
+				if (arguments.key.startsWith(prefix)) {
 					variables._cache.delete(arguments.key)
 				}
 			})
 		}
 	}
 
+	/**
+	 * Returns the path including the mapping for the given template.
+	 * The template should be passed in without the extension.
+	 */
 	public String function get(required String template) {
 
 		if (!variables._cache.keyExists(arguments.template)) {
@@ -50,6 +54,7 @@ component {
 		var template = null
 
 		variables._mappings.some(function (mapping, directory) {
+			// TODO: find out how to check for existence in Railo archives.
 			if (FileExists(arguments.directory & "/" & filename)) {
 				template = arguments.mapping & "/" & filename
 				return true

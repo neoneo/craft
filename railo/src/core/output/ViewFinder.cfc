@@ -1,60 +1,66 @@
 component {
 
 	public void function init(TemplateFinder templateFinder, TemplateRenderer templateRenderer) {
+
 		variables._templateFinder = arguments.templateFinder ?: null
 		if (!IsNull(variables._templateFinder)) {
+			// The template renderer is now required for creating template views.
 			if (IsNull(arguments.templateRenderer)) {
 				Throw("TemplateRenderer is required", "IllegalArgumentException")
 			}
 			variables._templateRenderer = arguments.templateRenderer
 		}
+
+		/*
+			The functionality needed for locating view components can be reused from TemplateFinder.
+			We need to map some public methods, and keep a cache of View instances, as the template finder returns paths.
+		*/
+		variables._finder = new TemplateFinder("cfc")
 		clear()
+
 	}
 
 	public void function clear() {
+		variables._finder.clear()
 		variables._cache = {}
-		variables._mappings = StructNew("linked")
 	}
 
-	// TODO: addMapping and removeMapping duplicate code in TemplateFinder.
 	public void function addMapping(required String mapping) {
-		if (variables._mappings.keyExists(arguments.mapping)) {
-			Throw("Mapping '#arguments.mapping# already exists", "AlreadyBoundException")
-		}
-		variables._mappings[arguments.mapping] = ExpandPath(arguments.mapping)
+		variables._finder.addMapping(arguments.mapping)
 	}
 
 	public void function removeMapping(required String mapping) {
-		if (variables._mappings.keyExists(arguments.mapping)) {
-			variables._mappings.delete(arguments.mapping)
-			// The mapping serves as the prefix for all keys to be removed from the cache.
-			var prefix = arguments.mapping
-			// Get a key array first and then delete from the cache.
-			variables._cache.keyArray().each(function (key) {
-				if (arguments.key.left(prefix.len()) == prefix) {
-					variables._cache.delete(arguments.key)
-				}
-			})
-		}
+		variables._finder.removeMapping(arguments.mapping)
 	}
 
+	/**
+	 * Returns the `View` with the given name.
+	 * The name is a dot delimited or slash delimited mapping, relative to one of the registered mappings.
+	 * If a `View` component is not found, a template is searched if there is a `TemplateFinder`.
+	 */
 	public View function get(required String viewName) {
 
 		if (!variables._cache.keyExists(arguments.viewName)) {
 			var view = null
-			// TODO: find out how to check for existence in Railo archives.
-			var componentPath = ExpandPath("/" & ListChangeDelims(arguments.viewName, "/", ".") & ".cfc"
-			if (FileExists(componentPath)) {
-				view = new "#arguments.viewName#"()
-			} else {
-				// Check if it's a template.
+			try {
+				// The finder uses slash delimited paths.
+				var path = variables._finder.get(ListChangeDelims(arguments.viewName, "/", "."))
+				// Convert the returned path to a dot delimited mapping and remove the cfc extension.
+				var mapping = ListChangeDelims(path, ".", "/").reReplace("\.cfc$", "")
+				view = new "#mapping#"()
+
+			} catch (FileNotFoundException e) {
+				// No view component was found.
 				if (!IsNull(variables._templateFinder)) {
-					var template = variables._templateFinder.get(arguments.viewName)
-					if (!IsNull(template)) {
+					try {
+						var template = variables._templateFinder.get(arguments.viewName)
 						view = new TemplateView(template, variables._templateRenderer)
+					} catch (FileNotFoundException e) {
+						// Swallow the exception.
 					}
 				}
 			}
+
 			if (IsNull(view)) {
 				Throw("View '#arguments.viewName#' not found", "FileNotFoundException")
 			}
@@ -62,23 +68,6 @@ component {
 		}
 
 		return variables._cache[arguments.viewName]
-	}
-
-	private Any function locate(required String template) {
-
-		var filename = arguments.template & "." & variables._extension
-		var template = null
-
-		variables._mappings.some(function (mapping, directory) {
-			if (FileExists(arguments.directory & "/" & filename)) {
-				template = arguments.mapping & "/" & filename
-				return true
-			}
-
-			return false
-		});
-
-		return template
 	}
 
 }

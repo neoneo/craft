@@ -16,8 +16,7 @@ component extends="mxunit.framework.TestCase" {
 		var result = variables.view.render(variables.model, "get")
 		assertEquals("done", result)
 
-		variables.renderer.verify()
-			.render(variables.template, variables.model)
+		variables.renderer.verify().render(variables.template, variables.model)
 	}
 
 }
