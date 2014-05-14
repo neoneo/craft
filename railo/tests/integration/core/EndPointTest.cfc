@@ -5,10 +5,6 @@ import craft.core.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests(){
-		variables.html = new HTMLContentType()
-		variables.json = new JSONContentType()
-
-		variables.extensions = [variables.html, variables.json]
 		// create a path structure that contains segments using all types of path matchers
 		variables.root = new PathSegment(new RootPathMatcher("index"))
 
@@ -31,7 +27,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function setUp() {
-		variables.endPoint = new QueryStringEndPoint(variables.root, variables.extensions)
+		variables.endPoint = new QueryStringEndPoint(variables.root)
 	}
 
 	public void function RequestParameters_Should_ReturnMergedUrlAndFormScopes() {
@@ -44,7 +40,7 @@ component extends="mxunit.framework.TestCase" {
 		form.b = "string 1"
 
 		// We need a new end point because the merge takes place in the constructor.
-		var endPoint = new QueryStringEndPoint(variables.root, variables.extensions)
+		var endPoint = new QueryStringEndPoint(variables.root)
 
 		var parameters = endPoint.requestParameters()
 		var merged = {a: 1, b: "string 1", x: 2, y: "string 2"}
@@ -57,73 +53,64 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(result, "requestParameters should merge form and url scopes, with form parameters taking precedence")
 	}
 
-	public void function ParsePath_indexhtml_Should_ReturnRootPathSegmentAndHTMLContentType() {
+	public void function ParsePath_indexhtml_Should_ReturnRootPathSegment() {
 		url.path = "/index.html"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /index.html should return html contentType")
-		assertSame(variables.root, result.pathSegment, "parsing /index.html should return the root path segment")
+		assertSame(variables.root, result)
 	}
 
-	public void function ParsePath_indexjson_Should_ReturnRootPathSegmentAndJSONContentType() {
+	public void function ParsePath_indexjson_Should_ReturnRootPathSegment() {
 		url.path = "/index.json"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.json, result.contentType, "parsing /index.json should return json contentType")
-		assertSame(variables.root, result.pathSegment, "parsing /index.json should return the root path segment")
+		assertSame(variables.root, result)
 	}
 
-	public void function ParsePath_index_Should_ReturnRootPathSegmentAndHTMLContentType() {
+	public void function ParsePath_index_Should_ReturnRootPathSegment() {
 		url.path = "/index"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /index should return the default contentType")
-		assertSame(variables.root, result.pathSegment, "parsing /index should return the root path segment")
+		assertSame(variables.root, result, "parsing /index should return the root path segment")
 	}
 
-	public void function ParsePath_indexslash_Should_ReturnRootPathSegmentAndHTMLContentType() {
+	public void function ParsePath_indexslash_Should_ReturnRootPathSegment() {
 		url.path = "/index/"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /index/ should return the default contentType")
-		assertSame(variables.root, result.pathSegment, "parsing /index/ should return the root path segment")
+		assertSame(variables.root, result)
 	}
 
-	public void function ParsePath_indexhtmlslash_Should_ReturnRootPathSegmentAndHTMLContentType() {
+	public void function ParsePath_indexhtmlslash_Should_ReturnRootPathSegment() {
 		url.path = "/index.html/"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /index.html/ should return html contentType")
-		assertSame(variables.root, result.pathSegment, "parsing /index.html/ should return the root path segment")
+		assertSame(variables.root, result)
 	}
 
-	public void function ParsePath_slash_Should_ReturnRootPathSegmentAndHTMLContentType() {
+	public void function ParsePath_slash_Should_ReturnRootPathSegment() {
 		url.path = "/"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing / should return the default contentType")
-		assertSame(variables.root, result.pathSegment, "parsing / should return the root path segment")
+		assertSame(variables.root, result)
 	}
 
-	public void function ParsePath_html_Should_ReturnHTMLPathSegmentAndHTMLContentType() {
+	public void function ParsePath_html_Should_ReturnHTMLPathSegment() {
 		url.path = "/html"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /html should return the default contentType")
-		assertEquals("html", result.pathSegment.parameterName(), "parsing /html should return the html path segment")
+		assertEquals("html", result.parameterName(), "parsing /html should return the html path segment")
 		var parameters = variables.endPoint.requestParameters()
 		assertTrue(parameters.keyExists("html"), "the html request parameter should exist")
 		assertEquals("html", parameters.html, "the html request parameter should equal 'html'")
 	}
 
-	public void function ParsePath_test1_Should_ReturnTest1PathSegmentAndHTMLContentType() {
+	public void function ParsePath_test1_Should_ReturnTest1PathSegment() {
 		url.path = "/test1"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /test1 should return the default contentType")
-		assertEquals("test1", result.pathSegment.parameterName(), "parsing /test1 should return the test1 path segment")
+		assertEquals("test1", result.parameterName(), "parsing /test1 should return the test1 path segment")
 		var parameters = variables.endPoint.requestParameters()
 		assertTrue(parameters.keyExists("test1"), "the test1 request parameter should exist")
 		assertEquals("test1", parameters.test1, "the test1 request parameter should equal 'test1'")
 	}
 
-	public void function ParsePath_test1test2_Should_ReturnTest2PathSegmentAndHTMLContentType() {
+	public void function ParsePath_test1test2_Should_ReturnTest2PathSegment() {
 		url.path = "/test1/test2"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /test1/test2 should return the default contentType")
-		assertEquals("test2", result.pathSegment.parameterName(), "parsing /test1/test2 should return the test2 path segment")
+		assertEquals("test2", result.parameterName(), "parsing /test1/test2 should return the test2 path segment")
 		var parameters = variables.endPoint.requestParameters()
 		assertTrue(parameters.keyExists("test1"), "the test1 request parameter should exist")
 		assertEquals("test1", parameters.test1, "the test1 request parameter should equal 'test1'")
@@ -131,12 +118,11 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals("test2", parameters.test2, "the test2 request parameter should equal 'test2'")
 	}
 
-	public void function ParsePath_test1test2test3test4_Should_ReturnTest3PathSegmentAndHTMLContentType() {
+	public void function ParsePath_test1test2test3test4_Should_ReturnTest3PathSegment() {
 		// test3 should match the remaining segments after test1 and test2
 		url.path = "/test1/test2/test3/test4"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /test1/test2/test3/test4 should return the default contentType")
-		assertEquals("test3", result.pathSegment.parameterName(), "parsing /test1/test2/test3/test4 should return the test3 path segment")
+		assertEquals("test3", result.parameterName(), "parsing /test1/test2/test3/test4 should return the test3 path segment")
 		var parameters = variables.endPoint.requestParameters()
 		assertTrue(parameters.keyExists("test1"), "the test1 request parameter should exist")
 		assertEquals("test1", parameters.test1, "the test1 request parameter should equal 'test1'")
@@ -146,11 +132,10 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals("test3/test4", parameters.test3, "the test3 request parameter should equal 'test3/test4'")
 	}
 
-	public void function ParsePath_test1test2test5_Should_ReturnTest5PathSegmentAndHTMLContentType() {
+	public void function ParsePath_test1test2test5_Should_ReturnTest5PathSegment() {
 		url.path = "/test1/test2/test5"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /test1/test2/test5 should return the default contentType")
-		assertEquals("test5", result.pathSegment.parameterName(), "parsing /test1/test2/test5 should return the test5 path segment")
+		assertEquals("test5", result.parameterName(), "parsing /test1/test2/test5 should return the test5 path segment")
 		var parameters = variables.endPoint.requestParameters()
 		assertTrue(parameters.keyExists("test1"), "the test1 request parameter should exist")
 		assertEquals("test1", parameters.test1, "the test1 request parameter should equal 'test1'")
@@ -160,22 +145,20 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals("test5", parameters.test5, "the test5 request parameter should equal 'test5'")
 	}
 
-	public void function ParsePath_test1test2test5test6_Should_ReturnTestABCDAndHTMLContentType() {
+	public void function ParsePath_test1test2test5test6_Should_ReturnTestABCD() {
 		// the test6 segment is not mapped, so the search should revert to the entire path matcher
 		url.path = "/test1/test2/test5/test6"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /test1/test2/test5/test6 should return the default contentType")
-		assertEquals("testABCD", result.pathSegment.parameterName(), "parsing /test1/test2/test5/test6 should return the testABCD path segment")
+		assertEquals("testABCD", result.parameterName(), "parsing /test1/test2/test5/test6 should return the testABCD path segment")
 		var parameters = variables.endPoint.requestParameters()
 		assertTrue(parameters.keyExists("testABCD"), "the testABCD request parameter should exist")
 		assertEquals("test1/test2/test5/test6", parameters.testABCD, "the testABCD request parameter should equal 'test1/test2/test5/test6'")
 	}
 
-	public void function ParsePath_testABCD_Should_ReturnTestABCDAndHTMLContentType() {
+	public void function ParsePath_testABCD_Should_ReturnTestABCD() {
 		url.path = "/testA/testB/testC/testD"
 		var result = variables.endPoint.parsePath()
-		assertSame(variables.html, result.contentType, "parsing /testA/testB/testC/testD should return the default contentType")
-		assertEquals("testABCD", result.pathSegment.parameterName(), "parsing /testA/testB/testC/testD should return the testABCD path segment")
+		assertEquals("testABCD", result.parameterName(), "parsing /testA/testB/testC/testD should return the testABCD path segment")
 		var parameters = variables.endPoint.requestParameters()
 		assertTrue(parameters.keyExists("testABCD"), "the testABCD request parameter should exist")
 		assertEquals("testa/testb/testc/testd", parameters.testABCD, "the testABCD request parameter should equal 'testa/testb/testc/testd'")
