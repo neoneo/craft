@@ -24,7 +24,7 @@ component {
 			// Create an empty array to keep elements that need to be deferred still longer.
 			var remaining = []
 			for (var element in deferred) {
-				// We cannot reuse our private construct methode because that might lead to elements being pushed on the remaining array multiple times.
+				// We cannot reuse our private construct method because that might lead to elements being pushed on the remaining array multiple times.
 				element.construct(localScope)
 				if (!element.ready()) {
 					remaining.append(element)

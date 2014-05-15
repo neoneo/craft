@@ -7,6 +7,7 @@ component {
 	/**
 	 * Registers any `Element`s found in the mapping. A settings.ini file must be present in order for any components to be inspected.
 	 * If absent, the subdirectories are searched for settings.ini files and `register()` is then called recursively.
+	 * The mapping should be passed in without a trailing slash.
 	 */
 	public void function register(required String mapping) {
 
@@ -42,11 +43,8 @@ component {
 				var subdirectory = registerPath.replace(path, "")
 				// Pick up all components in this directory (recursively) and keep the ones that extend Element.
 				DirectoryList(registerPath, true, "path", "*.cfc").each(function (filePath) {
-					// Construct the component name. First replace the directory with the mapping, then make that a dot delimited path.
-					var componentName = ListChangeDelims(Replace(arguments.filePath, registerPath, mapping & subdirectory), ".", "/", false)
-					// Finally remove the .cfc extension.
-					componentName = ListDeleteAt(componentName, ListLen(componentName, "."), ".")
-
+					// Construct the component name. Replace the directory with the mapping, make that a dot delimited path and remove the cfc extension.
+					var componentName = ListChangeDelims(arguments.filePath.replace(registerPath, mapping & subdirectory), ".", "/").reReplace("\.cfc$", "")
 					var metadata = GetComponentMetadata(componentName)
 
 					// Ignore components with the abstract annotation.
@@ -91,12 +89,10 @@ component {
 	 */
 	private Boolean function extendsElement(required Struct metadata) {
 
-		var metadata = arguments.metadata
-
 		var result = arguments.metadata.name == GetComponentMetadata("Element").name
 
-		if (!result && metadata.keyExists("extends")) {
-			result = extendsElement(metadata.extends)
+		if (!result && arguments.metadata.keyExists("extends")) {
+			result = extendsElement(arguments.metadata.extends)
 		}
 
 		return result

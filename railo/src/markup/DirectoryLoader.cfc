@@ -1,7 +1,7 @@
 component {
 
-	public void function init(required ElementFactory factory, required Scope scope) {
-		variables._fileLoader = new FileLoader(arguments.factory, arguments.scope)
+	public void function init(required ElementFactory factory) {
+		variables._fileLoader = new FileLoader(arguments.factory, new Scope())
 	}
 
 	public Struct function load(required String path) {
