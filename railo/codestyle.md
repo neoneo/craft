@@ -8,7 +8,7 @@ Naming
 ======
 * Components Pascal cased.
 * Methods camel cased.
-* Builtin functions Pascal cased. This makes it clearer that this is not a method of the component.
+* Builtin functions Pascal cased.
 * Private members have names that start with _. This avoids name clashes with getters.
 
 Railo specifics usage
@@ -28,9 +28,10 @@ Features
 
 Administrator settings
 ----------------------
-* Full null support.
 * Case sensitive structs.
 * Merge url and form.
-* Modern local scope mode.
 * Strict cascading.
 * Modern application listener.
+
+* Null support: supported but not necessary
+* Local scope mode: not supported. When this is enabled, closures can't see the outside scope.

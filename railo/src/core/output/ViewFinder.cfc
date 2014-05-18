@@ -2,7 +2,7 @@ component {
 
 	public void function init(TemplateFinder templateFinder, TemplateRenderer templateRenderer) {
 
-		variables._templateFinder = arguments.templateFinder ?: null
+		variables._templateFinder = arguments.templateFinder ?: NullValue()
 		if (!IsNull(variables._templateFinder)) {
 			// The template renderer is now required for creating template views.
 			if (IsNull(arguments.templateRenderer)) {
@@ -41,7 +41,7 @@ component {
 	public View function get(required String viewName) {
 
 		if (!variables._cache.keyExists(arguments.viewName)) {
-			var view = null
+			var view = NullValue()
 			try {
 				// The finder uses slash delimited paths.
 				var path = variables._finder.get(ListChangeDelims(arguments.viewName, "/", "."))

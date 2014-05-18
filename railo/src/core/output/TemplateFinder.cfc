@@ -51,7 +51,7 @@ component {
 	private Any function locate(required String template) {
 
 		var filename = arguments.template & "." & variables._extension
-		var template = null
+		var template = NullValue()
 
 		variables._mappings.some(function (mapping, directory) {
 			// TODO: find out how to check for existence in Railo archives.

@@ -1,7 +1,7 @@
 component {
 
 	public void function init(Scope parent) {
-		variables._parent = arguments.parent ?: null
+		variables._parent = arguments.parent ?: NullValue()
 		variables._elements = {}
 	}
 

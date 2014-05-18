@@ -134,7 +134,7 @@ component {
 		var values = arguments.attributes
 		data.attributes.each(function (attribute) {
 			var name = arguments.attribute.name
-			var value = values[name] ?: arguments.attribute.default ?: null
+			var value = values[name] ?: arguments.attribute.default ?: NullValue()
 
 			if (IsNull(value) && (arguments.attribute.required ?: false)) {
 				Throw("Attribute '#name#' is required", "IllegalArgumentException")
@@ -166,7 +166,7 @@ component {
 				}
 			}
 
-			metadata = metadata.extends ?: null
+			metadata = metadata.extends ?: NullValue()
 		} while (!IsNull(metadata))
 
 		return properties

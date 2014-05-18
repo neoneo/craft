@@ -11,9 +11,9 @@ component accessors="true" {
 	// All elements may have a 'ref' attribute.
 	property String ref;
 
-	variables._parent = null
+	variables._parent = NullValue()
 	variables._children = []
-	variables._product = null
+	variables._product = NullValue()
 
 	public Boolean function ready() {
 		return !IsNull(variables._product)

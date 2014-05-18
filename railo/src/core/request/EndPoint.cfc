@@ -74,7 +74,7 @@ component {
 		if (arguments.path.isEmpty()) {
 			return arguments.pathSegment
 		} else {
-			var result = null
+			var result = NullValue()
 
 			var children = arguments.pathSegment.children()
 			var count = children.len()

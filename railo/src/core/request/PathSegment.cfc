@@ -10,7 +10,7 @@ component {
 	public void function init(required PathMatcher pathMatcher, String parameterName) {
 
 		variables._pathMatcher = arguments.pathMatcher
-		variables._parameterName = arguments.parameterName ?: null
+		variables._parameterName = arguments.parameterName ?: NullValue()
 
 		variables._content = {}
 		variables._children = new ScopeCollection(this)
@@ -26,7 +26,7 @@ component {
 
 	public Content function content(required String type) {
 
-		var content = variables._content[arguments.type] ?: null
+		var content = variables._content[arguments.type] ?: NullValue()
 		if (IsNull(content)) {
 			Throw("No content of type #arguments.type# found", "ContentNotFoundException")
 		}
