@@ -101,11 +101,11 @@ component {
 	/**
 	 * Creates a tree of `Element`s that represents the given xml node tree.
 	 */
-	public Element function construct(required XML node) {
+	public Element function convert(required XML node) {
 
 		var element = create(arguments.node.xmlNsURI, arguments.node.xmlName, arguments.node.xmlAttributes)
 		for (var child in arguments.node.xmlChildren) {
-			element.add(construct(child))
+			element.add(convert(child))
 		}
 
 		return element

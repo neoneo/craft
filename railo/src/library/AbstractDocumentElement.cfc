@@ -2,14 +2,14 @@ import craft.core.content.Document;
 import craft.core.content.LayoutContent;
 
 import craft.markup.Element;
-import craft.markup.Loader;
+import craft.markup.Scope;
 
 /**
  * @abstract
  */
 component extends="Element" {
 
-	public void function construct(required Scope scope) {
+	public void function build(required Scope scope) {
 
 		var layoutRef = layoutRef()
 		if (arguments.scope.hasElement(layoutRef)) {

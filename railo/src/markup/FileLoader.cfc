@@ -9,7 +9,7 @@ component {
 	public Element function load(required String path) {
 
 		var node = XMLParse(FileRead(arguments.path)).xmlRoot
-		var element = variables._factory.construct(node)
+		var element = variables._factory.convert(node)
 		variables._builder.build(element, variables._scope)
 
 		variables._scope.store(element)

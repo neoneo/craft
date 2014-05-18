@@ -4,9 +4,9 @@ component extends="ChildElement" accessors="true" {
 
 	property Element until; // Another element that has to finish construction first.
 
-	public void function construct(required Reader reader) {
+	public void function build(required Scope scope) {
 		if (getUntil().ready()) {
-			super.construct(arguments.reader)
+			super.build(arguments.reader)
 		}
 	}
 

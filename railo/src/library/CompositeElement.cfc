@@ -1,6 +1,6 @@
 import craft.core.content.Composite;
 
-import craft.markup.Loader;
+import craft.markup.Scope;
 
 /**
  * Base implementation of an element that produces a `Composite`.
@@ -9,10 +9,10 @@ import craft.markup.Loader;
  */
 component extends="ComponentElement" {
 
-	public void function construct(required Scope scope) {
+	public void function build(required Scope scope) {
 
 		if (childrenReady()) {
-			var composite = createComposite(arguments.loader)
+			var composite = createComposite(arguments.scope)
 
 			for (var child in children()) {
 				composite.addChild(child.product())
@@ -25,10 +25,10 @@ component extends="ComponentElement" {
 
 	/**
 	 * Creates the `Composite` to which the children are added.
-	 * The `Loader` is passed in so that this class can also be used for more advanced uses. In such cases, the `createComposite()`
-	 * method is an extension to the `construct()` method.
+	 * The `Scope` is passed in so that this class can also be used for more advanced uses. In such cases, the `createComposite()`
+	 * method is an extension to the `build()` method.
 	 */
-	private Composite function createComposite(required Loader loader) {
+	private Composite function createComposite(required Scope scope) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 

@@ -2,7 +2,7 @@ import craft.markup.*;
 
 component extends="Element" {
 
-	public void function construct(required Reader reader) {
+	public void function build(required Scope scope) {
 
 		if (childrenReady()) {
 			var product = new Root()

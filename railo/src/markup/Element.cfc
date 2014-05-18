@@ -25,7 +25,7 @@ component accessors="true" {
 	 * This will be the case in most situations. However, an `Element`'s dependencies may not be ready yet. In this case,
 	 * do not call `setProduct()` so construction is retried later.
 	 */
-	public void function construct(required Scope scope) {
+	public void function build(required Scope scope) {
 		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
 	}
 

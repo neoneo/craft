@@ -1,3 +1,6 @@
+import craft.core.content.Document;
+import craft.core.content.LayoutContent;
+
 component extends="AbstractDocumentElement" accessors="true" tag="document" {
 
 	property String layout;

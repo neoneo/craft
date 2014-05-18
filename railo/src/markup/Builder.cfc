@@ -14,10 +14,13 @@ component {
 
 		// construct() returns an array of elements whose construction could not complete in one go.
 		var deferred = construct(arguments.root, localScope)
-		// If the root itself could not be constructed, it is the last element in deferred. Remove it.
-		// if (!deferred.isEmpty() && deferred.last() === arguments.root) {
-		// 	deferred.deleteAt(deferred.len())
-		// }
+		/*
+			The root element may depend on other elements, outside the current scope.
+			If the root could not be constructed, it is the last element in deferred. Remove it.
+		*/
+		if (!deferred.isEmpty() && deferred.last() === arguments.root) {
+			deferred.deleteAt(deferred.len())
+		}
 
 		// Loop through the deferred elements until there are none left. Each turn should diminish the size of the array.
 		while (!deferred.isEmpty()) {
@@ -25,7 +28,7 @@ component {
 			var remaining = []
 			for (var element in deferred) {
 				// We cannot reuse our private construct method because that might lead to elements being pushed on the remaining array multiple times.
-				element.construct(localScope)
+				element.build(localScope)
 				if (!element.ready()) {
 					remaining.append(element)
 				} else {
@@ -35,8 +38,7 @@ component {
 
 			// If no elements could be constructed in this loop, we have elements pointing to each other.
 			if (remaining.len() == deferred.len()) {
-				// TODO: put the list in the exception in a meaningful way.
-				Throw("Could not construct all elements", "InstantiationException")
+				Throw("Could not build all elements", "InstantiationException", "One or more elements are referring to eachother. Circular references cannot be resolved.")
 			}
 
 			deferred = remaining
@@ -59,7 +61,7 @@ component {
 			}
 		}
 
-		arguments.element.construct(arguments.scope)
+		arguments.element.build(arguments.scope)
 
 		if (!arguments.element.ready()) {
 			deferred.append(arguments.element)
