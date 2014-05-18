@@ -16,15 +16,15 @@ Railo specifics usage
 
 Syntax
 ------
-* No semicolons except where the parser needs them (basically, only after script tags such as property or abort).
+* No semicolons except where the parser needs them (basically, only after script tags such as `property` or `abort`).
 * JSON style creation of structs (: instead of =).
 
 Features
 --------
 * Member functions wherever possible except for scopes.
-* Break out of current and parent loops using break [loop name].
-* === operator to compare objects for equality. For other comparisons this operator could be used too, but its meaning is less clear.
-	For strings, the comparison is case sensitive, but this is not clear from the syntax (or the difference could be missed). Numeric comparisons may fail if the instances are not of the same type. Functions like Len return an integer, while all numerics are doubles. Therefore, Len("a") === 1 fails.
+* Break out of current and parent loops using `break [loop name]`.
+* `===` operator to compare objects for equality. For other comparisons this operator could be used too, but its meaning is less clear.
+	For strings, the comparison is case sensitive, but this is not clear from the syntax (or the difference could be missed). Numeric comparisons may fail if the instances are not of the same type. Functions like Len return an integer, while all numerics are doubles. Therefore, `Len("a") === 1` fails.
 
 Administrator settings
 ----------------------
