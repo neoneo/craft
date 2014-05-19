@@ -1,49 +1,50 @@
-import craft.core.content.Content;
-
-/**
- * Builds the `Content` of the `Element` and its children.
- */
 component {
 
-	public void function build(required Element root, required Scope scope) {
+	public void function init(required ElementFactory factory, required Scope scope) {
+		variables._factory = arguments.factory
+		variables._scope = arguments.scope
+	}
+
+	public Element function build(required String path) {
+
+		var node = XMLParse(FileRead(arguments.path)).xmlRoot
+		var element = variables._factory.convert(node)
+
 		/*
 			Create a scope for local elements. We don't want elements from outside this document to be able to refer to inside elements.
 			The parent scope contains only root elements.
 		*/
-		var localScope = new Scope(arguments.scope)
+		var localScope = new Scope(variables._scope)
 
 		// construct() returns an array of elements whose construction could not complete in one go.
-		var deferred = construct(arguments.root, localScope)
-		/*
-			The root element may depend on other elements, outside the current scope.
-			If the root could not be constructed, it is the last element in deferred. Remove it.
-		*/
-		if (!deferred.isEmpty() && deferred.last() === arguments.root) {
-			deferred.deleteAt(deferred.len())
-		}
+		var deferred = construct(element, localScope)
+
+		// The element may depend on other elements, outside the current scope. Remove it from the deferred elements.
+		deferred.delete(element)
 
 		// Loop through the deferred elements until there are none left. Each turn should diminish the size of the array.
 		while (!deferred.isEmpty()) {
-			// Create an empty array to keep elements that need to be deferred still longer.
-			var remaining = []
-			for (var element in deferred) {
-				// We cannot reuse our private construct method because that might lead to elements being pushed on the remaining array multiple times.
-				element.build(localScope)
-				if (!element.ready()) {
-					remaining.append(element)
-				} else {
+			var count = deferred.len()
+
+			deferred = deferred.filter(function (element) {
+				arguments.element.build(localScope)
+
+				if (arguments.element.ready()) {
 					localScope.store(arguments.element)
 				}
-			}
 
-			// If no elements could be constructed in this loop, we have elements pointing to each other.
-			if (remaining.len() == deferred.len()) {
-				Throw("Could not build all elements", "InstantiationException", "One or more elements are referring to eachother. Circular references cannot be resolved.")
-			}
+				return !arguments.element.ready()
+			})
 
-			deferred = remaining
+			// If no elements could be completed in this loop, we have elements pointing to each other or elements depending on unknown elements.
+			if (count == deferred.len()) {
+				Throw("Could not build all elements", "InstantiationException", "One or more elements have undefined dependencies, or are referring to each other. Circular references cannot be resolved.")
+			}
 		}
 
+		variables._scope.store(element)
+
+		return element
 	}
 
 	/**
