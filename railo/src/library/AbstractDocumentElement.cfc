@@ -35,11 +35,11 @@ component extends="Element" {
 	}
 
 	private String function layoutRef() {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	private Document function createDocument(required LayoutContent layoutContent) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 }

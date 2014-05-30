@@ -17,7 +17,7 @@ component extends="EndPoint" {
 					var absolutePath = position > 1 ? path.left(position - 1) : "/"
 					var relativePath = path.mid(position)
 					// Remove the last list item from the current path and the first from the relative path.
-					path = ListDeleteAt(absolutePath, ListLen(absolutePath, "/"), "/") & "/" & ListRest(relativePath, "/")
+					path = absolutePath.listDeleteAt(absolutePath.listLen("/"), "/") & "/" & relativePath.listRest("/")
 				}
 			} while (position > 0)
 			path = path.replace("./", "", "all")

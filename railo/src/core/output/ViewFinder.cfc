@@ -1,3 +1,5 @@
+import craft.core.util.ScopeCache;
+
 component {
 
 	public void function init(TemplateFinder templateFinder, TemplateRenderer templateRenderer) {
@@ -16,13 +18,14 @@ component {
 			We need to map some public methods, and keep a cache of View instances, as the template finder returns paths.
 		*/
 		variables._finder = new TemplateFinder("cfc")
-		clear()
+
+		variables._cache = new ScopeCache()
 
 	}
 
 	public void function clear() {
 		variables._finder.clear()
-		variables._cache = {}
+		variables._cache.clear()
 	}
 
 	public void function addMapping(required String mapping) {
@@ -40,13 +43,13 @@ component {
 	 */
 	public View function get(required String viewName) {
 
-		if (!variables._cache.keyExists(arguments.viewName)) {
+		if (!variables._cache.has(arguments.viewName)) {
 			var view = NullValue()
 			try {
 				// The finder uses slash delimited paths.
-				var path = variables._finder.get(ListChangeDelims(arguments.viewName, "/", "."))
+				var path = variables._finder.get(arguments.viewName.listChangeDelims("/", "."))
 				// Convert the returned path to a dot delimited mapping and remove the cfc extension.
-				var mapping = ListChangeDelims(path, ".", "/").reReplace("\.cfc$", "")
+				var mapping = path.listChangeDelims(".", "/").reReplace("\.cfc$", "")
 				view = new "#mapping#"()
 
 			} catch (FileNotFoundException e) {
@@ -56,7 +59,7 @@ component {
 						var template = variables._templateFinder.get(arguments.viewName)
 						view = new TemplateView(template, variables._templateRenderer)
 					} catch (FileNotFoundException e) {
-						// Swallow the exception.
+						// Swallow the exception, we will throw a new one below.
 					}
 				}
 			}
@@ -64,10 +67,10 @@ component {
 			if (IsNull(view)) {
 				Throw("View '#arguments.viewName#' not found", "FileNotFoundException")
 			}
-			variables._cache[arguments.viewName] = view
+			variables._cache.put(arguments.viewName, view)
 		}
 
-		return variables._cache[arguments.viewName]
+		return variables._cache.get(arguments.viewName)
 	}
 
 }

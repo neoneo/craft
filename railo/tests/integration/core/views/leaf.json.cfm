@@ -1,1 +1,0 @@
-<cfoutput>{"component": #SerializeJSON(component)#}</cfoutput>

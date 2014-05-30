@@ -28,8 +28,8 @@ component extends="ComponentElement" {
 	 * The `Scope` is passed in so that this class can also be used for more advanced uses. In such cases, the `createComposite()`
 	 * method is an extension to the `build()` method.
 	 */
-	private Composite function createComposite(required Scope scope) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+	private Composite function createComposite(required Loader loader) {
+		abort showerror="Not implemented";
 	}
 
 }

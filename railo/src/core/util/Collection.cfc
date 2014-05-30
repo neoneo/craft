@@ -49,52 +49,52 @@ component {
 	}
 
 	public Boolean function remove(required Any item) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	public Boolean function contains(required Any item) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	public Boolean function isEmpty() {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	public Numeric function size() {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	public Any function select(required Function predicate) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	public Array function toArray() {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	/**
 	 * Appends the item to the collection. If item is already a member of the collection, item is moved to the end.
 	 */
 	private void function append(required Any item) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	/**
 	 * Inserts the item at the given index in the collection. The item must already be a member of the collection.
 	 */
 	private void function insertAt(required Numeric index, required Any item) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	/**
 	 * Removes the item at the given index from the collection.
 	 */
 	private void function deleteAt(required Numeric index) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	private void function indexOf(required Any item) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 }

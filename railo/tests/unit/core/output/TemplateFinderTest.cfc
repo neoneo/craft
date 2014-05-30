@@ -2,7 +2,7 @@ import craft.core.output.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	variables.mapping = "/crafttest/unit/core/output/viewstubs"
+	variables.mapping = "/crafttest/unit/core/output/templates"
 
 	public void function setUp(){
 		variables.templateFinder = new TemplateFinder("cfm")

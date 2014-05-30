@@ -20,11 +20,11 @@ component {
 
 	public PathSegment function parsePath() {
 
-		var segments = ListToArray(path(), "/")
+		var segments = path().listToArray("/")
 
 		if (!segments.isEmpty()) {
 			var lastSegment = segments.last()
-			var extension = ListLast(lastSegment, ".")
+			var extension = lastSegment.listLast(".")
 
 			// The extension cannot be the whole last segment.
 			if (extension != lastSegment) {
@@ -43,7 +43,7 @@ component {
 	}
 
 	public String function extension() {
-		var extension = ListLast(path(), ".")
+		var extension = path().listLast(".")
 
 		return variables._mimeTypes.keyExists(extension) ? extension : "html"
 	}
@@ -57,11 +57,11 @@ component {
 	}
 
 	public String function path() {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	public String function createURL(required String path, Struct parameters, String extension) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	// PRIVATE ====================================================================================

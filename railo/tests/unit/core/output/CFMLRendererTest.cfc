@@ -4,7 +4,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
 		variables.renderer = new CFMLRenderer()
-		variables.template = "/crafttest/unit/core/output/viewstubs/renderer.cfm"
+		variables.template = "/crafttest/unit/core/output/templates/renderer.cfm"
 	}
 
 	public void function Render_Should_ReturnOutputString() {

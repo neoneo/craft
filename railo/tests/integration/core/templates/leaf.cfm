@@ -1,0 +1,1 @@
+<cfoutput>#component#</cfoutput>

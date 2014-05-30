@@ -6,17 +6,14 @@ component extends="craft.core.content.Composite" accessors="true" {
 		setName(arguments.name)
 	}
 
-	public Struct function model(required Context context, required Struct parentModel) {
-		var depth = arguments.parentModel.keyExists("depth") ? arguments.parentModel.depth + 1 : 1;
-
+	public Struct function model(required Context context) {
 		return {
-			component: getName(),
-			depth: depth
+			component: getName()
 		}
 	}
 
 	public String function view(required Context context) {
-		return "modelcomposite"
+		return "composite"
 	}
 
 }

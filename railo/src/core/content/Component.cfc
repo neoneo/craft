@@ -10,7 +10,7 @@ import craft.core.request.Context;
 component implements="Content" {
 
 	public void function accept(required Visitor visitor) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	public Boolean function hasParent() {
@@ -30,14 +30,14 @@ component implements="Content" {
 	}
 
 	public Boolean function hasChildren() {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	/**
 	 * Returns the name of the view that renders this component.
 	 */
 	public String function view(required Context context) {
-		Throw("Function #GetFunctionCalledName()# must be implemented", "NoSuchMethodException")
+		abort showerror="Not implemented";
 	}
 
 	/**

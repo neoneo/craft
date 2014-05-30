@@ -19,17 +19,17 @@ component {
 		if (FileExists(settingsFile)) {
 			var sections = GetProfileSections(settingsFile)
 			// If there is no section named 'craft', or if this section doesn't contain a namespace key, throw an exception.
-			if (!sections.keyExists("craft") || ListFind(sections.craft, "namespace") == 0) {
+			if (!sections.keyExists("craft") || sections.craft.listFind("namespace") == 0) {
 				Throw("Namespace not found in #settingsFile#", "NoSuchElementException")
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
 			var namespaceTags = variables._tags[namespace] = {}
 
-			if (ListFind(sections.craft, "directories") > 0) {
+			if (sections.craft.listFind("directories") > 0) {
 				// The directories key contains a comma separated list of directories that should exist below the current one.
 				var directories = GetProfileString(settingsFile, "craft", "directories")
-				var registerPaths = ListToArray(directories).map(function (directory) {
+				var registerPaths = directories.listToArray().map(function (directory) {
 					var directory = arguments.directory.trim()
 					var separator = directory.startsWith("/") ? "" : "/"
 					return path & separator & directory
@@ -44,7 +44,7 @@ component {
 				// Pick up all components in this directory (recursively) and keep the ones that extend Element.
 				DirectoryList(registerPath, true, "path", "*.cfc").each(function (filePath) {
 					// Construct the component name. Replace the directory with the mapping, make that a dot delimited path and remove the cfc extension.
-					var componentName = ListChangeDelims(arguments.filePath.replace(registerPath, mapping & subdirectory), ".", "/").reReplace("\.cfc$", "")
+					arguments.filePath.replace(registerPath, mapping & subdirectory).listChangeDelims(".", "/").reReplace("\.cfc$", "")
 					var metadata = GetComponentMetadata(componentName)
 
 					// Ignore components with the abstract annotation.

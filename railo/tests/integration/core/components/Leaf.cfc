@@ -6,15 +6,14 @@ component extends="craft.core.content.Leaf" accessors="true" {
 		setName(arguments.name)
 	}
 
-	public Struct function model(required Context context, required Struct parentModel) {
+	public Struct function model(required Context context) {
 		return {
-			component: getName(),
-			depth: arguments.parentModel.depth + 1
+			component: getName()
 		}
 	}
 
 	public String function view(required Context context) {
-		return "modelleaf"
+		return "leaf"
 	}
 
 }

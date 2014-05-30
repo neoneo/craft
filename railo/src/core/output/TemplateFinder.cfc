@@ -1,12 +1,15 @@
+import craft.core.util.ScopeCache;
+
 component {
 
 	public void function init(required String extension) {
 		variables._extension = arguments.extension
+		variables._cache = new ScopeCache()
 		clear()
 	}
 
 	public void function clear() {
-		variables._cache = {}
+		variables._cache.clear()
 		variables._mappings = StructNew("linked") // The order of the mappings is important.
 	}
 
@@ -23,9 +26,9 @@ component {
 			// The mapping serves as the prefix for all keys to be removed from the cache.
 			var prefix = arguments.mapping
 			// Get a key array first and then delete from the cache.
-			variables._cache.keyArray().each(function (key) {
+			variables._cache.keys().each(function (key) {
 				if (arguments.key.startsWith(prefix)) {
-					variables._cache.delete(arguments.key)
+					variables._cache.remove(arguments.key)
 				}
 			})
 		}
@@ -37,15 +40,15 @@ component {
 	 */
 	public String function get(required String template) {
 
-		if (!variables._cache.keyExists(arguments.template)) {
-			var template = locate(arguments.template)
-			if (IsNull(template)) {
+		if (!variables._cache.has(arguments.template)) {
+			var fileName = locate(arguments.template)
+			if (IsNull(fileName)) {
 				Throw("Template '#arguments.template#' not found", "FileNotFoundException")
 			}
-			variables._cache[arguments.template] = template
+			variables._cache.put(arguments.template, fileName)
 		}
 
-		return variables._cache[arguments.template]
+		return variables._cache.get(arguments.template)
 	}
 
 	private Any function locate(required String template) {
