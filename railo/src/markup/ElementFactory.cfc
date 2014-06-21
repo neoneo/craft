@@ -44,7 +44,7 @@ component {
 				// Pick up all components in this directory (recursively) and keep the ones that extend Element.
 				DirectoryList(registerPath, true, "path", "*.cfc").each(function (filePath) {
 					// Construct the component name. Replace the directory with the mapping, make that a dot delimited path and remove the cfc extension.
-					arguments.filePath.replace(registerPath, mapping & subdirectory).listChangeDelims(".", "/").reReplace("\.cfc$", "")
+					var componentName = arguments.filePath.replace(registerPath, mapping & subdirectory).listChangeDelims(".", "/").reReplace("\.cfc$", "")
 					var metadata = GetComponentMetadata(componentName)
 
 					// Ignore components with the abstract annotation.
@@ -140,12 +140,14 @@ component {
 				Throw("Attribute '#name#' is required", "IllegalArgumentException")
 			}
 
-			// Assuming we'll only encounter simple values here, we can use IsValid. We also assume that the property type is specified.
-			if (!IsValid(arguments.attribute.type, value)) {
-				Throw("Invalid value '#value#' for attribute '#name#': #arguments.attribute.type# expected", "IllegalArgumentException")
-			}
+			if (!IsNull(value)) {
+				// Assuming we'll only encounter simple values here, we can use IsValid. We also assume that the property type is specified.
+				if (!IsValid(arguments.attribute.type, value)) {
+					Throw("Invalid value '#value#' for attribute '#name#': #arguments.attribute.type# expected", "IllegalArgumentException")
+				}
 
-			constructorArguments[name] = value
+				constructorArguments[name] = value
+			}
 		})
 
 		return new "#data.name#"(argumentCollection: constructorArguments)
@@ -155,10 +157,10 @@ component {
 
 		var properties = []
 		var names = []
-		var metadata = arguments.metadata
+		var data = arguments.metadata
 
 		do {
-			for (var property in metadata.properties) {
+			for (var property in data.properties) {
 				// Let a property in a subclass take precedence over one of the same name in a superclass.
 				if (names.find(property.name) == 0) {
 					properties.append(property)
@@ -166,8 +168,8 @@ component {
 				}
 			}
 
-			metadata = metadata.extends ?: NullValue()
-		} while (!IsNull(metadata))
+			data = data.extends ?: NullValue()
+		} while (!IsNull(data))
 
 		return properties
 	}

@@ -4,7 +4,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
 		variables.factory = new ElementFactory()
-		variables.mapping = "/crafttests/unit/xml/stubs"
+		variables.mapping = "/crafttests/unit/markup/stubs"
 	}
 
 	public void function RegisterWithNoSettings_ShouldNot_RegisterAnything() {
@@ -55,7 +55,7 @@ component extends="mxunit.framework.TestCase" {
 		// There are 2 directories, with 1 element each.
 		assertEquals(2, tagNames.len())
 		// SomeElement has no tag annotation, so the fully qualified name should be returned.
-		assertTrue(sameContents(["crafttests.unit.xml.stubs.recursive.dir1.SomeElement", "dir1sub"], tagNames), "found tag names '#tagNames.toList()#'")
+		assertTrue(sameContents(["crafttests.unit.markup.stubs.recursive.dir1.SomeElement", "dir1sub"], tagNames), "found tag names '#tagNames.toList()#'")
 	}
 
 	public void function Register_Should_RegisterMultipleNamespaces() {
@@ -131,7 +131,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function Create_Should_ReturnElement_When_Component() {
 		variables.factory.register(variables.mapping & "/create")
 
-		var element = variables.factory.create("http://neoneo.nl/craft", "crafttests.unit.xml.stubs.create.NoTagElement")
+		var element = variables.factory.create("http://neoneo.nl/craft", "crafttests.unit.markup.stubs.create.NoTagElement")
 
 		assertTrue(IsInstanceOf(element, "NoTagElement"))
 	}
@@ -143,7 +143,7 @@ component extends="mxunit.framework.TestCase" {
 			ref: CreateUniqueId(),
 			name: CreateGUID()
 		}
-		var element = variables.factory.create("http://neoneo.nl/craft", "crafttests.unit.xml.stubs.create.NoTagElement", attributes)
+		var element = variables.factory.create("http://neoneo.nl/craft", "crafttests.unit.markup.stubs.create.NoTagElement", attributes)
 
 		assertTrue(IsInstanceOf(element, "NoTagElement"))
 		assertEquals(attributes.ref, element.getRef())

@@ -1,7 +1,7 @@
 import craft.core.content.Content;
 
 /**
- * Represents an XML element.
+ * Represents a markup element.
  * An `Element` constructs a `Content` instance.
  *
  * @abstract
