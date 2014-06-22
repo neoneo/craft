@@ -165,4 +165,51 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(IsNull(element.getName()))
 	}
 
+	public void function Convert_Should_ReturnElementTree() {
+		variables.factory = new ElementFactoryMock()
+
+		var document = XMLNew()
+
+		var createNode = function (required String ref) {
+			var node = XMLElemNew(document, "http://neoneo.nl/craft", "node")
+			node.xmlAttributes.ref = arguments.ref
+			return node
+		}
+
+		var rootNode = createNode("root")
+		var childNode1 = createNode("child1")
+		var childNode2 = createNode("child2")
+		var childNode3 = createNode("child3")
+		var grandchildNode1 = createNode("grandchild1")
+		var grandchildNode2 = createNode("grandchild2")
+		var grandchildNode3 = createNode("grandchild3")
+
+		childNode2.xmlChildren = [grandchildNode1, grandchildNode2, grandchildNode3]
+		rootNode.xmlChildren = [childNode1, childNode2, childNode3]
+
+		// Test.
+		var root = factory.convert(rootNode)
+		assertEquals(rootNode.xmlAttributes.ref, root.getRef())
+
+		var children = root.children()
+		var child1 = children[1]
+		assertEquals(childNode1.xmlAttributes.ref, child1.getRef())
+
+		var child2 = children[2]
+		assertEquals(childNode2.xmlAttributes.ref, child2.getRef())
+
+		var child3 = children[3]
+		assertEquals(childNode3.xmlAttributes.ref, child3.getRef())
+
+		var grandchildren = child2.children()
+
+		var grandchild1 = grandchildren[1]
+		assertEquals(grandchildNode1.xmlAttributes.ref, grandchild1.getRef())
+		var grandchild2 = grandchildren[2]
+		assertEquals(grandchildNode2.xmlAttributes.ref, grandchild2.getRef())
+		var grandchild3 = grandchildren[3]
+		assertEquals(grandchildNode3.xmlAttributes.ref, grandchild3.getRef())
+
+	}
+
 }
