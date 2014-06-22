@@ -2,7 +2,7 @@ import craft.core.output.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	variables.mapping = "/crafttest/unit/core/output/templates"
+	variables.mapping = "/crafttests/unit/core/output/templates"
 
 	public void function setUp(){
 		variables.templateFinder = new TemplateFinder("cfm")
@@ -18,9 +18,7 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			var layout = variables.templateFinder.get("view3") // error: file does not exist
 			fail("view3.cfm should not be found")
-		} catch (any e) {
-			assertEquals("FileNotFoundException", e.type, "when a view is not found, exception 'FileNotFoundException' should be thrown")
-		}
+		} catch (FileNotFoundException e) {}
 	}
 
 	public void function Get_Should_SearchMappingsInOrder() {

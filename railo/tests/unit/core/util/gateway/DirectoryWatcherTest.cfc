@@ -28,9 +28,7 @@ component extends="mxunit.framework.TestCase" {
 			variables.watcher = createWatcher(variables.directory & "0", false)
 			variables.watcher.close()
 			fail("trying to watch a directory that does not exist should throw an exception")
-		} catch (any e) {
-			assertEquals("FileNotFoundException", e.type, "trying to watch a directory that does not exist should throw exception 'FileNotFoundException'")
-		}
+		} catch (FileNotFoundException e) {}
 	}
 
 	public void function WatchingExistingFile_Should_ThrowInvalidArgumentException() {
@@ -38,9 +36,7 @@ component extends="mxunit.framework.TestCase" {
 			variables.watcher = createWatcher(variables.directory & "nodir", false)
 			variables.watcher.close()
 			fail("trying to watch a directory that is not a directory should throw an exception")
-		} catch (any e) {
-			assertEquals("FileNotFoundException", e.type, "trying to watch a directory that is not a directory should throw exception 'FileNotFoundException'")
-		}
+		} catch (FileNotFoundException e) {}
 	}
 
 	public void function AfterCreatingFile_Watcher_Should_ReturnCreateEvent() {
@@ -98,9 +94,7 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			var events = variables.watcher.poll()
 			fail("polling a closed watcher should throw an exception")
-		} catch (any e) {
-			assertEquals("java.nio.file.ClosedWatchServiceException", e.type, "polling a closed watcher should throw exception 'java.nio.file.ClosedWatchServiceException'");
-		}
+		} catch (java.nio.file.ClosedWatchServiceException e) {}
 	}
 
 	public void function AfterWritingInSubDir_Watcher_ShouldNot_ReturnEvents() {

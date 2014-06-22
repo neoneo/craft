@@ -16,18 +16,14 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			variables.factory.register(variables.mapping & "/nocraftsection")
 			fail("if there is no section named 'craft' in settings.ini, an exception should be thrown")
-		} catch (any e) {
-			assertEquals("NoSuchElementException", e.type)
-		}
+		} catch (NoSuchElementException e) {}
 	}
 
 	public void function RegisterWithNoNamespace_Should_ThrowNoSuchElementException() {
 		try {
 			variables.factory.register(variables.mapping & "/nonamespace")
 			fail("if no namespace is defined in settings.ini, an exception should be thrown")
-		} catch (any e) {
-			assertEquals("NoSuchElementException", e.type)
-		}
+		} catch (NoSuchElementException e) {}
 	}
 
 	public void function RegisterWithSimpleSettings_Should_RegisterOnlyNonAbstractElements() {
@@ -90,9 +86,7 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			var element = variables.factory.create("http://doesnotexist", "tagelement")
 			fail("create should have thrown an exception")
-		} catch (any e) {
-			assertEquals("NoSuchElementException", e.type, "if a non-existent namespace is referenced, a NoSuchElementException should be thrown")
-		}
+		} catch (NoSuchElementException e) {}
 	}
 
 	public void function Create_Should_ThrowException_When_NonExistentTag() {
@@ -101,9 +95,7 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			var element = variables.factory.create("http://neoneo.nl/craft", "doesnotexist")
 			fail("create should have thrown an exception")
-		} catch (any e) {
-			assertEquals("NoSuchElementException", e.type, "if a non-existent tag is referenced, a NoSuchElementException should be thrown")
-		}
+		} catch (NoSuchElementException e) {}
 	}
 
 	public void function Create_Should_ReturnElement_When_Tag() {

@@ -10,41 +10,31 @@ component extends="mxunit.framework.TestCase" {
 	public void function Get_Should_ThrowUnsupportedOperationException_When_Undefined() {
 		try {
 			variables.view.get(model)
-		} catch (Any e) {
-			assertEquals("UnsupportedOperationException", e.type)
-		}
+		} catch (UnsupportedOperationException e) {}
 	}
 
 	public void function Post_Should_ThrowUnsupportedOperationException_When_Undefined() {
 		try {
 			variables.view.post(model)
-		} catch (Any e) {
-			assertEquals("UnsupportedOperationException", e.type)
-		}
+		} catch (UnsupportedOperationException e) {}
 	}
 
 	public void function Put_Should_ThrowUnsupportedOperationException_When_Undefined() {
 		try {
 			variables.view.put(model)
-		} catch (Any e) {
-			assertEquals("UnsupportedOperationException", e.type)
-		}
+		} catch (UnsupportedOperationException e) {}
 	}
 
 	public void function Delete_Should_ThrowUnsupportedOperationException_When_Undefined() {
 		try {
 			variables.view.delete(model)
-		} catch (Any e) {
-			assertEquals("UnsupportedOperationException", e.type)
-		}
+		} catch (UnsupportedOperationException e) {}
 	}
 
 	public void function Patch_Should_ThrowUnsupportedOperationException_When_Undefined() {
 		try {
 			variables.view.patch(model)
-		} catch (Any e) {
-			assertEquals("UnsupportedOperationException", e.type)
-		}
+		} catch (UnsupportedOperationException e) {}
 	}
 
 	public void function Render_Should_CallCorrectMethod() {

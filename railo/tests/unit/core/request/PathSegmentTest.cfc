@@ -27,8 +27,8 @@ component extends="mxunit.framework.TestCase" {
 
 		try {
 			pathSegment.content("test3") // not existing type
-			fail("path segment should throw ContentNotFoundException when content type does not exist")
-		} catch (ContentNotFoundException e) {
+			fail("path segment should throw NoSuchElementException when content type does not exist")
+		} catch (NoSuchElementException e) {
 			// OK
 		}
 	}

@@ -17,16 +17,16 @@ component extends="mxunit.framework.TestCase" {
 		var view = mock(CreateObject("View"))
 			.render("{struct}", "{string}").returns("done")
 		var leaf = mock(CreateObject("Leaf"))
-			.model("{any}").returns(model) // Don't know why I can't pass in variables.context as the first argument..
-			.view("{any}").returns("view")
+			.model("{object}").returns(model) // Don't know why I can't pass in variables.context as the first argument..
+			.view("{object}").returns("view")
 		variables.viewFinder
 			.get("view").returns(view)
 
 		// Call the component under test.
 		variables.visitor.visitLeaf(leaf)
 
-		leaf.verify().model("{any}")
-		leaf.verify().view("{any}")
+		leaf.verify().model("{object}")
+		leaf.verify().view("{object}")
 
 		variables.viewFinder.verify().get("view")
 
@@ -41,17 +41,17 @@ component extends="mxunit.framework.TestCase" {
 		var view = mock(CreateObject("View"))
 			.render("{struct}", "{string}").returns("done")
 		var composite = mock(CreateObject("Composite"))
-			.model("{any}").returns(model)
-			.view("{any}").returns("view")
-			.view2("{any}").returns("view")
+			.model("{object}").returns(model)
+			.view("{object}").returns("view")
+			.view2("{object}").returns("view")
 			.traverse(variables.visitor)
 		variables.viewFinder
 			.get("view").returns(view)
 
 		variables.visitor.visitComposite(composite)
 
-		composite.verify().model("{any}")
-		composite.verify().view("{any}")
+		composite.verify().model("{object}")
+		composite.verify().view("{object}")
 		composite.verify().traverse(variables.visitor)
 
 		variables.viewFinder.verify().get("view")

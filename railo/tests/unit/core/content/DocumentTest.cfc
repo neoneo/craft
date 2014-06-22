@@ -70,9 +70,7 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			variables.document.addSection(section1, placeholder1.ref())
 			fail("exception should have been thrown")
-		} catch (Any e) {
-			assertEquals(e.type, "NoSuchElementException")
-		}
+		} catch (NoSuchElementException e) {}
 	}
 
 	public void function UseLayout_Should_KeepSimilarContentAndRemoveRest() {

@@ -135,9 +135,7 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			var content = variables.reader.build(root)
 			fail("building an element tree with a circular structure should throw an exception")
-		} catch (any e) {
-			assertEquals("ConstructionException", e.type)
-		}
+		} catch (ConstructionException e) {}
 	}
 
 	private Element function createElement(required String ref) {

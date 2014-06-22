@@ -10,9 +10,7 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			var parent = variables.component.parent()
 			fail("exception should have been thrown")
-		} catch (Any e) {
-			assertEquals("NoSuchElementException", e.type)
-		}
+		} catch (NoSuchElementException e) {}
 	}
 
 	public void function GetSetParent_Should_Work() {

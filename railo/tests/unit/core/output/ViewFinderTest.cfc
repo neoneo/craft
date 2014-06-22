@@ -4,7 +4,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function Get_Should_ReturnView_When_ComponentExists() {
 		var viewFinder = new ViewFinder()
-		viewFinder.addMapping("/crafttest/unit/core/output")
+		viewFinder.addMapping("/crafttests/unit/core/output")
 
 		var viewName = "ViewStub"
 		var view = viewFinder.get(viewName)
@@ -15,37 +15,35 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function Get_Should_ReturnView_When_ComponentExistsDotDelimited() {
 		var viewFinder = new ViewFinder()
-		viewFinder.addMapping("/crafttest/unit")
+		viewFinder.addMapping("/crafttests/unit")
 
 		var viewName = "core.output.ViewStub"
 		var view = viewFinder.get(viewName)
 
 		assertTrue(IsInstanceOf(view, "View"))
-		assertTrue(IsInstanceOf(view, "crafttest.unit.core.output.ViewStub"))
+		assertTrue(IsInstanceOf(view, "crafttests.unit.core.output.ViewStub"))
 	}
 
 	public void function Get_Should_ReturnView_When_ComponentExistsSlashDelimited() {
 		var viewFinder = new ViewFinder()
-		viewFinder.addMapping("/crafttest/unit")
+		viewFinder.addMapping("/crafttests/unit")
 
 		var viewName = "/core/output/ViewStub"
 		var view = viewFinder.get(viewName)
 
 		assertTrue(IsInstanceOf(view, "View"))
-		assertTrue(IsInstanceOf(view, "crafttest.unit.core.output.ViewStub"))
+		assertTrue(IsInstanceOf(view, "crafttests.unit.core.output.ViewStub"))
 	}
 
 	public void function Get_Should_ThrowFileNotFoundException_When_ViewComponentNotFound() {
 		var viewFinder = new ViewFinder()
-		viewFinder.addMapping("/crafttest/unit/core/output")
+		viewFinder.addMapping("/crafttests/unit/core/output")
 		var viewName = "NoViewStub"
 
 		try {
 			var view = viewFinder.get(viewName)
 			fail("exception should have been thrown")
-		} catch (Any e) {
-			assertEquals("FileNotFoundException", e.type)
-		}
+		} catch (FileNotFoundException e) {}
 	}
 
 	public void function Init_Should_ThrowIllegalArgumentException_When_RendererAbsent() {
@@ -54,9 +52,7 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			var viewFinder = new ViewFinder(templateFinder)
 			fail("exception should have been thrown")
-		} catch (Any e) {
-			assertEquals("IllegalArgumentException", e.type)
-		}
+		} catch (IllegalArgumentException e) {}
 	}
 
 	public void function Get_Should_ReturnTemplateView_When_ViewIsTemplate() {
@@ -67,7 +63,7 @@ component extends="mxunit.framework.TestCase" {
 		var viewFinder = new ViewFinder(templateFinder, templateRenderer)
 
 		var view = viewFinder.get("viewtemplate")
-		viewFinder.addMapping("/crafttest/unit")
+		viewFinder.addMapping("/crafttests/unit")
 
 		assertTrue(IsInstanceOf(view, "TemplateView"))
 
@@ -76,7 +72,7 @@ component extends="mxunit.framework.TestCase" {
 		var view = viewFinder.get(viewName)
 
 		assertTrue(IsInstanceOf(view, "View"))
-		assertTrue(IsInstanceOf(view, "crafttest.unit.core.output.ViewStub"))
+		assertTrue(IsInstanceOf(view, "crafttests.unit.core.output.ViewStub"))
 	}
 
 	public void function Get_Should_ThrowFileNotFoundException_When_ViewTemplateNotFound() {
@@ -85,14 +81,12 @@ component extends="mxunit.framework.TestCase" {
 		var templateRenderer = mock(CreateObject("TemplateRendererStub"))
 
 		var viewFinder = new ViewFinder(templateFinder, templateRenderer)
-		viewFinder.addMapping("/crafttest/unit/core/output")
+		viewFinder.addMapping("/crafttests/unit/core/output")
 
 		try {
 			var view = viewFinder.get("viewtemplate")
 			fail("exception should have been thrown")
-		} catch (Any e) {
-			assertEquals("FileNotFoundException", e.type)
-		}
+		} catch (FileNotFoundException e) {}
 
 		templateFinder.verify().get("viewtemplate")
 
