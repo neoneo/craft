@@ -2,7 +2,7 @@ component {
 
 	public void function init(required ElementFactory factory) {
 		variables._scope = new Scope()
-		variables._fileBuilder = new FileBuilder(arguments.factory, variables._scope)
+		variables._documentBuilder = new DocumentBuilder(arguments.factory, variables._scope)
 	}
 
 	public Struct function build(required String path) {
@@ -10,7 +10,7 @@ component {
 		var elements = {}
 
 		DirectoryList(arguments.path, false, "path", "*.xml").each(function (path) {
-			elements[arguments.path] = variables._fileBuilder.build(arguments.path)
+			elements[arguments.path] = variables._documentBuilder.buildFile(arguments.path)
 		})
 
 		// Root elements may depend on other root elements. Gather all elements that are not ready.

@@ -5,10 +5,16 @@ component {
 		variables._scope = arguments.scope
 	}
 
-	public Element function build(required String path) {
+	public Element function buildFile(required String path) {
 
-		var node = XMLParse(FileRead(arguments.path)).xmlRoot
-		var element = variables._factory.convert(node)
+		var document = XMLParse(FileRead(arguments.path))
+
+		return build(document)
+	}
+
+	public Element function build(required XML document) {
+
+		var element = variables._factory.convert(arguments.document.xmlRoot)
 
 		/*
 			Create a scope for local elements. We don't want elements from outside this document to be able to refer to inside elements.

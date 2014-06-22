@@ -3,28 +3,30 @@ import craft.markup.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.factory = CreateObject("ElementFactory")
-		// Mock the create method of the factory.
-		variables.factory.create = function (required String namespace, required String tagName, Struct attributes = {}) {
-			// We need to be able to build trees, so we don't get there with simple mocking. We could stub this, but Element
-			// itself is little more than a stub in itself.
-			return new Element(argumentCollection: arguments.attributes)
-		}
-		variables.reader = new Reader(factory)
+		variables.factory = mock(CreateObject("ElementFactory"))
+		variables.scope = new Scope() // We should mock this, but it's a simple object. Mocking would be too complicated.
 
-		// We need an XML document for creating nodes.
-		variables.document = XMLNew()
+		variables.builder = new DocumentBuilder(variables.factory, variables.scope)
 	}
 
-	public void function ParseSingleNode_Should_ReturnElement() {
+	public void function BuildSingleNode_Should_ReturnElement() {
 
-		var node = createNode("node")
+		var element = new stubs.build.RootElement(ref: "ref")
 
-		var element = variables.reader.parse(node)
+		// Mock the convert() method, which is called by the builder.
+		// The {xml} datatype expects xml strings, not nodes, so we use struct.
+		variables.factory.convert("{struct}").returns(element)
 
-		// The factory returns the element with ref 'node'.
-		assertEquals("node", element.getRef())
-		assertTrue(variables.reader.hasElement("node"))
+		var document = XMLNew()
+		var root = XMLElemNew(document, "http://neoneo.nl/craft", "node")
+		document.xmlRoot = root
+
+		var result = variables.builder.build(document)
+
+		// The result should be the element created earlier.
+		assertSame(element, result)
+		assertTrue(variables.scope.has("ref"))
+		assertTrue(element.ready())
 	}
 
 	public void function ParseNodeTree_Should_ReturnElementWithChildren() {
