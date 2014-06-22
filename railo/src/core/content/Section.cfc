@@ -33,7 +33,7 @@ component {
 		return variables._components.toArray()
 	}
 
-	public void function addComponent(required Component component, Component component) {
+	public void function addComponent(required Component component, Component beforeComponent) {
 		variables._components.add(argumentCollection: ArrayToStruct(arguments))
 	}
 

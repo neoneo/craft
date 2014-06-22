@@ -26,12 +26,12 @@ component {
 
 	public Content function content(required String type) {
 
-		var content = variables._content[arguments.type] ?: NullValue()
-		if (IsNull(content)) {
-			Throw("No content of type #arguments.type# found", "ContentNotFoundException")
+		var item = variables._content[arguments.type] ?: NullValue()
+		if (IsNull(item)) {
+			Throw("No content of type #arguments.type# found", "NoSuchElementException")
 		}
 
-		return content
+		return item
 	}
 
 	public Any function parameterName() {
