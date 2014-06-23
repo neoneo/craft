@@ -12,8 +12,8 @@ component extends="Element" {
 	public void function build(required Scope scope) {
 
 		var layoutRef = layoutRef()
-		if (arguments.scope.hasElement(layoutRef)) {
-			var layout = arguments.scope.element(layoutRef)
+		if (arguments.scope.has(layoutRef)) {
+			var layout = arguments.scope.get(layoutRef)
 
 			if (layout.ready() && childrenReady()) {
 				var document = createDocument(layout.product())
