@@ -48,6 +48,11 @@ component {
 			}
 		}
 
+		// If the element is not ready yet, give it one more try. Just in case it was waiting for some other deferred element.
+		if (!element.ready()) {
+			element.build(localScope)
+		}
+
 		variables._scope.store(element)
 
 		return element

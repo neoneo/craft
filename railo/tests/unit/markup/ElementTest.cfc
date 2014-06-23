@@ -78,7 +78,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function SiblingRelationship() {
 		assertEquals(0, variables.element.siblingIndex(), "if an element has no parent, siblingIndex() should return 0")
-		assertEquals(0, variables.element.siblings().len(), "if an element has no parent, siblings() should return an empty array")
+		assertTrue(variables.element.siblings().isEmpty(), "if an element has no parent, siblings() should return an empty array")
 
 		// Create children with a ref, so that .equals can distinguish them.
 		var child1 = new Element(ref: "1")
