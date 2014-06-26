@@ -11,8 +11,9 @@ component extends="Element" accessors="true" tag="layout" {
 
 		if (childrenReady()) {
 			var section = new Section()
-			for (var child in children()) {
-				section.addComponent(child.product())
+
+			children().each(function (child) {
+				section.addComponent(arguments.child.product())
 			})
 
 			setProduct(new Layout(section))

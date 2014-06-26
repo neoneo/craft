@@ -19,10 +19,10 @@ component extends="Element" {
 				var document = createDocument(layout.product())
 
 				// The child elements are all section elements. Each section element may contain multiple child elements.
-				for (var sectionElement in children()) {
+				children().each(function (child) {
 					// Add the section under the ref of the section element (which refers to a placeholder with the same ref).
-					document.addSection(sectionElement.product(), sectionElement.getRef())
-				}
+					document.addSection(arguments.child.product(), arguments.child.getRef())
+				})
 
 				setProduct(document)
 			}

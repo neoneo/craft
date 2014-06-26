@@ -11,8 +11,7 @@ component {
 	 */
 	public void function register(required String mapping) {
 
-		var mapping = arguments.mapping
-		var path = ExpandPath(mapping)
+		var path = ExpandPath(arguments.mapping)
 
 		// See if there is a settings.ini here.
 		var settingsFile = path & "/settings.ini"
@@ -38,6 +37,7 @@ component {
 				var registerPaths = [path]
 			}
 
+			var mapping = arguments.mapping
 			registerPaths.each(function (registerPath) {
 				var registerPath = arguments.registerPath
 				var subdirectory = registerPath.replace(path, "")

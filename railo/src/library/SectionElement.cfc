@@ -13,9 +13,9 @@ component extends="Element" accessors="true" tag="section" {
 			var section = new Section()
 
 			// Now add the child elements to the section.
-			for (var componentElement in sectionElement.children()) {
-				section.addComponent(componentElement.product())
-			}
+			children().each(function (child) {
+				section.addComponent(arguments.child.product())
+			})
 
 			setProduct(section)
 		}

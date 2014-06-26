@@ -4,9 +4,9 @@ component extends="ElementMock" accessors="true" {
 
 	property Element until; // Another element that has to finish construction first.
 
-	public void function build(required Scope scope) {
+	public void function construct(required Scope scope) {
 		if (getUntil().ready()) {
-			super.build(arguments.scope)
+			super.construct(arguments.scope)
 		}
 	}
 

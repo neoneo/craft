@@ -10,7 +10,8 @@ component {
 		var elements = {}
 
 		DirectoryList(arguments.path, false, "path", "*.xml").each(function (path) {
-			elements[arguments.path] = variables._documentBuilder.buildFile(arguments.path)
+			var document = XMLParse(FileRead(arguments.path))
+			elements[arguments.path] = variables._documentBuilder.build(document)
 		})
 
 		// Root elements may depend on other root elements. Gather all elements that are not ready.
@@ -36,9 +37,8 @@ component {
 			})
 
 			if (count == deferred.len()) {
-				Throw("Could not build all elements", "InstantiationException", "One or more elements have undefined dependencies, or are referring to each other. Circular references cannot be resolved.")
+				Throw("Could not construct all elements", "InstantiationException", "One or more elements have undefined dependencies, or are referring to each other. Circular references cannot be resolved.")
 			}
-
 		}
 
 		return elements

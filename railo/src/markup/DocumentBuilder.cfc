@@ -5,13 +5,6 @@ component {
 		variables._scope = arguments.scope
 	}
 
-	public Element function buildFile(required String path) {
-
-		var document = XMLParse(FileRead(arguments.path))
-
-		return build(document)
-	}
-
 	public Element function build(required XML document) {
 
 		var element = variables._factory.convert(arguments.document.xmlRoot)
@@ -33,7 +26,7 @@ component {
 			var count = deferred.len()
 
 			deferred = deferred.filter(function (element) {
-				arguments.element.build(localScope)
+				arguments.element.construct(localScope)
 
 				if (arguments.element.ready()) {
 					localScope.store(arguments.element)
@@ -44,13 +37,13 @@ component {
 
 			// If no elements could be completed in this loop, we have elements pointing to each other or elements depending on unknown elements.
 			if (count == deferred.len()) {
-				Throw("Could not build all elements", "InstantiationException", "One or more elements have undefined dependencies, or are referring to each other. Circular references cannot be resolved.")
+				Throw("Could not construct all elements", "InstantiationException", "One or more elements have undefined dependencies, or are referring to each other. Circular references cannot be resolved.")
 			}
 		}
 
 		// If the element is not ready yet, give it one more try. Just in case it was waiting for some other deferred element.
 		if (!element.ready()) {
-			element.build(localScope)
+			element.construct(localScope)
 		}
 
 		variables._scope.store(element)
@@ -73,7 +66,7 @@ component {
 			}
 		}
 
-		arguments.element.build(arguments.scope)
+		arguments.element.construct(arguments.scope)
 
 		if (!arguments.element.ready()) {
 			deferred.append(arguments.element)

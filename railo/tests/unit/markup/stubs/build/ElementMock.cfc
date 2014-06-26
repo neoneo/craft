@@ -4,7 +4,7 @@ component extends="Element" {
 
 	variables._ready = false
 
-	public void function build(required Scope scope) {
+	public void function construct(required Scope scope) {
 		variables._ready = !hasChildren() || childrenReady()
 		dump([getRef(), _ready])
 	}

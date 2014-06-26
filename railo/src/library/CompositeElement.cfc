@@ -9,14 +9,14 @@ import craft.markup.Scope;
  */
 component extends="ComponentElement" {
 
-	public void function build(required Scope scope) {
+	public void function construct(required Scope scope) {
 
 		if (childrenReady()) {
 			var composite = createComposite(arguments.scope)
 
-			for (var child in children()) {
-				composite.addChild(child.product())
-			}
+			children().each(function (child) {
+				composite.addChild(arguments.child.product())
+			})
 
 			setProduct(composite)
 		}
@@ -25,10 +25,8 @@ component extends="ComponentElement" {
 
 	/**
 	 * Creates the `Composite` to which the children are added.
-	 * The `Scope` is passed in so that this class can also be used for more advanced uses. In such cases, the `createComposite()`
-	 * method is an extension to the `build()` method.
 	 */
-	private Composite function createComposite(required Loader loader) {
+	private Composite function createComposite(required Scope scope) {
 		abort showerror="Not implemented";
 	}
 
