@@ -99,7 +99,7 @@ component {
 				i += 1
 			}
 
-			return result
+			return result ?: NullValue()
 		}
 
 	}
