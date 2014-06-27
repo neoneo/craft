@@ -29,10 +29,23 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function FileBuilder_Should_ThrowException_When_ElementIsDependent() {
 
-		var path = variables.path & "/document/document.xml"
+		var builder = new FileBuilder(variables.factory)
 
+		var path = variables.path & "/document/document.xml"
 		try {
-			var element = new FileBuilder(factory).build(path)
+			var element = builder.build(path)
+			fail("build should have thrown an exception")
+		} catch (InstantiationException e) {}
+
+	}
+
+	public void function DirectoryBuilder_Should_ThrowException_When_ElementIsDependent() {
+
+		var builder = new DirectoryBuilder(variables.factory)
+
+		var path = variables.path & "/invalid"
+		try {
+			var documents = builder.build(path)
 			fail("build should have thrown an exception")
 		} catch (InstantiationException e) {}
 
@@ -56,6 +69,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function DocumentMarkup() {
 
+		// The document depends on a tree of layouts that have to be loaded with a DirectoryBuilder.
 		var builder = new DirectoryBuilder(factory)
 
 		var path = variables.path & "/document"
