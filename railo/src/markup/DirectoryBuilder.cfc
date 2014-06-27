@@ -2,7 +2,7 @@ component {
 
 	public void function init(required ElementFactory factory) {
 		variables._scope = new Scope()
-		variables._documentBuilder = new DocumentBuilder(arguments.factory, variables._scope)
+		variables._elementBuilder = new ElementBuilder(arguments.factory, variables._scope)
 	}
 
 	public Struct function build(required String path) {
@@ -11,7 +11,10 @@ component {
 
 		DirectoryList(arguments.path, false, "path", "*.xml").each(function (path) {
 			var document = XMLParse(FileRead(arguments.path))
-			elements[arguments.path] = variables._documentBuilder.build(document)
+			var element = elements[arguments.path] = variables._elementBuilder.build(document)
+			if (element.ready()) {
+				variables._scope.put(element)
+			}
 		})
 
 		// Root elements may depend on other root elements. Gather all elements that are not ready.
@@ -27,10 +30,10 @@ component {
 			var count = deferred.len()
 
 			deferred = deferred.filter(function (element) {
-				arguments.element.build(variables._scope)
+				arguments.element.construct(variables._scope)
 
 				if (arguments.element.ready()) {
-					variables._scope.store(arguments.element)
+					variables._scope.put(arguments.element)
 				}
 
 				return !arguments.element.ready()

@@ -19,7 +19,7 @@ component {
 		return variables._elements.keyExists(arguments.ref) ? variables._elements[arguments.ref] : variables._parent.get(arguments.ref)
 	}
 
-	public void function store(required Element element) {
+	public void function put(required Element element) {
 		var ref = arguments.element.getRef()
 		if (!IsNull(ref)) {
 			if (has(ref)) {

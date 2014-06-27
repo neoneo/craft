@@ -1,14 +1,14 @@
 component extends="craft.core.content.Leaf" accessors="true" {
 
-	property String name;
+	property String ref;
 
-	public void function init(required String name) {
-		setName(arguments.name)
+	public void function init(required String ref) {
+		setRef(arguments.ref)
 	}
 
 	public Struct function model(required Context context) {
 		return {
-			component: getName()
+			component: getRef()
 		}
 	}
 

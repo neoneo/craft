@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<composite xmlns="http://neoneo.nl/craft/test" ref="root">
+	<leaf ref="leaf1" />
+	<composite ref="composite2">
+		<composite ref="composite2.1">
+			<leaf ref="leaf2.1.1" />
+			<leaf ref="leaf2.1.2" />
+		</composite>
+		<leaf ref="leaf2.2" />
+		<composite ref="composite2.3" />
+	</composite>
+	<leaf ref="leaf3" />
+</composite>

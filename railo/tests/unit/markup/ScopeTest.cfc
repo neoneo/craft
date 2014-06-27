@@ -11,7 +11,7 @@ component extends="mxunit.framework.TestCase" {
 		var scope = new Scope()
 		var element = mock(CreateObject("Element")).getRef().returns("ref")
 
-		scope.store(element)
+		scope.put(element)
 
 		assertTrue(scope.has("ref"))
 		assertSame(element, scope.get("ref"))
@@ -21,15 +21,15 @@ component extends="mxunit.framework.TestCase" {
 	public void function Methods_Should_SearchParentScope() {
 		var scope1 = new Scope()
 		var element1 = mock(CreateObject("Element")).getRef().returns("ref1")
-		scope1.store(element1)
+		scope1.put(element1)
 
 		var scope2 = new Scope(scope1)
 		var element2 = mock(CreateObject("Element")).getRef().returns("ref2")
-		scope2.store(element2)
+		scope2.put(element2)
 
 		var scope3 = new Scope(scope2)
 		var element3 = mock(CreateObject("Element")).getRef().returns("ref3")
-		scope3.store(element3)
+		scope3.put(element3)
 
 		assertTrue(scope3.has("ref3"))
 		assertSame(element3, scope3.get("ref3"))

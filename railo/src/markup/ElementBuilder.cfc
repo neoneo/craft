@@ -29,7 +29,7 @@ component {
 				arguments.element.construct(localScope)
 
 				if (arguments.element.ready()) {
-					localScope.store(arguments.element)
+					localScope.put(arguments.element)
 				}
 
 				return !arguments.element.ready()
@@ -46,8 +46,7 @@ component {
 			element.construct(localScope)
 		}
 
-		variables._scope.store(element)
-
+		// Return the element whether it's ready or not. It's the responsibility of other objects to handle this.
 		return element
 	}
 
@@ -71,7 +70,7 @@ component {
 		if (!arguments.element.ready()) {
 			deferred.append(arguments.element)
 		} else {
-			arguments.scope.store(arguments.element)
+			arguments.scope.put(arguments.element)
 		}
 
 		return deferred

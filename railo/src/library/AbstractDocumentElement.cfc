@@ -9,7 +9,7 @@ import craft.markup.Scope;
  */
 component extends="Element" {
 
-	public void function build(required Scope scope) {
+	public void function construct(required Scope scope) {
 
 		var layoutRef = layoutRef()
 		if (arguments.scope.has(layoutRef)) {
@@ -30,7 +30,7 @@ component extends="Element" {
 
 	}
 
-	public void function add(required Section element) {
+	public void function add(required SectionElement element) {
 		super.add(arguments.element)
 	}
 

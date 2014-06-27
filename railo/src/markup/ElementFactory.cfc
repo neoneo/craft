@@ -103,7 +103,8 @@ component {
 	 */
 	public Element function convert(required XML node) {
 
-		var element = create(arguments.node.xmlNsURI, arguments.node.xmlName, arguments.node.xmlAttributes)
+		var tagName = arguments.node.xmlName.replace(arguments.node.xmlNsPrefix & ":", "") // Remove the namespace prefix, if it exists.
+		var element = create(arguments.node.xmlNsURI, tagName, arguments.node.xmlAttributes)
 		for (var child in arguments.node.xmlChildren) {
 			element.add(convert(child))
 		}

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<layout xmlns="http://neoneo.nl/craft" xmlns:t="http://neoneo.nl/craft/test" ref="layout">
+	<t:composite ref="composite1">
+		<placeholder ref="placeholder1.1" />
+	</t:composite>
+	<t:leaf ref="leaf2" />
+	<t:composite ref="composite3">
+		<placeholder ref="placeholder3.1" />
+	</t:composite>
+</layout>

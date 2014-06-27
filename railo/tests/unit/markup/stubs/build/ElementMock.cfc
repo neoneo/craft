@@ -6,7 +6,6 @@ component extends="Element" {
 
 	public void function construct(required Scope scope) {
 		variables._ready = !hasChildren() || childrenReady()
-		dump([getRef(), _ready])
 	}
 
 	public Boolean function ready() {

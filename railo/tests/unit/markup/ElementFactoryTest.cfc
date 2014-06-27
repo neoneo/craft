@@ -182,25 +182,54 @@ component extends="mxunit.framework.TestCase" {
 		// Test.
 		var root = factory.convert(rootNode)
 		assertEquals(rootNode.xmlAttributes.ref, root.getRef())
+		assertEquals(rootNode.xmlName, root.getName())
 
 		var children = root.children()
 		var child1 = children[1]
 		assertEquals(childNode1.xmlAttributes.ref, child1.getRef())
+		assertEquals(rootNode.xmlName, root.getName())
 
 		var child2 = children[2]
 		assertEquals(childNode2.xmlAttributes.ref, child2.getRef())
+		assertEquals(childNode2.xmlName, child2.getName())
 
 		var child3 = children[3]
 		assertEquals(childNode3.xmlAttributes.ref, child3.getRef())
+		assertEquals(childNode3.xmlName, child3.getName())
 
 		var grandchildren = child2.children()
 
 		var grandchild1 = grandchildren[1]
 		assertEquals(grandchildNode1.xmlAttributes.ref, grandchild1.getRef())
+		assertEquals(grandchildNode1.xmlName, grandchild1.getName())
 		var grandchild2 = grandchildren[2]
 		assertEquals(grandchildNode2.xmlAttributes.ref, grandchild2.getRef())
+		assertEquals(grandchildNode2.xmlName, grandchild2.getName())
 		var grandchild3 = grandchildren[3]
 		assertEquals(grandchildNode3.xmlAttributes.ref, grandchild3.getRef())
+		assertEquals(grandchildNode3.xmlName, grandchild3.getName())
+
+	}
+
+	public void function Convert_Should_HandleMultipleNamespaces() {
+		variables.factory = new ElementFactoryMock()
+
+		var document = XMLNew()
+		var rootNode = XMLElemNew(document, "http://neoneo.nl/craft/test", "t:composite")
+		rootNode.xmlAttributes.ref = "root"
+		var childNode = XMLElemNew(document, "http://neoneo.nl/craft", "node")
+		childNode.xmlAttributes.ref = "child"
+
+		rootNode.xmlChildren = [childNode]
+
+		var root = factory.convert(rootNode)
+		assertEquals(rootNode.xmlAttributes.ref, root.getRef())
+		// getName() returns the tag name without the namespace prefix.
+		assertEquals(rootNode.xmlName, "t:" & root.getName())
+
+		var child = root.children()[1]
+		assertEquals(childNode.xmlAttributes.ref, child.getRef())
+		assertEquals(childNode.xmlName, child.getName())
 
 	}
 

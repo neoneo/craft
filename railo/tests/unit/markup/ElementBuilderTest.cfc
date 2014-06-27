@@ -4,9 +4,8 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
 		variables.factory = mock(CreateObject("ElementFactory"))
-		variables.scope = new Scope()
 
-		variables.builder = new DocumentBuilder(variables.factory, variables.scope)
+		variables.builder = new ElementBuilder(variables.factory, new Scope())
 
 		// Create a fake xml document for the call to build().
 		variables.document = XMLNew()
@@ -24,7 +23,6 @@ component extends="mxunit.framework.TestCase" {
 
 		// The result should be the element created earlier.
 		assertSame(element, result)
-		assertTrue(variables.scope.has("ref"))
 		// The most important test: the building process should be complete.
 		assertTrue(result.ready())
 	}
@@ -37,7 +35,6 @@ component extends="mxunit.framework.TestCase" {
 		var result = variables.builder.build(variables.document)
 
 		assertSame(root, result)
-		assertTrue(variables.scope.has("root"))
 		// Test whether all elements are ready.
 		assertTrue(allReady(root))
 	}
@@ -58,7 +55,6 @@ component extends="mxunit.framework.TestCase" {
 
 		var result = variables.builder.build(variables.document)
 		assertSame(root, result)
-		assertTrue(variables.scope.has("root"))
 		assertTrue(allReady(root))
 	}
 
