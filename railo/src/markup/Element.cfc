@@ -3,10 +3,8 @@ import craft.core.content.Content;
 /**
  * Represents a markup element.
  * An `Element` constructs a `Content` instance.
- *
- * @abstract
  */
-component accessors="true" {
+component accessors="true" abstract="true" {
 
 	// All elements may have a 'ref' attribute.
 	property String ref;

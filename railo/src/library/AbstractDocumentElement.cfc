@@ -4,10 +4,7 @@ import craft.core.content.LayoutContent;
 import craft.markup.Element;
 import craft.markup.Scope;
 
-/**
- * @abstract
- */
-component extends="Element" {
+component extends="Element" abstract="true" {
 
 	public void function construct(required Scope scope) {
 
@@ -20,8 +17,8 @@ component extends="Element" {
 
 				// The child elements are all section elements. Each section element may contain multiple child elements.
 				children().each(function (child) {
-					// Add the section under the ref of the section element (which refers to a placeholder with the same ref).
-					document.addSection(arguments.child.product(), arguments.child.getRef())
+					// Add the section under the placeholder attribute.
+					document.addSection(arguments.child.product(), arguments.child.getPlaceholder())
 				})
 
 				setProduct(document)

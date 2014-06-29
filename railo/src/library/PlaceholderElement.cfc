@@ -10,4 +10,9 @@ component extends="ComponentElement" accessors="true" tag="placeholder" {
 		setProduct(new Placeholder(getRef()))
 	}
 
+	public Boolean function childrenReady() {
+		// Ignore any children.
+		return ready()
+	}
+
 }

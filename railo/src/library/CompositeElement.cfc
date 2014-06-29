@@ -4,10 +4,8 @@ import craft.markup.Scope;
 
 /**
  * Base implementation of an element that produces a `Composite`.
- *
- * @abstract
  */
-component extends="ComponentElement" {
+component extends="ComponentElement" abstract="true" {
 
 	public void function construct(required Scope scope) {
 

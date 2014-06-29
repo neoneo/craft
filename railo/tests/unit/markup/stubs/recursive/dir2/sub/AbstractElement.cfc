@@ -1,8 +1,6 @@
 /**
  * This element should not be registered.
- *
- * @abstract
  */
-component extends="craft.markup.Element" tag="abstractelement" {
+component extends="craft.markup.Element" tag="abstractelement" abstract="true" {
 
 }
