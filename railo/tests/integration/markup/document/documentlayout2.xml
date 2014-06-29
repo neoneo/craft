@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <documentlayout xmlns="http://neoneo.nl/craft" xmlns:t="http://neoneo.nl/craft/test" ref="documentlayout2" extends="documentlayout1">
-	<section ref="placeholder1.1.2">
+	<section placeholder="placeholder1.1.2">
 		<t:leaf ref="leaf1.1.2.1" />
 		<placeholder ref="placeholder1.1.2.2" />
 	</section>
