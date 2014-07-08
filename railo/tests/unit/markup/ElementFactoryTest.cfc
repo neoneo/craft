@@ -154,7 +154,7 @@ component extends="mxunit.framework.TestCase" {
 
 		assertTrue(IsInstanceOf(element, "TagElement"))
 		assertEquals(attributes.ref, element.getRef())
-		assertTrue(IsNull(element.getName()))
+		assertTrue(element.getName() === null)
 	}
 
 	public void function Convert_Should_ReturnElementTree() {

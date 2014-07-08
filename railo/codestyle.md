@@ -23,7 +23,7 @@ Features
 --------
 * Member functions wherever possible except for scopes.
 * Break out of current and parent loops using `break [loop name]`.
-* `===` operator to compare objects for equality. For other comparisons this operator could be used too, but its meaning is less clear.
+* `===` operator to compare objects for equality (including null). For other comparisons this operator could be used too, but its meaning is less clear.
 	For strings, the comparison is case sensitive, but this is not clear from the syntax (or the difference could be missed). Numeric comparisons may fail if the instances are not of the same type. Functions like Len return an integer, while all numerics are doubles. Therefore, `Len("a") === 1` fails.
 
 Administrator settings
@@ -32,6 +32,6 @@ Administrator settings
 * Merge url and form.
 * Strict cascading.
 * Modern application listener.
+* Null support
 
-* Null support: supported but not necessary
 * Local scope mode: not supported. When this is enabled, closures can't see the outside scope.

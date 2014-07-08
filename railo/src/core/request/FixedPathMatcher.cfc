@@ -4,7 +4,7 @@ component implements="PathMatcher" {
 		variables._name = arguments.name
 	}
 
-	public Numeric function match(required Array path) {
+	public Numeric function match(required String[] path) {
 		return arguments.path.first() == variables._name ? 1 : 0
 	}
 

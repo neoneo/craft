@@ -102,7 +102,7 @@ component extends="mxunit.framework.TestCase" {
 		}
 
 		// This function can only test cases where nodes and components are in a one to one correspondence.
-		var children = NullValue()
+		var children = null
 		if (IsInstanceOf(arguments.content, "craft.core.content.Component")) {
 			if (arguments.content.hasChildren()) {
 				var children = arguments.content.children()
@@ -121,7 +121,7 @@ component extends="mxunit.framework.TestCase" {
 			Throw("Unknown content instance: #tagName#")
 		}
 
-		if (!IsNull(local.children)) { // For some reason, children sometimes ends up in the variables scope?
+		if (children !== null) {
 			var nodes = arguments.node.xmlChildren
 
 			return children.every(function (child, index) {

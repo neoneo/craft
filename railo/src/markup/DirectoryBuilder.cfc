@@ -1,7 +1,7 @@
 component {
 
-	public void function init(required ElementFactory factory) {
-		variables._scope = new Scope()
+	public void function init(required ElementFactory factory, Scope scope) {
+		variables._scope = arguments.scope ?: new Scope()
 		variables._elementBuilder = new ElementBuilder(arguments.factory, variables._scope)
 	}
 

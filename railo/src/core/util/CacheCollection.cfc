@@ -24,13 +24,12 @@ component extends="Collection" {
 		return get().isEmpty()
 	}
 
-	public any function select(required Function predicate) {
+	public Any function select(required Function predicate) {
 
 		var items = get()
 		var index = items.find(arguments.predicate)
-		if (index > 0) {
-			return items[index]
-		}
+
+		return index > 0 ? items[index] : null
 	}
 
 	public Numeric function size() {

@@ -5,7 +5,7 @@ component extends="View" {
 		variables._renderer = arguments.renderer
 	}
 
-	public Any function render(required Struct model, required String method) {
+	public String function render(required Struct model, required String method) {
 		return variables._renderer.render(variables._template, arguments.model)
 	}
 

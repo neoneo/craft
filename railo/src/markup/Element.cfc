@@ -9,12 +9,12 @@ component accessors="true" abstract="true" {
 	// All elements may have a 'ref' attribute.
 	property String ref;
 
-	variables._parent = NullValue()
+	variables._parent = null
 	variables._children = []
-	variables._product = NullValue()
+	variables._product = null
 
 	public Boolean function ready() {
-		return !IsNull(variables._product)
+		return variables._product !== null
 	}
 
 	/**
@@ -42,7 +42,7 @@ component accessors="true" abstract="true" {
 	}
 
 	public Boolean function hasParent() {
-		return !IsNull(variables._parent)
+		return variables._parent !== null
 	}
 
 	public void function setParent(required Element parent) {

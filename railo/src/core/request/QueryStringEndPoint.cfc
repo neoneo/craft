@@ -25,10 +25,11 @@ component extends="EndPoint" {
 
 		var queryString = "path=" & URLEncode(path)
 
-		if (!IsNull(arguments.parameters)) {
+		var parameters = arguments.parameters ?: null
+		if (parameters !== null) {
 			// Put the parameters on the query string.
-			queryString = arguments.parameters.reduce(function (queryString, name, value) {
-				return ListAppend(arguments.queryString, arguments.name & "=" & URLEncode(value), "&")
+			queryString = parameters.reduce(function (queryString, name, value) {
+				return arguments.queryString.listAppend(arguments.name & "=" & URLEncode(value), "&")
 			}, queryString)
 		}
 

@@ -4,13 +4,13 @@ component {
 
 	public void function init(TemplateFinder templateFinder, TemplateRenderer templateRenderer) {
 
-		variables._templateFinder = arguments.templateFinder ?: NullValue()
-		if (!IsNull(variables._templateFinder)) {
+		variables._templateFinder = arguments.templateFinder ?: null
+		variables._templateRenderer = arguments.templateRenderer ?: null
+		if (variables._templateFinder !== null) {
 			// The template renderer is now required for creating template views.
-			if (IsNull(arguments.templateRenderer)) {
+			if (variables._templateRenderer === null) {
 				Throw("TemplateRenderer is required", "IllegalArgumentException")
 			}
-			variables._templateRenderer = arguments.templateRenderer
 		}
 
 		/*
@@ -44,7 +44,7 @@ component {
 	public View function get(required String viewName) {
 
 		if (!variables._cache.has(arguments.viewName)) {
-			var view = NullValue()
+			var view = null
 			try {
 				// The finder uses slash delimited paths.
 				var path = variables._finder.get(arguments.viewName.listChangeDelims("/", "."))
@@ -54,7 +54,7 @@ component {
 
 			} catch (FileNotFoundException e) {
 				// No view component was found.
-				if (!IsNull(variables._templateFinder)) {
+				if (variables._templateFinder !== null) {
 					try {
 						var template = variables._templateFinder.get(arguments.viewName)
 						view = new TemplateView(template, variables._templateRenderer)
@@ -64,7 +64,7 @@ component {
 				}
 			}
 
-			if (IsNull(view)) {
+			if (view === null) {
 				Throw("View '#arguments.viewName#' not found", "FileNotFoundException")
 			}
 			variables._cache.put(arguments.viewName, view)

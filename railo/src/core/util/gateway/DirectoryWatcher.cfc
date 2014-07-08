@@ -29,12 +29,12 @@ component {
 		variables._watcher.close()
 	}
 
-	private Array function handleEvents(required Any key) {
+	private Array function handleEvents(required Any key = null) {
 
 		var events = []
-		if (!IsNull(arguments.key)) {
+		if (arguments.key !== null) {
 			var path = variables._keys.get(arguments.key)
-			if (!IsNull(path)) {
+			if (path === null) {
 				for (var event in arguments.key.pollEvents()) {
 					var kind = event.kind()
 					if (kind !== variables._kinds.OVERFLOW) {

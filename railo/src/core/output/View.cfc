@@ -7,42 +7,42 @@ import craft.core.request.Context;
  */
 component {
 
-	public Any function render(required Struct model, required String method) {
+	public Any function render(required Any model, required String method) {
 		return this[arguments.method](arguments.model)
 	}
 
 	/**
 	 * Returns the output for a GET request.
 	 */
-	public Any function get(required Struct model) {
+	public Any function get(required Any model) {
 		Throw("Method Not Allowed", "UnsupportedOperationException")
 	}
 
 	/**
 	 * Returns the output for a POST request.
 	 */
-	public Any function post(required Struct model) {
+	public Any function post(required Any model) {
 		Throw("Method Not Allowed", "UnsupportedOperationException")
 	}
 
 	/**
 	 * Returns the output for a PUT request.
 	 */
-	public Any function put(required Struct model) {
+	public Any function put(required Any model) {
 		Throw("Method Not Allowed", "UnsupportedOperationException")
 	}
 
 	/**
 	 * Returns the output for a DELETE request.
 	 */
-	public Any function delete(required Struct model) {
+	public Any function delete(required Any model) {
 		Throw("Method Not Allowed", "UnsupportedOperationException")
 	}
 
 	/**
 	 * Returns the output for a PATCH request.
 	 */
-	public Any function patch(required Struct model) {
+	public Any function patch(required Any model) {
 		Throw("Method Not Allowed", "UnsupportedOperationException")
 	}
 

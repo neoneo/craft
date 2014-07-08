@@ -2,7 +2,7 @@ import craft.core.util.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	private BranchList function createCollection() {
+	private Collection function createCollection() {
 		Throw("Not implemented")
 	}
 
@@ -28,7 +28,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Add_Should_ReturnFalse_IfInsertedBeforeNotExists() {
-		assertFalse(collection.add({id: "A"}, {id: "B"}), "collection.add should return false if the item should be moved before a item that is not in the list")
+		assertFalse(collection.add({id: "A"}, {id: "B"}), "collection.add should return false if the item should be moved before an item that is not in the list")
 	}
 
 	public void function Contains_Should_ReturnCorrectBooleanValue() {
@@ -113,7 +113,7 @@ component extends="mxunit.framework.TestCase" {
 		var selected = collection.select(function (item) {
 			return arguments.item === noChild
 		})
-		assertTrue(IsNull(selected), "collection.select should return null if the predicate is not met")
+		assertTrue(selected === null, "collection.select should return null if the predicate is not met")
 	}
 
 }

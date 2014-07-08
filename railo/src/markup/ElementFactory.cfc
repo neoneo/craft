@@ -135,13 +135,13 @@ component {
 		var values = arguments.attributes
 		data.attributes.each(function (attribute) {
 			var name = arguments.attribute.name
-			var value = values[name] ?: arguments.attribute.default ?: NullValue()
+			var value = values[name] ?: arguments.attribute.default ?: null
 
-			if (IsNull(value) && (arguments.attribute.required ?: false)) {
+			if (value === null && (arguments.attribute.required ?: false)) {
 				Throw("Attribute '#name#' is required", "IllegalArgumentException")
 			}
 
-			if (!IsNull(value)) {
+			if (value !== null) {
 				// Assuming we'll only encounter simple values here, we can use IsValid. We also assume that the property type is specified.
 				if (!IsValid(arguments.attribute.type, value)) {
 					Throw("Invalid value '#value#' for attribute '#name#': #arguments.attribute.type# expected", "IllegalArgumentException")
@@ -169,8 +169,8 @@ component {
 				}
 			}
 
-			data = data.extends ?: NullValue()
-		} while (!IsNull(data))
+			data = data.extends ?: null
+		} while (data !== null)
 
 		return properties
 	}

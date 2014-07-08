@@ -1,12 +1,12 @@
 component {
 
 	public void function init(Scope parent) {
-		variables._parent = arguments.parent ?: NullValue()
+		variables._parent = arguments.parent ?: null
 		variables._elements = {}
 	}
 
 	public Boolean function has(required String ref) {
-		return variables._elements.keyExists(arguments.ref) || !IsNull(variables._parent) && variables._parent.has(arguments.ref)
+		return variables._elements.keyExists(arguments.ref) || variables._parent !== null && variables._parent.has(arguments.ref)
 	}
 
 	public Element function get(required String ref) {
@@ -21,7 +21,7 @@ component {
 
 	public void function put(required Element element) {
 		var ref = arguments.element.getRef()
-		if (!IsNull(ref)) {
+		if (ref !== null) {
 			if (has(ref)) {
 				Throw("Element '#ref#' already exists", "AlreadyBoundException")
 			}

@@ -3,14 +3,14 @@
  */
 component {
 
-	public Boolean function add(required Any item, Any beforeItem) {
+	public Boolean function add(required Any item, Any beforeItem = null) {
 
 		var added = false
 		if (!contains(arguments.item)) {
-			if (IsNull(arguments.beforeItem) || contains(arguments.beforeItem)) {
+			if (arguments.beforeItem === null || contains(arguments.beforeItem)) {
 				append(arguments.item)
 				added = true
-				if (!IsNull(arguments.beforeItem)) {
+				if (arguments.beforeItem !== null) {
 					move(arguments.item, arguments.beforeItem)
 				}
 			}
@@ -19,13 +19,13 @@ component {
 		return added
 	}
 
-	public Boolean function move(required Any item, Any beforeItem) {
+	public Boolean function move(required Any item, Any beforeItem = null) {
 
 		var moved = false
 		var currentIndex = indexOf(arguments.item)
 		// The item must be in the collection already.
 		if (currentIndex > 0) {
-			if (IsNull(arguments.beforeItem)) {
+			if (arguments.beforeItem === null) {
 				if (currentIndex < size()) {
 					append(arguments.item)
 					moved = true

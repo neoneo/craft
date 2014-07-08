@@ -20,8 +20,10 @@ component {
 				variables._state = "running"
 				var directory = variables._config.directory & (variables._config.recursive ? " (recursively)" : "")
 				log log="application" type="information" text="directory watcher gateway: starting";
+
+				var watcher = null
 				try {
-					var watcher = new DirectoryWatcher(variables._config.directory, variables._config.recursive)
+					watcher = new DirectoryWatcher(variables._config.directory, variables._config.recursive)
 					log log="application" type="information" text="directory watcher gateway: watching #directory#";
 
 					running:while (variables._state == "running") {
@@ -48,7 +50,7 @@ component {
 				} catch (Any e) {
 					log log="application" type="error" text="directory watcher gateway: #e.type# #e.message#";
 				} finally {
-					if (!IsNull(watcher)) {
+					if (watcher !== null) {
 						watcher.close()
 					}
 					variables._state = "stopped"

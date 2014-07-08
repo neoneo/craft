@@ -35,7 +35,7 @@ component {
 
 		// Traverse the path to get the path segment that applies to this request.
 		var pathSegment = variables._root.match(segments) ? variables._root : traverse(segments, variables._root)
-		if (IsNull(pathSegment)) {
+		if (pathSegment === null) {
 			Throw("Path segment not found", "FileNotFoundException")
 		}
 
@@ -74,22 +74,22 @@ component {
 		if (arguments.path.isEmpty()) {
 			return arguments.pathSegment
 		} else {
-			var result = NullValue()
+			var result = null
 
 			var children = arguments.pathSegment.children()
 			var count = children.len()
 			var i = 1
-			while (IsNull(result) && i <= count) {
+			while (result === null && i <= count) {
 				var child = children[i]
 				var segmentCount = child.match(arguments.path)
 				if (segmentCount > 0) {
 					// Remove the number of segments that were matched and traverse the remaining path.
 					result = traverse(arguments.path.mid(segmentCount + 1), child)
 
-					if (!IsNull(result)) {
+					if (result !== null) {
 						// The complete path is traversed so the current path segment is part of the tree.
 						var parameterName = child.parameterName()
-						if (!IsNull(parameterName)) {
+						if (parameterName !== null) {
 							// Get the part of the path that was actually matched by the current path segment.
 							variables._parameters[parameterName] = arguments.path.mid(1, segmentCount).toList("/")
 						}
@@ -99,7 +99,7 @@ component {
 				i += 1
 			}
 
-			return result ?: NullValue()
+			return result
 		}
 
 	}

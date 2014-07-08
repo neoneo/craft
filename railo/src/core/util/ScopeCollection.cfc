@@ -14,11 +14,9 @@ component extends="Collection" {
 		return variables._items.isEmpty()
 	}
 
-	public any function select(required Function predicate) {
+	public Any function select(required Function predicate) {
 		var index = variables._items.find(arguments.predicate)
-		if (index > 0) {
-			return variables._items[index]
-		}
+		return index > 0 ? variables._items[index] : null
 	}
 
 	public Numeric function size() {

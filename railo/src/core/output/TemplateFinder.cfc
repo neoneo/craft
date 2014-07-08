@@ -42,7 +42,7 @@ component {
 
 		if (!variables._cache.has(arguments.template)) {
 			var fileName = locate(arguments.template)
-			if (IsNull(fileName)) {
+			if (fileName === null) {
 				Throw("Template '#arguments.template#' not found", "FileNotFoundException")
 			}
 			variables._cache.put(arguments.template, fileName)
@@ -54,7 +54,7 @@ component {
 	private Any function locate(required String template) {
 
 		var filename = arguments.template & "." & variables._extension
-		var templatePath = NullValue()
+		var templatePath = null
 
 		variables._mappings.some(function (mapping, directory) {
 			// TODO: find out how to check for existence in Railo archives.
@@ -66,11 +66,11 @@ component {
 			return false
 		});
 
-		return templatePath ?: NullValue()
+		return templatePath
 	}
 
 	public Boolean function exists(required String template) {
-		return !IsNull(locate(arguments.template))
+		return locate(arguments.template) !== null
 	}
 
 }

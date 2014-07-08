@@ -10,10 +10,12 @@ component {
 	public void function init(required PathMatcher pathMatcher, String parameterName) {
 
 		variables._pathMatcher = arguments.pathMatcher
-		variables._parameterName = arguments.parameterName ?: NullValue()
+		variables._parameterName = arguments.parameterName ?: null
 
 		variables._content = {}
 		variables._children = new ScopeCollection(this)
+
+		variables._parent = null
 
 	}
 
@@ -26,8 +28,8 @@ component {
 
 	public Content function content(required String type) {
 
-		var item = variables._content[arguments.type] ?: NullValue()
-		if (IsNull(item)) {
+		var item = variables._content[arguments.type] ?: null
+		if (item === null) {
 			Throw("No content of type #arguments.type# found", "NoSuchElementException")
 		}
 
@@ -56,7 +58,7 @@ component {
 	}
 
 	public Boolean function hasParent() {
-		return !IsNull(variables._parent)
+		return variables._parent !== null
 	}
 
 	public PathSegment function parent() {
