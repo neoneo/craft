@@ -44,36 +44,49 @@ component implements="Visitor" {
 	public void function visitLeaf(required Leaf leaf) {
 
 		var model = arguments.leaf.model(variables._context)
-		var view = variables._viewFinder.get(arguments.leaf.view(variables._context))
 
-		variables._content = view.render(model, variables._context.requestMethod())
-		variables._contents.append(variables._content)
+		// If _contents is null, rendering the view is useless.
+		if (variables._contents !== null) {
+			var viewName = arguments.leaf.view(variables._context)
+			if (viewName !== null) {
+				var view = variables._viewFinder.get(viewName)
+
+				variables._content = view.render(model, variables._context.requestMethod())
+				variables._contents.append(variables._content)
+			}
+		}
 
 	}
 
 	public void function visitComposite(required Composite composite) {
 
-		// Copy state in local variables.
+		// Keep state in local variables.
 		var contents = variables._contents
 
 		var model = arguments.composite.model(variables._context)
-		var view = variables._viewFinder.get(arguments.composite.view(variables._context))
 
-		// Overwrite state.
-		variables._contents = []
+		var viewName = null
+		if (contents !== null) {
+			viewName = arguments.composite.view(variables._context)
+
+			// Overwrite state. Set _contents to null if there is no view defined.
+			// As a consequence, children will not be rendered either.
+			variables._contents = viewName !== null ? [] : null
+		}
 
 		// During traversal, the contents of the children will be appended to the _contents array.
 		arguments.composite.traverse(this)
 
-		// Put the content on the model so the view can include it.
-		model.__content__ = variables._contents
-
-		variables._content = view.render(model, variables._context.requestMethod())
+		if (contents !== null && viewName !== null) {
+			// Put the content of the children on the model so the view can include it.
+			model.__content__ = variables._contents
+			var view = variables._viewFinder.get(viewName)
+			variables._content = view.render(model, variables._context.requestMethod())
+			contents.append(variables._content)
+		}
 
 		// Revert state.
 		variables._contents = contents
-
-		variables._contents.append(variables._content)
 
 	}
 

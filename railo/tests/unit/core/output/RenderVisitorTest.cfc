@@ -15,7 +15,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function VisitLeaf_Should_CallModelAndView() {
 		var model = {key: 1}
 		var view = mock(CreateObject("View"))
-			.render("{struct}", "{string}").returns("done")
+			.render("{any}", "{string}").returns("done")
 		var leaf = mock(CreateObject("Leaf"))
 			.model("{object}").returns(model) // Don't know why I can't pass in variables.context as the first argument..
 			.view("{object}").returns("view")
@@ -30,7 +30,7 @@ component extends="mxunit.framework.TestCase" {
 
 		variables.viewFinder.verify().get("view")
 
-		view.verify().render("{struct}", "{string}")
+		view.verify().render("{any}", "{string}")
 
 		// The visitor should make the rendered output ('done') available.
 		assertEquals("done", variables.visitor.content())
@@ -39,11 +39,10 @@ component extends="mxunit.framework.TestCase" {
 	public void function VisitComposite_Should_CallModelViewAndTraverse() {
 		var model = {key: 1}
 		var view = mock(CreateObject("View"))
-			.render("{struct}", "{string}").returns("done")
+			.render("{any}", "{string}").returns("done")
 		var composite = mock(CreateObject("Composite"))
 			.model("{object}").returns(model)
 			.view("{object}").returns("view")
-			.view2("{object}").returns("view")
 			.traverse(variables.visitor)
 		variables.viewFinder
 			.get("view").returns(view)
@@ -56,9 +55,67 @@ component extends="mxunit.framework.TestCase" {
 
 		variables.viewFinder.verify().get("view")
 
-		view.verify().render("{struct}", "{string}")
+		view.verify().render("{any}", "{string}")
 
 		assertEquals("done", variables.visitor.content())
+	}
+
+	public void function VisitLeafWithoutView_Should_ReturnNoContent() {
+		var model = {key: 1}
+		var leaf = mock(CreateObject("Leaf"))
+			.model("{object}").returns(model)
+			.view("{object}").returns(null) // No view.
+
+		variables.visitor.visitLeaf(leaf)
+
+		leaf.verify().model("{object}")
+		leaf.verify().view("{object}")
+
+		// No view should be retrieved or rendered.
+		variables.viewFinder.verify(0).get("{any}")
+
+		// The rendered content should be null.
+		var content = variables.visitor.content()
+		assertTrue(content === null, "content should be null, but returned '#content#'")
+	}
+
+	public void function VisitCompositeWithoutView_Should_ReturnNoContent() {
+		var model = {key: 1}
+		// Mock a composite without a view, containing a child with a view.
+		var child = mock(CreateObject("Leaf"))
+			.model("{object}").returns(model)
+			.view("{object}").returns("view")
+
+		var composite = mock(CreateObject("Composite"))
+			.model("{object}").returns(model)
+			.view("{object}").returns(null) // No view.
+
+		// Stub the traverse method.
+		composite.traverse = function (visitor) {
+			// We make a shortcut here.
+			arguments.visitor.visitLeaf(child)
+		}
+
+		// Mock the view of the child. This should never be used in this test.
+		var view = mock(CreateObject("View"))
+			.render("{any}", "{string}").returns("done")
+		variables.viewFinder
+			.get("view").returns(view)
+
+		// Actual test.
+		variables.visitor.visitComposite(composite)
+
+		composite.verify().model("{object}")
+		composite.verify().view("{object}")
+
+		child.verify().model("{object}")
+		child.verify(0).view("{object}") // Should not be called.
+		variables.viewFinder.verify(0).get("{any}") // No views should be retrieved.
+		view.verify(0).render("{any}", "{string}") // And this view should therefore not be rendered.
+
+		// The rendered content should be null.
+		var content = variables.visitor.content()
+		assertTrue(content === null, "content should be null, but returned '#content#'")
 	}
 
 	public void function VisitLayout_Should_CallSectionAccept() {
