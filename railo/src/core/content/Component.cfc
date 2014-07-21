@@ -43,46 +43,10 @@ component implements="Content" {
 	}
 
 	/**
-	 * Returns data for the view. This method is called during tree traversal, and calls the method corresponding
-	 * to the request method. Override this method, or implement the supported methods.
+	 * Processes the request and returns data for the view.
 	 */
 	public Any function model(required Context context) {
-		return this[arguments.context.requestMethod()](arguments.context)
-	}
-
-	/**
-	 * Collects data for a GET request.
-	 */
-	public Any function get(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
-	}
-
-	/**
-	 * Collects data for a POST request.
-	 */
-	public Any function post(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
-	}
-
-	/**
-	 * Collects data for a PUT request.
-	 */
-	public Any function put(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
-	}
-
-	/**
-	 * Collects data for a DELETE request.
-	 */
-	public Any function delete(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
-	}
-
-	/**
-	 * Collects data for a PATCH request.
-	 */
-	public Any function patch(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
+		abort showerror="Not implemented";
 	}
 
 }
