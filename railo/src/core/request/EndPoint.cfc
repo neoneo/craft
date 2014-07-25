@@ -84,14 +84,14 @@ component {
 				var segmentCount = child.match(arguments.path)
 				if (segmentCount > 0) {
 					// Remove the number of segments that were matched and traverse the remaining path.
-					result = traverse(arguments.path.mid(segmentCount + 1), child)
+					result = traverse(arguments.path.slice(segmentCount + 1), child)
 
 					if (result !== null) {
 						// The complete path is traversed so the current path segment is part of the tree.
 						var parameterName = child.parameterName()
 						if (parameterName !== null) {
 							// Get the part of the path that was actually matched by the current path segment.
-							variables._parameters[parameterName] = arguments.path.mid(1, segmentCount).toList("/")
+							variables._parameters[parameterName] = arguments.path.slice(1, segmentCount).toList("/")
 						}
 					}
 				}

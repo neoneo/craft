@@ -1,47 +1,50 @@
-import craft.core.content.Content;
-
 import craft.core.util.ScopeCollection;
 
 /**
  * PathSegment
+ *
+ * @abstract
  */
 component {
 
-	public void function init(required PathMatcher pathMatcher, String parameterName) {
+	public void function init(String pattern = null, String parameterName = null) {
 
-		variables._pathMatcher = arguments.pathMatcher
-		variables._parameterName = arguments.parameterName ?: null
+		variables._pattern = arguments.pattern
+		variables._parameterName = arguments.parameterName
 
-		variables._content = {}
 		variables._children = new ScopeCollection(this)
-
 		variables._parent = null
+
+		variables._commands = {} // Map of http methods to commands.
 
 	}
 
 	/**
-	 * Sets the content for the given content type.
+	 * Sets the command to execute.
 	 */
-	public void function setContent(required String type, required Content content) {
-		variables._content[arguments.type] = arguments.content
+	public void function setCommand(required Command command, required String method) {
+		variables._commands[arguments.method] = arguments.command
 	}
 
-	public Content function content(required String type) {
+	public Command function command(required String method) {
 
-		var item = variables._content[arguments.type] ?: null
-		if (item === null) {
-			Throw("No content of type #arguments.type# found", "NoSuchElementException")
+		if (!variables._command.keyExists(arguments.method)) {
+			Throw("Command not found", "NoSuchElementException")
 		}
 
-		return item
+		return variables._command[arguments.method]
 	}
 
-	public Any function parameterName() {
+	public String function pattern() {
+		return variables._pattern
+	}
+
+	public String function parameterName() {
 		return variables._parameterName
 	}
 
-	public Numeric function match(required Array path) {
-		return variables._pathMatcher.match(arguments.path)
+	public Numeric function match(required String[] path) {
+		abort showerror="Not implemented";
 	}
 
 	public PathSegment[] function children() {
