@@ -4,9 +4,7 @@ component {
 		variables._factory = arguments.factory
 		variables._root = new RootPathSegment()
 
-		// A struct that maps paths to path segments.
-		variables._pathSegments = {"": variables._root}
-
+		// Array of path segments that correspond to the indents in the routes file.
 		variables._indentLevels = []
 	}
 
