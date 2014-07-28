@@ -1,6 +1,6 @@
-component extends="craft.core.output.View" {
+component implements="craft.core.output.View" {
 
-	public Any function get(required Struct model) {
+	public Any function render(required Any model) {
 		return arguments.model
 	}
 

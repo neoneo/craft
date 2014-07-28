@@ -2,47 +2,116 @@ import craft.core.request.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	public void function Match_Should_InvokePathMatcher() {
-		var path = ["dir1", "dir2"]
-		var pathMatcher = mock(CreateObject("PathMatcherStub")).match(path).returns(1)
-
-		var pathSegment = new PathSegment(pathMatcher)
-
-		// Actual test.
-		pathSegment.match(path)
-
-		pathMatcher.verify().match(path)
+	public void function setUp() {
+		variables.root = createPathSegment("root")
+		variables.path1 = ["dir1", "dir2", "dir3"]
+		variables.path2 = ["dirA"]
 	}
 
-	public void function Content_Should_ReturnCorrespondingContent() {
-		var content1 = new ContentStub(type: "test1")
-		var content2 = new ContentStub(type: "test2")
+	public void function PatternAndParameterName_Should_ReturnConstructorValues() {
+		var segment = new PathSegment("pattern", "parameter")
+		assertEquals("pattern", segment.pattern())
+		assertEquals("parameter", segment.parameterName())
+	}
 
-		var pathSegment = new PathSegment(mock(CreateObject("PathMatcherStub")))
-		pathSegment.setContent("test1", content1)
-		pathSegment.setContent("test2", content2)
+	public void function Command_Should_ReturnCorrespondingCommand() {
+		var command1 = new CommandStub()
+		var command2 = new CommandStub()
 
-		assertEquals(content1, pathSegment.content("test1"))
-		assertEquals(content2, pathSegment.content("test2"))
+		variables.root.setCommand(command1, "GET")
+		variables.root.setCommand(command2, "POST")
+
+		assertEquals(command1, variables.root.command("GET"))
+		assertEquals(command2, variables.root.command("POST"))
 
 		try {
-			pathSegment.content("test3") // not existing type
-			fail("path segment should throw NoSuchElementException when content type does not exist")
+			variables.root.command("DELETE")
+			fail("exception should have been thrown")
 		} catch (NoSuchElementException e) {
 			// OK
 		}
 	}
 
-	public void function Content_Should_OverwriteExistingContent() {
-		var content1 = new ContentStub(type: "test")
-		var content2 = new ContentStub(type: "test")
-
-		var pathSegment = new PathSegment(mock(CreateObject("PathMatcherStub")))
-		pathSegment.setContent("test", content1)
-		assertEquals(content1, pathSegment.content("test"))
-
-		pathSegment.setContent("test", content2)
-		assertEquals(content2, pathSegment.content("test"))
+	public void function Children_Should_BeEmptyArray() {
+		assertTrue(variables.root.children().isEmpty())
 	}
+
+	public void function AddChild_Should_AppendChild() {
+		var child1 = createPathSegment("test1")
+		var child2 = createPathSegment("test2")
+		variables.root.addChild(child1)
+		variables.root.addChild(child2)
+
+		var children = variables.root.children()
+		assertEquals(2, children.len())
+		assertSame(child1, children[1])
+		assertSame(child2, children[2])
+	}
+
+	public void function AddChildBefore_Should_InsertChild() {
+		var test1 = createPathSegment("test1")
+		var test2 = createPathSegment("test2")
+		var test3 = createPathSegment("test3")
+		variables.root.addChild(test1)
+		variables.root.addChild(test3)
+
+		// actual test
+		variables.root.addChild(test2, test3)
+		var children = variables.root.children()
+		assertEquals(3, children.len())
+		assertSame(test2, children[2])
+	}
+
+	public void function RemoveChild_Should_ReturnRemovedChild() {
+		var test1 = createPathSegment("test1")
+		var test2 = createPathSegment("test2")
+		variables.root.addChild(test1)
+		variables.root.addChild(test2)
+
+		var removed = variables.root.removeChild(test1)
+		assertTrue(removed);
+		// try again
+		var removed = variables.root.removeChild(test1)
+		assertFalse(removed);
+
+		var children = variables.root.children()
+		assertEquals(1, children.len())
+		assertSame(test2, children[1])
+	}
+
+	public void function Parent_Should_ReturnParent_IfExists() {
+		var test = createPathSegment("test")
+		assertFalse(test.hasParent())
+
+		test.setParent(variables.root)
+		assertTrue(test.hasParent())
+		assertSame(variables.root, test.parent())
+	}
+
+	private PathSegment function createPathSegment(required String name) {
+		return new PathSegment(arguments.name)
+	}
+
+	public void function EntirePathSegmentMatch() {
+		var segment = new EntirePathSegment()
+		assertEquals(variables.path1.len(), segment.match(variables.path1))
+		assertEquals(variables.path2.len(), segment.match(variables.path2))
+	}
+
+	public void function StaticPathSegmentMatch() {
+		var segment = new StaticPathSegment("dir1")
+
+		assertEquals(1, segment.match(variables.path1))
+		assertEquals(0, segment.match(variables.path2))
+	}
+
+	public void function DynamicPathSegmentMatch() {
+		var segment = new DynamicPathSegment("dir[0-9]")
+		assertEquals(1, segment.match(variables.path1))
+		assertEquals(0, segment.match(variables.path2))
+		var path = ["dir10"]
+		assertEquals(0, segment.match(path), "pattern path matcher should match against the complete segment")
+	}
+
 
 }

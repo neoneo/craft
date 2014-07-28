@@ -28,11 +28,11 @@ component {
 
 	public Command function command(required String method) {
 
-		if (!variables._command.keyExists(arguments.method)) {
+		if (!variables._commands.keyExists(arguments.method)) {
 			Throw("Command not found", "NoSuchElementException")
 		}
 
-		return variables._command[arguments.method]
+		return variables._commands[arguments.method]
 	}
 
 	public String function pattern() {
@@ -43,6 +43,9 @@ component {
 		return variables._parameterName
 	}
 
+	/**
+	 * Returns the number of segments in the given path that are matched by this `PathSegment`.
+	 */
 	public Numeric function match(required String[] path) {
 		abort showerror="Not implemented";
 	}

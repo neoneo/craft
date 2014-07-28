@@ -4,10 +4,6 @@ component {
 
 		variables._root = arguments.root
 
-		// Merge the parameters from the form and url scopes.
-		variables._parameters = Duplicate(form, false)
-		variables._parameters.append(url, false)
-
 		variables._mimeTypes = {
 			html: "text/html",
 			json: "application/json",
@@ -15,6 +11,7 @@ component {
 			pdf: "application/pdf",
 			txt: "text/plain"
 		}
+		variables._extensions = variables._mimeTypes.keyArray()
 
 	}
 
@@ -27,14 +24,14 @@ component {
 			var extension = lastSegment.listLast(".")
 
 			// The extension cannot be the whole last segment.
-			if (extension != lastSegment) {
+			if (extension != lastSegment && variables._extensions.find(extension) > 0) {
 				// Remove the extension from the last segment.
-				segments[segments.len()] = lastSegment.left(lastSegment.len() - extension.len() - 1)
+				segments[segments.len()] = lastSegment.reReplace("\.[a-z0-9]+$", "")
 			}
 		}
 
-		// Traverse the path to get the path segment that applies to this request.
-		var pathSegment = variables._root.match(segments) ? variables._root : traverse(segments, variables._root)
+		// Walk the path to get the path segment that applies to this request.
+		var pathSegment = walk(segments, variables._root)
 		if (pathSegment === null) {
 			Throw("Path segment not found", "FileNotFoundException")
 		}
@@ -49,7 +46,11 @@ component {
 	}
 
 	public Struct function requestParameters() {
-		return variables._parameters
+		// Merge the parameters from the form and url scopes.
+		var parameters = Duplicate(form, false)
+		parameters.append(url, false)
+
+		return parameters
 	}
 
 	public String function requestMethod() {
@@ -67,9 +68,9 @@ component {
 	// PRIVATE ====================================================================================
 
 	/**
-	 * Traverses the path to find the applicable path segment. If no path segment is found, returns null.
+	 * Traverses the path to find the applicable `PathSegment`. If no `PathSegment` is found, returns null.
 	 */
-	private Any function traverse(required Array path, required PathSegment pathSegment) {
+	private Any function walk(required String[] path, required PathSegment pathSegment) {
 
 		if (arguments.path.isEmpty()) {
 			return arguments.pathSegment
@@ -83,8 +84,8 @@ component {
 				var child = children[i]
 				var segmentCount = child.match(arguments.path)
 				if (segmentCount > 0) {
-					// Remove the number of segments that were matched and traverse the remaining path.
-					result = traverse(arguments.path.slice(segmentCount + 1), child)
+					// Remove the number of segments that were matched and walk the remaining path.
+					result = walk(arguments.path.mid(segmentCount + 1), child)
 
 					if (result !== null) {
 						// The complete path is traversed so the current path segment is part of the tree.

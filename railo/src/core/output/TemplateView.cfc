@@ -5,7 +5,10 @@ component implements="View" {
 		variables._renderer = arguments.renderer
 	}
 
-	public String function render(required Struct model) {
+	/**
+	* Renders the view by delegating to the `TemplateRenderer`.
+	*/
+	public Any function render(required Any model) {
 		return variables._renderer.render(variables._template, arguments.model)
 	}
 

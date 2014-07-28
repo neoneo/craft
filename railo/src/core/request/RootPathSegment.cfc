@@ -4,9 +4,9 @@ component extends="PathSegment" {
 		super.init()
 	}
 
-
 	public Numeric function match(required String[] path) {
-		return arguments.path.isEmpty()
+		// This path segment never matches anything.
+		return 0
 	}
 
 }
