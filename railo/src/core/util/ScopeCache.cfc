@@ -1,10 +1,8 @@
 component implements="Cache" {
 
-	public void function init() {
-		variables._cache = {}
-	}
+	variables._cache = {}
 
-	public any function get(required String key) {
+	public Any function get(required String key) {
 		return variables._cache[arguments.key]
 	}
 
@@ -24,7 +22,7 @@ component implements="Cache" {
 		variables._cache.clear()
 	}
 
-	public Array function keys() {
+	public String[] function keys() {
 		return variables._cache.keyArray()
 	}
 

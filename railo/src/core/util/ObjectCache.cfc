@@ -1,6 +1,6 @@
 component implements="Cache" {
 
-	public any function get(required String key) {
+	public Any function get(required String key) {
 		return CacheGet(arguments.key)
 	}
 
@@ -20,7 +20,7 @@ component implements="Cache" {
 		CacheClear()
 	}
 
-	public Array function keys() {
+	public String[] function keys() {
 		return CacheGetAllIds()
 	}
 
