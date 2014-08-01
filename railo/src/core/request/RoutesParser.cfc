@@ -2,7 +2,7 @@ component {
 
 	public void function init(required CommandFactory factory) {
 		variables._factory = arguments.factory
-		variables._root = new RootPathSegment()
+		variables._root = createPathSegment("/")
 
 		// Array of path segments that correspond to the indents in the routes file.
 		variables._indentLevels = []
@@ -18,49 +18,42 @@ component {
 
 		// A route has the form: <method> ([">"*] <path> | ".") <command identifier> [(-> <command identifier> | => <path>)]*
 
-		try {
-			var pos = 1
-			var method = words[pos]
+		var index = 1
+		var method = pick(words, index)
 
-			pos += 1
-			var path = words[pos]
+		index += 1
+		var path = pick(words, index)
 
-			// Find out the path segment relative to which the path should be interpreted.
-			var pathSegment = null
+		// Find out the path segment relative to which the path should be interpreted.
+		var pathSegment = null
 
-			if (path == ".") {
-				pathSegment = variables._indentLevels.last()
-				path = ""
-			} else if (path.startsWith(">")) {
-				var level = path.len()
-				pathSegment = variables._indentLevels[level]
+		if (path == ".") {
+			if (variables._indentLevels.isEmpty()) {
+				Throw("Route '.' cannot be the first route", "NoSuchElementException")
+			}
+			pathSegment = variables._indentLevels.last()
+			path = ""
+		} else if (path.startsWith(">")) {
+			var level = path.len()
+			pathSegment = pick(variables._indentLevels, level)
 
-				pos += 1
-				path = words[pos]
+			index += 1
+			path = pick(words, index)
 
-				// If the indent level decreased, remove everything after the current level.
-				if (level < variables._indentLevels.len()) {
-					variables._indentLevels = variables._indentLevels.slice(1, level)
-				}
-
-			} else {
-				// No indents.
-				pathSegment = variables._root
-				variables._indentLevels.clear()
+			// If the indent level decreased, remove everything after the current level.
+			if (level < variables._indentLevels.len()) {
+				variables._indentLevels = variables._indentLevels.slice(1, level)
 			}
 
-			// The command identifier.
-			pos += 1
-			var identifier = words[pos]
-
-		} catch (Expression e) {
-			/*
-				Possible errors:
-				- Another word was expected but not found.
-				- The indent level does not exist.
-			*/
-			rethrow;
+		} else {
+			// No indents.
+			pathSegment = variables._root
+			variables._indentLevels.clear()
 		}
+
+		// The command identifier.
+		index += 1
+		var identifier = pick(words, index)
 
 		// Split the path into segments and add path segments that don't exist yet.
 		path.listToArray("/").each(function (segment) {
@@ -75,12 +68,12 @@ component {
 				// Split the segment at any @ sign that is not escaped by a \, unless that \ is itself escaped.
 				// This uses a Java regex, which supports negative lookbehind.
 				var parts = arguments.segment.split("(?<!(?<!\\)\\)@")
-				// We accept 1 or 2 parts.
-				if (parts.len() > 2) {
-					Throw("Invalid path segment '#arguments.segment#'", "IllegalArgumentException", "Escape @ signs with a \ where necessary")
+				// We accept 1 or 2 parts. It's a Java array so we can't use member functions.
+				if (ArrayLen(parts) > 2) {
+					Throw("Invalid path segment '#arguments.segment#'", "IllegalArgumentException", "Escape @ signs with a \ where applicable")
 				}
 				var pattern = parts[1].reReplace("\\([@\\])", "\1", "all")
-				if (parts.len() == 2) {
+				if (ArrayLen(parts) == 2) {
 					parameterName = parts[2]
 				}
 			}
@@ -111,16 +104,22 @@ component {
 		return pathSegment
 	}
 
+	private Any function pick(required Array array, required Numeric index) {
+		if (arguments.array.len() < arguments.index) {
+			Throw("Number of items does not match", "NoSuchElementException", "Expected #arguments.index# but found #arguments.array.len()#")
+		}
+
+		return arguments.array[arguments.index]
+	}
+
 	/**
-	 * Creates the `PathSegment` that listens to the given pattern. The pattern can be:
-	 *
-	 * - a fixed string
-	 * - a regular expression
-	 * - *
+	 * Creates the `PathSegment` that listens to the given pattern.
 	 */
 	private PathSegment function createPathSegment(required String pattern, String parameterName = null) {
 
-		if (arguments.pattern == "*") {
+		if (arguments.pattern == "/") {
+			return new RootPathSegment()
+		} else if (arguments.pattern == "*") {
 			return new EntirePathSegment(arguments.parameterName)
 		} else {
 			// If the pattern contains some 'specific' regex character, we assume it is a regex.

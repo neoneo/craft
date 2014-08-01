@@ -36,7 +36,7 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(variables.root.children().isEmpty())
 	}
 
-	public void function AddChild_Should_AppendChild() {
+	public void function AddChild_Should_AppendChildAndSetParent() {
 		var child1 = createPathSegment("test1")
 		var child2 = createPathSegment("test2")
 		variables.root.addChild(child1)
@@ -46,6 +46,9 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(2, children.len())
 		assertSame(child1, children[1])
 		assertSame(child2, children[2])
+
+		assertSame(variables.root, child1.parent())
+		assertSame(variables.root, child2.parent())
 	}
 
 	public void function AddChildBefore_Should_InsertChild() {
@@ -62,21 +65,30 @@ component extends="mxunit.framework.TestCase" {
 		assertSame(test2, children[2])
 	}
 
-	public void function RemoveChild_Should_ReturnRemovedChild() {
+	public void function RemoveChild_Should_RemoveIfChildAndSetParentNull() {
 		var test1 = createPathSegment("test1")
 		var test2 = createPathSegment("test2")
 		variables.root.addChild(test1)
 		variables.root.addChild(test2)
 
+		var test3 = createPathSegment("test3")
+		test2.addChild(test3)
+
 		var removed = variables.root.removeChild(test1)
-		assertTrue(removed);
-		// try again
+		assertTrue(removed)
+		assertFalse(test1.hasParent())
+		// Try again:
 		var removed = variables.root.removeChild(test1)
-		assertFalse(removed);
+		assertFalse(removed)
 
 		var children = variables.root.children()
 		assertEquals(1, children.len())
 		assertSame(test2, children[1])
+
+		// Try to remove test3 from the root, while it's a child of test2.
+		var removed = variables.root.removeChild(test3)
+		assertFalse(removed)
+		assertSame(test2, test3.parent())
 	}
 
 	public void function Parent_Should_ReturnParent_IfExists() {

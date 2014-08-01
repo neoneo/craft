@@ -12,7 +12,7 @@ component {
 		variables._pattern = arguments.pattern
 		variables._parameterName = arguments.parameterName
 
-		variables._children = new ScopeCollection(this)
+		variables._children = new ScopeCollection()
 		variables._parent = null
 
 		variables._commands = {} // Map of http methods to commands.
@@ -57,10 +57,17 @@ component {
 	public void function addChild(required PathSegment child, PathSegment beforeChild) {
 		// TODO: implement check for duplicates
 		variables._children.add(argumentCollection: ArrayToStruct(arguments))
+		arguments.child.setParent(this)
 	}
 
 	public Boolean function removeChild(required PathSegment child) {
-		return variables._children.remove(arguments.child)
+
+		var success = variables._children.remove(arguments.child)
+		if (success) {
+			arguments.child.setParent(null)
+		}
+
+		return success
 	}
 
 	public Boolean function hasParent() {
@@ -71,7 +78,7 @@ component {
 		return variables._parent
 	}
 
-	public void function setParent(required PathSegment parent) {
+	public void function setParent(required Any parent) {
 		variables._parent = arguments.parent
 	}
 
