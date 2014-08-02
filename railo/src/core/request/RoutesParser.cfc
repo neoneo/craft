@@ -8,6 +8,22 @@ component {
 		variables._indentLevels = []
 	}
 
+	public PathSegment function root() {
+		return variables._root
+	}
+
+	public void function read(required String path) {
+
+		FileRead(arguments.path).listToArray(Chr(10)).each(function (route) {
+			// Strip off comments.
+			var route = Trim(arguments.route.reReplace("##.*$", ""))
+			if (!route.isEmpty()) {
+				parse(route)
+			}
+		})
+
+	}
+
 	/**
 	 * Parses a single route and returns the corresponding `PathSegment`.
 	 */

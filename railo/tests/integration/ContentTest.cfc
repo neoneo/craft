@@ -6,7 +6,6 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
 		var context = mock(CreateObject("Context"))
-			.requestMethod().returns("get")
 
 		var templateFinder = new TemplateFinder("cfm")
 		templateFinder.addMapping("/crafttests/integration/templates")

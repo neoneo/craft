@@ -17,7 +17,7 @@ component {
 
 		// Parse the path. If path segments define parameters, they are appended on the parameters struct.
 		variables._pathSegment = null
-		var segments = arguments.endPoint.path().listToArray("/")
+		var segments = path().listToArray("/")
 
 		if (!segments.isEmpty()) {
 			var lastSegment = segments.last()
@@ -44,6 +44,10 @@ component {
 
 	public Struct function parameters() {
 		return variables._parameters
+	}
+
+	public String function path() {
+		return variables._endPoint.path()
 	}
 
 	public String function extension() {

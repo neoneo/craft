@@ -6,5 +6,4 @@ component extends="craft.core.request.EndPoint" accessors="true" {
 		return getTestPath()
 	}
 
-
 }

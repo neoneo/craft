@@ -4,8 +4,8 @@ component implements="Command" accessors="true" {
 
 	property String identifier;
 
-	public void function execute(required Context context) {
-
+	public Any function execute(required Context context) {
+		return null
 	}
 
 }

@@ -1,5 +1,5 @@
 interface {
 
-	public void function execute(required Context context);
+	public Any function execute(required Context context);
 
 }

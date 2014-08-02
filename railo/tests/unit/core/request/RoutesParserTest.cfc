@@ -3,7 +3,7 @@ import craft.core.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.parser = new RoutesParserStub(new CommandFactoryStub())
+		variables.parser = new RoutesParser(new CommandFactoryStub())
 	}
 
 	public void function RootRoute() {
@@ -250,6 +250,8 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function CreatePathSegment() {
+		makePublic(variables.parser, "createPathSegment")
+
 		var root = variables.parser.createPathSegment("/")
 		assertTrue(IsInstanceOf(root, "RootPathSegment"))
 
@@ -267,11 +269,5 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals("[0-9]+", dynamic.pattern())
 		assertEquals("par3", dynamic.parameterName())
 	}
-
-	/*
-		Te maken tests:
-		- createPathSegment methode (publiek maken en kijken of juiste type terug komt)
-
-	*/
 
 }
