@@ -1,4 +1,4 @@
-import craft.core.util.ScopeCollection;
+import craft.util.ScopeCollection;
 
 /**
  * PathSegment

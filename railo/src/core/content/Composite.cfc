@@ -1,4 +1,4 @@
-import craft.core.util.ScopeCollection;
+import craft.util.ScopeCollection;
 
 /**
  * A `Composite` is a `Component` that contains other `Component`s.

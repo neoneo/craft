@@ -1,9 +1,9 @@
-import craft.core.util.*;
+import craft.util.*;
 
 component extends="CollectionTestSetup" {
 
 	private Collection function createCollection() {
-		return new CacheCollection(new ScopeCache())
+		return new ScopeCollection()
 	}
 
 }

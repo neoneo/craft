@@ -1,4 +1,4 @@
-import craft.core.util.gateway.DirectoryWatcher;
+import craft.util.gateway.DirectoryWatcher;
 
 component extends="mxunit.framework.TestCase" {
 

@@ -1,4 +1,4 @@
-import craft.core.util.*;
+import craft.util.*;
 
 component extends="mxunit.framework.TestCase" {
 

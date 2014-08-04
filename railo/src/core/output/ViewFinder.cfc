@@ -1,4 +1,4 @@
-import craft.core.util.ScopeCache;
+import craft.util.ScopeCache;
 
 component {
 

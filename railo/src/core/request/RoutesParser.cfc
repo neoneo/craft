@@ -139,7 +139,7 @@ component {
 			return new EntirePathSegment(arguments.parameterName)
 		} else {
 			// If the pattern contains some 'specific' regex character, we assume it is a regex.
-			if (arguments.pattern.findOneOf("[](){}*+?") > 0) {
+			if (arguments.pattern.findOneOf("[({*+?|") > 0) {
 				return new DynamicPathSegment(arguments.pattern, arguments.parameterName)
 			} else {
 				return new StaticPathSegment(arguments.pattern, arguments.parameterName)

@@ -17,11 +17,11 @@ component {
 
 	}
 
-	public Array function poll() {
+	public Struct[] function poll() {
 		return handleEvents(variables._watcher.poll())
 	}
 
-	public Array function take() {
+	public Struct[] function take() {
 		return handleEvents(variables._watcher.take())
 	}
 

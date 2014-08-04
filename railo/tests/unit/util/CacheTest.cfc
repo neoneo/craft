@@ -1,14 +1,14 @@
 component extends="mxunit.framework.TestCase" {
 
 	public void function ObjectCache() {
-		test(new craft.core.util.ObjectCache())
+		test(new craft.util.ObjectCache())
 	}
 
 	public void function ScopeCache() {
-		test(new craft.core.util.ScopeCache())
+		test(new craft.util.ScopeCache())
 	}
 
-	private void function test(required craft.core.util.Cache cache) {
+	private void function test(required craft.util.Cache cache) {
 
 		var object1 = {"id" = "object1"}
 		var object2 = {"id" = "object2"}
