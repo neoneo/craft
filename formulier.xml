@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<person>
+	<form>
+		<!-- form is een leaf. hij overschrijft accept zodat hij eerst validation en dan fields kan laten visiteren. -->
+		<fields>
+			<!-- formuliervelden. renderen indien get, of post/put met validatiefout. -->
+		</fields>
+		<store>
+			<!-- alles wat onder dit element staat kan straks in een losse include worden gezet, zodat dit ook gebruikt kan worden bij rest api. -->
+
+			<!-- functionaliteit voor opslaan. alleen uitvoeren indien post of put. -->
+			<saveperson />
+			<validation>
+				<!-- regels -->
+				<!-- indien geen post of put, dan voert de validatie niets uit. -->
+				<!-- validation is een leaf, zodat die daar controle over heeft. -->
+			</validation>
+		</store>
+	</form>
+</person>

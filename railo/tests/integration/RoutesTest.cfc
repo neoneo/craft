@@ -40,6 +40,55 @@ component extends="mxunit.framework.TestCase" {
 		}, result)
 	}
 
+	public void function Artist() {
+		var result = testRequest("GET", "/artists/1")
+		assertEquals({
+			command: "Artist",
+			method: "GET",
+			path: "/artists/1",
+			extension: "html",
+			parameters: {
+				artist: 1
+			}
+		}, result)
+	}
+
+	public void function ArtistPicture() {
+		var result = testRequest("GET", "/artists/1/picture")
+		assertEquals({
+			command: "Artist",
+			method: "GET",
+			path: "/artists/1/picture",
+			extension: "html",
+			parameters: {
+				artist: 1,
+				action: "picture"
+			}
+		}, result)
+	}
+
+	public void function Song() {
+		var result = testRequest("GET", "/artists/1/albums/2/songs/3.json")
+		assertEquals({
+			command: "Song",
+			method: "GET",
+			path: "/artists/1/albums/2/songs/3.json",
+			extension: "json",
+			parameters: {
+				artist: 1,
+				album: 2,
+				song: 3
+			}
+		}, result)
+	}
+
+	public void function NotFound() {
+		try {
+			var result = testRequest("GET", "/artists/1/notexist")
+			fail("exception should have been thrown")
+		} catch (FileNotFoundException e) {}
+	}
+
 	private Struct function testRequest(required String method, required String path, Struct parameters) {
 
 		variables.endPoint.setTestRequestMethod(arguments.method)

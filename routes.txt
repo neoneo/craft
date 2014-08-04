@@ -1,0 +1,14 @@
+GET		/						mapping.Command
+GET		/artists				mapping.ArtistListCommand
+GET		> /search				mapping.ArtistSearch
+GET		> /[0-9]+@id			mapping.Artist
+PUT		.		# zelfde pad als voorgaand
+DELETE	.		# zelfde pad als voorgaand
+GET		>> /albums	# is /artist/[0-9]+@id/album
+GET		>>> /[0-9]+@albumId # /artist/[0-9]+@id/album/[0-9]+@id
+GET		>>> /search
+GET		>> /songs
+POST	>> /songs   mapping.Songs => /artists/@id
+
+404		mapping.NotFoundCommand
+500		mapping.ServerErrorCommand
