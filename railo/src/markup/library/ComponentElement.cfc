@@ -1,4 +1,4 @@
-import craft.core.content.Component;
+import craft.content.Component;
 
 import craft.markup.Element;
 

@@ -1,4 +1,4 @@
-import craft.core.content.*;
+import craft.content.*;
 
 import craft.markup.*;
 
@@ -8,7 +8,7 @@ component extends="mxunit.framework.TestCase" {
 
 		var factory = new ElementFactory()
 		factory.register("/crafttests/integration/elements")
-		factory.register("/craft/library")
+		factory.register("/craft/markup/library")
 
 		variables.factory = factory
 
@@ -103,7 +103,7 @@ component extends="mxunit.framework.TestCase" {
 
 		// This function can only test cases where nodes and components are in a one to one correspondence.
 		var children = null
-		if (IsInstanceOf(arguments.content, "craft.core.content.Component")) {
+		if (IsInstanceOf(arguments.content, "craft.content.Component")) {
 			if (arguments.content.hasChildren()) {
 				var children = arguments.content.children()
 			}

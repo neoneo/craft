@@ -1,4 +1,4 @@
-import craft.core.content.Composite;
+import craft.content.Composite;
 
 import craft.markup.Scope;
 

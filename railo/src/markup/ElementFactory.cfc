@@ -73,15 +73,43 @@ component {
 
 	}
 
+	public void function deregister(required String mapping) {
+
+		var path = ExpandPath(arguments.mapping)
+
+		// See if there is a settings.ini here.
+		var settingsFile = path & "/settings.ini"
+		if (FileExists(settingsFile)) {
+			var sections = GetProfileSections(settingsFile)
+			// If there is no section named 'craft', or if this section doesn't contain a namespace key, throw an exception.
+			if (!sections.keyExists("craft") || sections.craft.listFind("namespace") == 0) {
+				Throw("Namespace not found in #settingsFile#", "NoSuchElementException")
+			}
+
+			var namespace = GetProfileString(settingsFile, "craft", "namespace")
+
+			variables._tags.delete(namespace)
+
+		} else {
+			// Call again for each subdirectory.
+			var mapping = arguments.mapping
+			DirectoryList(path, false, "name").each(function (name) {
+				if (DirectoryExists(path & "/" & arguments.name)) {
+					deregister(mapping & "/" & arguments.name)
+				}
+			})
+		}
+	}
+
+	public void function deregisterNamespace(required String namespace) {
+		variables._tags.delete(arguments.namespace)
+	}
+
 	public Struct function tags() {
-
-		var tags = {}
-		variables._tags.each(function (namespace, metadata) {
+		return variables._tags.map(function (namespace, metadata) {
 			// The metadata argument is a struct where the keys are tag names.
-			tags[arguments.namespace] = arguments.metadata.keyArray()
+			return arguments.metadata.keyArray()
 		})
-
-		return tags
 	}
 
 	/**

@@ -1,5 +1,5 @@
-import craft.core.content.Layout;
-import craft.core.content.Section;
+import craft.content.Layout;
+import craft.content.Section;
 
 import craft.markup.Element;
 import craft.markup.Scope;

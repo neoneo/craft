@@ -1,4 +1,4 @@
-import craft.core.content.Placeholder;
+import craft.content.Placeholder;
 
 import craft.markup.Scope;
 

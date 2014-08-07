@@ -1,5 +1,5 @@
-import craft.core.content.DocumentLayout;
-import craft.core.content.LayoutContent;
+import craft.content.DocumentLayout;
+import craft.content.LayoutContent;
 
 component extends="AbstractDocumentElement" accessors="true" tag="documentlayout" {
 
