@@ -2,7 +2,7 @@ component extends="Collection" {
 
 	public void function init(required Cache cache) {
 		variables._cache = arguments.cache
-		variables._key = generateKey()
+		variables._key = CreateGUID()
 		variables._cache.put(variables._key, [])
 	}
 
@@ -72,10 +72,6 @@ component extends="Collection" {
 	private void function put(required Array items) {
 		variables._cache.remove(variables._key)
 		variables._cache.put(variables._key, arguments.items)
-	}
-
-	private String function generateKey() {
-		return CreateGUID()
 	}
 
 }
