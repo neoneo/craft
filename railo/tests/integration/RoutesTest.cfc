@@ -1,12 +1,14 @@
-import craft.core.request.*;
+import craft.request.*;
 
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
 		variables.endPoint = new stubs.EndPointStub()
-		variables.parser = new RoutesParser(new stubs.CommandFactoryStub())
+		var pathSegmentFactory = new PathSegmentFactory()
+		variables.root = pathSegmentFactory.create("/")
+		variables.parser = new RoutesParser(root, pathSegmentFactory, new stubs.CommandFactoryStub())
 
-		variables.parser.read(ExpandPath("/crafttests/integration/routes"))
+		variables.parser.import(ExpandPath("/crafttests/integration/routes"))
 	}
 
 	public void function Root() {
@@ -99,7 +101,7 @@ component extends="mxunit.framework.TestCase" {
 			variables.endPoint.setTestParameters(parameters)
 		}
 
-		var context = new Context(variables.endPoint, variables.parser.root())
+		var context = new Context(variables.endPoint, variables.root)
 		var pathSegment = context.pathSegment()
 		var command = pathSegment.command(arguments.method)
 
