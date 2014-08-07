@@ -1,4 +1,4 @@
-import craft.core.content.*;
+import craft.content.*;
 
 import craft.markup.*;
 

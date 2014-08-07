@@ -1,5 +1,5 @@
-import craft.core.request.Command;
-import craft.core.request.Context;
+import craft.request.Command;
+import craft.request.Context;
 
 component implements="Command" accessors="true" {
 

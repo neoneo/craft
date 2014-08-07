@@ -1,5 +1,4 @@
-import craft.request.Command;
-import craft.request.CommandFactory;
+import craft.request.*;
 
 component implements="CommandFactory" {
 

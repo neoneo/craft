@@ -1,4 +1,4 @@
-import craft.core.content.Content;
+import craft.content.Content;
 
 /**
  * Represents a markup element.

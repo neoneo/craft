@@ -1,6 +1,6 @@
-import craft.core.content.*;
-import craft.core.output.*;
-import craft.core.request.*;
+import craft.content.*;
+import craft.output.*;
+import craft.request.*;
 
 component extends="mxunit.framework.TestCase" {
 

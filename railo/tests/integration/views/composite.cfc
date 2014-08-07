@@ -1,4 +1,4 @@
-component implements="craft.core.output.View" {
+component implements="craft.output.View" {
 
 	public Any function render(required Any model) {
 		return arguments.model
