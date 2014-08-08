@@ -20,10 +20,6 @@ component {
 	public void function init() {
 
 		initialize()
-		// All objects have to be constructed.
-		variables._objects.keyArray().each(function (object, data) {
-			arguments.data.construct = true
-		})
 
 		// Define dependencies among the framework objects.
 		variables._dependencies = {
@@ -78,7 +74,7 @@ component {
 	 */
 	public Boolean function canCommitWithoutConstruction() {
 		return variables._objects.every(function (object, data) {
-			return !arguments.data.construct
+			return variables.keyExists("_" & object) && !arguments.data.construct
 		})
 	}
 
@@ -203,7 +199,7 @@ component {
 
 	private CommandFactory function commandFactory() {
 		var object = variables._objects.CommandFactory
-		if (object.construct) {
+		if (object.construct || !variables.keyExists("_commandFactory")) {
 			variables._commandFactory = new ContentCommandFactory(elementFactory(), viewFinder())
 			object.construct = false
 		}
@@ -213,7 +209,7 @@ component {
 
 	private EndPoint function endPoint() {
 		var object = variables._objects.EndPoint
-		if (object.construct) {
+		if (object.construct || !variables.keyExists("_endPoint")) {
 			variables._endPoint = new EndPoint()
 			object.construct = false
 		}
@@ -223,7 +219,7 @@ component {
 
 	private ElementFactory function elementFactory() {
 		var object = variables._objects.ElementFactory
-		if (object.construct) {
+		if (object.construct || !variables.keyExists("_elementFactory")) {
 			variables._elementFactory = new ElementFactory()
 			object.construct = false
 		}
@@ -233,7 +229,7 @@ component {
 
 	private PathSegmentFactory function pathSegmentFactory() {
 		var object = variables._objects.PathSegmentFactory
-		if (object.construct) {
+		if (object.construct || !variables.keyExists("_pathSegmentFactory")) {
 			variables._pathSegmentFactory = new PathSegmentFactory()
 			object.construct = false
 		}
@@ -243,7 +239,7 @@ component {
 
 	private RoutesParser function routesParser() {
 		var object = variables._objects.RoutesParser
-		if (object.construct) {
+		if (object.construct || !variables.keyExists("_routesParser")) {
 			variables._routesParser = new RoutesParser(rootPathSegment(), pathSegmentFactory(), commandFactory())
 			object.construct = false
 		}
@@ -253,7 +249,7 @@ component {
 
 	private TemplateFinder function templateFinder() {
 		var object = variables._objects.TemplateFinder
-		if (object.construct) {
+		if (object.construct || !variables.keyExists("_templateFinder")) {
 			variables._extension = object.extension ?: variables._extension ?: "cfm"
 			variables._templateFinder = new TemplateFinder(variables._extension)
 			object.construct = false
@@ -264,7 +260,7 @@ component {
 
 	private ViewFinder function viewFinder() {
 		var object = variables._objects.ViewFinder
-		if (object.construct) {
+		if (object.construct || !variables.keyExists("_viewFinder")) {
 			variables._templateRenderer = object.templateRenderer ?: variables._templateRenderer ?: new CFMLRenderer()
 			variables._viewFinder = new ViewFinder(templateFinder(), variables._templateRenderer)
 			object.construct = false
