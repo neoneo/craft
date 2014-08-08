@@ -26,7 +26,7 @@ component {
 	}
 
 	/**
-	 * Reads the routes file located at the given path, and removes the corresponding `PathSegment`s.
+	 * Reads the routes file located at the given path, and removes the corresponding `Command`s.
 	 */
 	public void function purge(required String path) {
 
@@ -37,6 +37,8 @@ component {
 				remove(route)
 			}
 		})
+
+		variables._root.trim()
 
 	}
 
@@ -169,7 +171,7 @@ component {
 	}
 
 	/**
-	 * Removes the `Command` for the route, and if a `PathSegment` with no children and `Command`s remains, also the `PathSegment`.
+	 * Removes the `Command` for the route.
 	 */
 	public void function remove(required String route) {
 
@@ -195,11 +197,6 @@ component {
 
 		// Remove the command.
 		pathSegment.removeCommand(tokens.method)
-		// If the path segment has no commands left, remove it if it has a parent. The root path segment is not maintained here, so can't be removed.
-		// This is important, because a different exception is thrown if the path segment still exists (and hence a different http status).
-		if (pathSegment.hasParent() && !pathSegment.hasCommand() && !pathSegment.hasChildren()) {
-			pathSegment.parent().removeChild(pathSegment)
-		}
 
 	}
 

@@ -94,4 +94,18 @@ component {
 		variables._parent = arguments.parent
 	}
 
+	/**
+	 * Removes all descendants without `Command`s and child `PathSegment`s.
+	 */
+	public void function trim() {
+
+		children().each(function (child) {
+			arguments.child.trim()
+			if (!arguments.child.hasCommand() && !arguments.child.hasChildren()) {
+				removeChild(arguments.child)
+			}
+		})
+
+	}
+
 }
