@@ -28,11 +28,19 @@ component {
 
 	public Command function command(required String method) {
 
-		if (!variables._commands.keyExists(arguments.method)) {
-			Throw("Command not found", "NoSuchElementException")
+		if (!hasCommand(arguments.method)) {
+			Throw("Command for method '#arguments.method#' not found", "NoSuchElementException")
 		}
 
 		return variables._commands[arguments.method]
+	}
+
+	public void function removeCommand(required String method) {
+		variables._commands.delete(arguments.method)
+	}
+
+	public Boolean function hasCommand(String method = null) {
+		return arguments.method === null ? !variables._commands.isEmpty() : variables._commands.keyExists(arguments.method)
 	}
 
 	public String function pattern() {
@@ -48,6 +56,10 @@ component {
 	 */
 	public Numeric function match(required String[] path) {
 		abort showerror="Not implemented";
+	}
+
+	public Boolean function hasChildren() {
+		return !variables._children.isEmpty()
 	}
 
 	public PathSegment[] function children() {

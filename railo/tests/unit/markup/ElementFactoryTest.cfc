@@ -80,6 +80,30 @@ component extends="mxunit.framework.TestCase" {
 
 	// The following tests are integration tests, strictly speaking.
 
+	public void function Deregister_Should_RemoveNamespace() {
+		// First register some namespaces.
+		variables.factory.register(variables.mapping & "/recursive")
+
+		// Deregister one of the mappings.
+		variables.factory.deregister(variables.mapping & "/recursive/dir2")
+
+		// Test.
+		var tags = variables.factory.tags()
+		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
+		assertFalse(tags.keyExists("http://neoneo.nl/craft/dir2"))
+	}
+
+	public void function DeregisterNamespace_Should_RemoveNamespace() {
+		variables.factory.register(variables.mapping & "/recursive")
+
+		variables.factory.deregisterNamespace("http://neoneo.nl/craft/dir2")
+
+		// Test.
+		var tags = variables.factory.tags()
+		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
+		assertFalse(tags.keyExists("http://neoneo.nl/craft/dir2"))
+	}
+
 	public void function Create_Should_ThrowException_When_NonExistentNamespace() {
 		variables.factory.register(variables.mapping & "/create")
 

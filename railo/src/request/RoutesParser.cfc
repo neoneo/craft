@@ -9,6 +9,9 @@ component {
 		variables._indentLevels = []
 	}
 
+	/**
+	 * Reads the routes file located at the given path, and creates / amends `PathSegment`s.
+	 */
 	public void function import(required String path) {
 
 		variables._indentLevels.clear()
@@ -23,10 +26,28 @@ component {
 	}
 
 	/**
-	 * Parses a single route and returns the corresponding `PathSegment`.
+	 * Reads the routes file located at the given path, and removes the corresponding `PathSegment`s.
 	 */
-	public PathSegment function parse(required String route) {
+	public void function purge(required String path) {
 
+		variables._indentLevels.clear()
+		FileRead(arguments.path).listToArray(Chr(10)).each(function (route) {
+			var route = Trim(arguments.route.reReplace("##.*$", ""))
+			if (!route.isEmpty()) {
+				remove(route)
+			}
+		})
+
+	}
+
+	/**
+	 * Splits the route into its parts and returns them in a struct with keys:
+	 * - method: the http method
+	 * - pathSegment: the existing `PathSegment` to which any indents lead
+	 * - path: the path relative to this `PathSegment`
+	 * - identifier: the `Command` identifier
+	 */
+	private Struct function tokenizeRoute(required String route, required Boolean requireIdentifier) {
 		// Split the route into words using spaces and tabs as delimiters.
 		var words = arguments.route.listToArray(" #Chr(9)#")
 
@@ -66,59 +87,119 @@ component {
 		}
 
 		// The command identifier.
-		index += 1
-		var identifier = pick(words, index)
+		if (arguments.requireIdentifier) {
+			index += 1
+			var identifier = pick(words, index)
+		}
 
-		// Split the path into segments and add path segments that don't exist yet.
-		path.listToArray("/").each(function (segment) {
-			// Parse the segment for a parameter name.
-			var pattern = arguments.segment
-			var parameterName = null
+		return {
+			method: method,
+			path: path,
+			identifier: identifier ?: null,
+			pathSegment: pathSegment
+		}
+	}
 
-			if (arguments.segment.startsWith("@")) {
-				pattern = ".*"
-				parameterName = arguments.segment.removeChars(1, 1)
-			} else if (arguments.segment contains "@") {
-				// Split the segment at any @ sign that is not escaped by a \, unless that \ is itself escaped.
-				// This uses a Java regex, which supports negative lookbehind.
-				var parts = arguments.segment.split("(?<!(?<!\\)\\)@")
-				// We accept 1 or 2 parts. It's a Java array so we can't use member functions.
-				if (ArrayLen(parts) > 2) {
-					Throw("Invalid path segment '#arguments.segment#'", "IllegalArgumentException", "Escape @ signs with a \ where applicable")
-				}
-				var pattern = parts[1].reReplace("\\([@\\])", "\1", "all")
-				if (ArrayLen(parts) == 2) {
-					parameterName = parts[2]
-				}
+	private Struct function tokenizeSegment(required String segment) {
+
+		if (arguments.segment.startsWith("@")) {
+			return {
+				pattern: ".*",
+				parameterName: arguments.segment.removeChars(1, 1)
+			}
+		} else if (arguments.segment contains "@") {
+			// Split the segment at any @ sign that is not escaped by a \, unless that \ is itself escaped.
+			// This uses a Java regex, which supports negative lookbehind.
+			var parts = arguments.segment.split("(?<!(?<!\\)\\)@")
+			// We accept 1 or 2 parts. It's a Java array so we can't use member functions.
+			if (ArrayLen(parts) > 2) {
+				Throw("Invalid path segment '#arguments.segment#'", "IllegalArgumentException", "Escape @ signs with a \ where applicable")
 			}
 
+			return {
+				pattern: parts[1].reReplace("\\([@\\])", "\1", "all"),
+				parameterName: ArrayLen(parts) == 2 ? parts[2] : null
+			}
+		} else {
+			return {
+				pattern: arguments.segment,
+				parameterName: null
+			}
+		}
+	}
+
+	/**
+	 * Parses a single route and returns the corresponding `PathSegment`.
+	 */
+	public PathSegment function parse(required String route) {
+
+		var tokens = tokenizeRoute(arguments.route, true) // true: require identifier.
+
+		// Split the path into segments, start at the path segment returned by tokenizeRoute().
+		var pathSegment = tokens.path.listToArray("/").reduce(function (pathSegment, segment) {
+			// Parse the segment for a parameter name.
+			var tokens = tokenizeSegment(arguments.segment)
+			var pattern = tokens.pattern
+
 			// Try to find a path segment that has this pattern.
-			var children = pathSegment.children()
+			var children = arguments.pathSegment.children()
 			var index = children.find(function (child) {
 				return arguments.child.pattern() == pattern
 			})
 			if (index > 0) {
-				pathSegment = children[index]
+				// Found it: continue with this path segment.
+				return children[index]
 			} else {
 				// There is no path segment for this pattern, so create it.
-				var child = variables._pathSegmentFactory.create(pattern, parameterName)
-				pathSegment.addChild(child)
+				var child = variables._pathSegmentFactory.create(pattern, tokens.parameterName)
+				arguments.pathSegment.addChild(child)
 				// Continue with the child for the next iteration.
-				pathSegment = child
+				return child
 			}
-		})
+		}, tokens.pathSegment)
 
 		// The pathSegment variable now contains the path segment that corresponds to the route.
 		// Push the path segment on the indent levels in case the next parse uses indents.
 		variables._indentLevels.append(pathSegment)
 
-		var command = variables._commandFactory.supply(identifier)
-		pathSegment.setCommand(command, method)
+		var command = variables._commandFactory.supply(tokens.identifier)
+		pathSegment.setCommand(command, tokens.method)
 
 		return pathSegment
 	}
 
-	public void function purge(required String route) {
+	/**
+	 * Removes the `Command` for the route, and if a `PathSegment` with no children and `Command`s remains, also the `PathSegment`.
+	 */
+	public void function remove(required String route) {
+
+		var route = arguments.route
+		var tokens = tokenizeRoute(route, false) // false: identifier not required.
+		var path = tokens.path
+		// Walk the path starting at the path segment. Path segments for the complete path are expected to exist.
+		var pathSegment = path.listToArray("/").reduce(function (pathSegment, segment) {
+
+			var tokens = tokenizeSegment(arguments.segment)
+			var pattern = tokens.pattern
+
+			var children = arguments.pathSegment.children()
+			var index = children.find(function (child) {
+				return arguments.child.pattern() == pattern
+			})
+			if (index == 0) {
+				Throw("Route '#path#' not found", "NoSuchElementException")
+			}
+
+			return children[index]
+		}, tokens.pathSegment)
+
+		// Remove the command.
+		pathSegment.removeCommand(tokens.method)
+		// If the path segment has no commands left, remove it if it has a parent. The root path segment is not maintained here, so can't be removed.
+		// This is important, because a different exception is thrown if the path segment still exists (and hence a different http status).
+		if (pathSegment.hasParent() && !pathSegment.hasCommand() && !pathSegment.hasChildren()) {
+			pathSegment.parent().removeChild(pathSegment)
+		}
 
 	}
 

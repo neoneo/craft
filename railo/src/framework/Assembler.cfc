@@ -256,7 +256,7 @@ component {
 		if (object.construct) {
 			variables._extension = object.extension ?: variables._extension ?: "cfm"
 			variables._templateFinder = new TemplateFinder(variables._extension)
-			variables._objects.TemplateFinder.construct = false
+			object.construct = false
 		}
 
 		return variables._templateFinder

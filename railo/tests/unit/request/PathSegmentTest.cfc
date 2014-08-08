@@ -18,8 +18,14 @@ component extends="mxunit.framework.TestCase" {
 		var command1 = new CommandStub()
 		var command2 = new CommandStub()
 
+		assertFalse(variables.root.hasCommand())
+
 		variables.root.setCommand(command1, "GET")
 		variables.root.setCommand(command2, "POST")
+
+		assertTrue(variables.root.hasCommand())
+		assertTrue(variables.root.hasCommand("GET"))
+		assertFalse(variables.root.hasCommand("DELETE"))
 
 		assertEquals(command1, variables.root.command("GET"))
 		assertEquals(command2, variables.root.command("POST"))
@@ -27,13 +33,19 @@ component extends="mxunit.framework.TestCase" {
 		try {
 			variables.root.command("DELETE")
 			fail("exception should have been thrown")
-		} catch (NoSuchElementException e) {
-			// OK
-		}
+		} catch (NoSuchElementException e) {}
+
+		variables.root.removeCommand("GET")
+		assertFalse(variables.root.hasCommand("GET"))
+
+		variables.root.removeCommand("POST")
+		assertFalse(variables.root.hasCommand("POST"))
+		assertFalse(variables.root.hasCommand())
 	}
 
 	public void function Children_Should_BeEmptyArray() {
 		assertTrue(variables.root.children().isEmpty())
+		assertFalse(variables.root.hasChildren())
 	}
 
 	public void function AddChild_Should_AppendChildAndSetParent() {
@@ -41,6 +53,8 @@ component extends="mxunit.framework.TestCase" {
 		var child2 = createPathSegment("test2")
 		variables.root.addChild(child1)
 		variables.root.addChild(child2)
+
+		assertTrue(variables.root.hasChildren())
 
 		var children = variables.root.children()
 		assertEquals(2, children.len())

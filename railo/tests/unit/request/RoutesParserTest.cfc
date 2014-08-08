@@ -250,4 +250,42 @@ component extends="mxunit.framework.TestCase" {
 		} catch (NoSuchElementException e) {}
 	}
 
+	public void function RemoveExistingRoute() {
+		// Add some routes to the root.
+		var child1 = new PathSegment("child1")
+		var child2 = new PathSegment("child2")
+		variables.root.addChild(child1)
+		variables.root.addChild(child2)
+
+		child2.addChild(new PathSegment("grandchild1"))
+		var grandchild = new PathSegment("grandchild2")
+		child2.addChild(grandchild)
+
+		assertEquals(2, child2.children().len())
+
+		grandchild.setCommand(new CommandStub("get"), "GET")
+		grandchild.setCommand(new CommandStub("post"), "POST")
+
+		// Actual test. No identifier should be required so we leave it off.
+		variables.parser.remove("GET /child2/grandchild2")
+
+		// The path segment should still exists, only the GET command should be removed.
+		assertEquals(2, child2.children().len())
+		assertFalse(grandchild.hasCommand("GET"))
+
+		variables.parser.remove("POST /child2/grandchild2")
+
+		assertEquals(1, child2.children().len())
+		assertEquals("grandchild1", child2.children()[1].pattern())
+		assertFalse(grandchild.hasCommand("POST"))
+	}
+
+	public void function RemoveNonExistingRoute_Should_ThrowException() {
+		// Test immediately. The root has no children, so any route suffices.
+		try {
+			variables.parser.remove("GET /child")
+			fail("exception should have been thrown")
+		} catch (NoSuchElementException e) {}
+	}
+
 }
