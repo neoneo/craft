@@ -39,7 +39,7 @@ component implements="Content" {
 	}
 
 	/**
-	 * Returns the name of the view that renders this component.
+	 * Returns the name of the view that renders this `Component`.
 	 */
 	public String function view(required Context context) {
 		abort showerror="Not implemented";

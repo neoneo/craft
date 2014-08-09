@@ -99,7 +99,7 @@ component {
 	 */
 	public void function trim() {
 
-		children().each(function (child) {
+		children().reverse().each(function (child) {
 			arguments.child.trim()
 			if (!arguments.child.hasCommand() && !arguments.child.hasChildren()) {
 				removeChild(arguments.child)

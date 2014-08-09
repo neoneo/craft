@@ -25,6 +25,10 @@ component {
 		return variables._mimeTypes.keyExists(extension) ? extension : "html"
 	}
 
+	public String function mimeType() {
+		return variables._mimeTypes[extension()]
+	}
+
 	public String[] function extensions() {
 		return variables._extensions
 	}

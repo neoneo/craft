@@ -12,6 +12,7 @@ component {
 		variables._root = arguments.root
 
 		variables._extension = arguments.endPoint.extension()
+		variables._mimeType = arguments.endPoint.mimeType()
 		variables._requestMethod = arguments.endPoint.requestMethod()
 		variables._parameters = arguments.endPoint.requestParameters()
 
@@ -52,6 +53,10 @@ component {
 
 	public String function extension() {
 		return variables._extension
+	}
+
+	public String function mimeType() {
+		return variables._mimeType
 	}
 
 	public String function requestMethod() {

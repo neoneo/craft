@@ -269,14 +269,21 @@ component extends="mxunit.framework.TestCase" {
 		// Actual test. No identifier should be required so we leave it off.
 		variables.parser.remove("GET /child2/grandchild2")
 
-		// The path segment should still exists, only the GET command should be removed.
+		// The path segment should still exist, only the GET command should be removed.
 		assertEquals(2, child2.children().len())
 		assertFalse(grandchild.hasCommand("GET"))
 
-		variables.parser.remove("POST /child2/grandchild2")
+		// Remove all empty path segments (in this case it's only grandchild1)
+		variables.root.trim()
 
 		assertEquals(1, child2.children().len())
-		assertEquals("grandchild1", child2.children()[1].pattern())
+		assertTrue(grandchild.hasCommand("POST"))
+
+		// Now remove the last command and trim again.
+		variables.parser.remove("POST /child2/grandchild2")
+		variables.root.trim()
+
+		assertEquals(0, child2.children().len())
 		assertFalse(grandchild.hasCommand("POST"))
 	}
 

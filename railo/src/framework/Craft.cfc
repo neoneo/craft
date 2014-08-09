@@ -6,6 +6,7 @@ import craft.output.TemplateRenderer;
 import craft.output.ViewFinder;
 
 import craft.request.CommandFactory;
+import craft.request.Context;
 import craft.request.EndPoint;
 import craft.request.PathSegment;
 import craft.request.PathSegmentFactory;
@@ -110,6 +111,55 @@ component {
 	 */
 	public void function revert() {
 		initialize()
+	}
+
+	public void function handleRequest() {
+
+		try {
+			var context = new Context(endPoint(), rootPathSegment())
+		} catch (FileNotFoundException e) {
+			Echo("404 not found")
+			abort;
+		}
+
+		var pathSegment = context.pathSegment()
+
+		var method = context.requestMethod()
+		if (pathSegment.hasCommand(method)) {
+			var command = pathSegment.command(method)
+			var output = command.execute(context)
+		} else {
+			Echo("405 method not allowed")
+			abort;
+		}
+
+		switch (context.mimeType()) {
+			case "text/html":
+			case "text/plain":
+				Echo(output)
+				break;
+
+			case "application/json":
+				if (IsSimpleValue(output)) {
+					Echo(output)
+				} else {
+					Echo(SerializeJSON(output))
+				}
+				break;
+
+			case "application/xml":
+				if (IsSimpleValue(output)) {
+					Echo(output)
+				} else {
+					Echo(ToString(output))
+				}
+				break;
+
+			case "application/pdf":
+
+				break;
+		}
+
 	}
 
 

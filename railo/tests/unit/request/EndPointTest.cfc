@@ -29,12 +29,14 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(result, "requestParameters should merge form and url scopes, with form parameters taking precedence")
 	}
 
-	public void function Extension_Should_ReturnExtensionOrHTML() {
+	public void function ExtensionMimeType_Should_ReturnValueOrDefault() {
 		variables.endPoint.setTestPath("/path/to/request.json")
 		assertEquals("json", variables.endPoint.extension())
+		assertEquals("application/json", variables.endPoint.mimeType())
 
 		variables.endPoint.setTestPath("/path/to/request.notexist")
 		assertEquals("html", variables.endPoint.extension())
+		assertEquals("text/html", variables.endPoint.mimeType())
 	}
 
 }

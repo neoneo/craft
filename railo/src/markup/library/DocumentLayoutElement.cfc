@@ -3,7 +3,7 @@ import craft.content.LayoutContent;
 
 component extends="AbstractDocumentElement" accessors="true" tag="documentlayout" {
 
-	property String extends;
+	property String extends required="true";
 
 	private String function layoutRef() {
 		return getExtends()
