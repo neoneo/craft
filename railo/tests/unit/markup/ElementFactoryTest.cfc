@@ -15,14 +15,14 @@ component extends="mxunit.framework.TestCase" {
 	public void function RegisterWithNoCraftSection_Should_ThrowNoSuchElementException() {
 		try {
 			variables.factory.register(variables.mapping & "/nocraftsection")
-			fail("if there is no section named 'craft' in settings.ini, an exception should be thrown")
+			fail("if there is no section named 'craft' in craft.ini, an exception should be thrown")
 		} catch (NoSuchElementException e) {}
 	}
 
 	public void function RegisterWithNoNamespace_Should_ThrowNoSuchElementException() {
 		try {
 			variables.factory.register(variables.mapping & "/nonamespace")
-			fail("if no namespace is defined in settings.ini, an exception should be thrown")
+			fail("if no namespace is defined in craft.ini, an exception should be thrown")
 		} catch (NoSuchElementException e) {}
 	}
 
@@ -31,7 +31,7 @@ component extends="mxunit.framework.TestCase" {
 
 		var tags = variables.factory.tags()
 
-		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir2"), "there should be a key for the namespace as defined in settings.ini")
+		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir2"), "there should be a key for the namespace as defined in craft.ini")
 		tagNames = tags["http://neoneo.nl/craft/dir2"]
 
 		assertFalse(tagNames.find("noelement") > 0, "if a component does not extend Element, it should not be registered")

@@ -5,16 +5,16 @@ component {
 	variables._tags = {} // Keeps metadata of tags per namespace.
 
 	/**
-	 * Registers any `Element`s found in the mapping. A settings.ini file must be present in order for any components to be inspected.
-	 * If absent, the subdirectories are searched for settings.ini files and `register()` is then called recursively.
+	 * Registers any `Element`s found in the mapping. A craft.ini file must be present in order for any components to be inspected.
+	 * If absent, the subdirectories are searched for craft.ini files and `register()` is then called recursively.
 	 * The mapping should be passed in without a trailing slash.
 	 */
 	public void function register(required String mapping) {
 
 		var path = ExpandPath(arguments.mapping)
 
-		// See if there is a settings.ini here.
-		var settingsFile = path & "/settings.ini"
+		// See if there is a craft.ini here.
+		var settingsFile = path & "/craft.ini"
 		if (FileExists(settingsFile)) {
 			var sections = GetProfileSections(settingsFile)
 			// If there is no section named 'craft', or if this section doesn't contain a namespace key, throw an exception.
@@ -77,8 +77,8 @@ component {
 
 		var path = ExpandPath(arguments.mapping)
 
-		// See if there is a settings.ini here.
-		var settingsFile = path & "/settings.ini"
+		// See if there is a craft.ini here.
+		var settingsFile = path & "/craft.ini"
 		if (FileExists(settingsFile)) {
 			var sections = GetProfileSections(settingsFile)
 			// If there is no section named 'craft', or if this section doesn't contain a namespace key, throw an exception.
