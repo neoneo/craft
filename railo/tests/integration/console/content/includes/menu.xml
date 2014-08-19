@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<menu ref="menu" xmlns="http://neoneo.nl/craft/controls">
+	<button label="New" />
+	<button label="Open" />
+	<button label="Close" />
+</menu>

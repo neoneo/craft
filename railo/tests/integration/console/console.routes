@@ -1,0 +1,2 @@
+GET		/component		/component.xml
+GET		/document		/document.xml

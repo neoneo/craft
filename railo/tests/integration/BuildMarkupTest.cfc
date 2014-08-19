@@ -7,7 +7,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function beforeTests() {
 
 		var factory = new ElementFactory()
-		factory.register("/crafttests/integration/elements")
+		factory.register("/crafttests/integration/markup/elements")
 		factory.register("/craft/markup/library")
 
 		variables.factory = factory
@@ -16,8 +16,8 @@ component extends="mxunit.framework.TestCase" {
 
 		// The markup tags should result in specific component types.
 		variables.types = {
-			composite: GetComponentMetaData("components.Composite").name,
-			leaf: GetComponentMetaData("components.Leaf").name,
+			composite: GetComponentMetaData("markup.elements.components.Composite").name,
+			leaf: GetComponentMetaData("markup.elements.components.Leaf").name,
 			document: GetComponentMetaData("Document").name,
 			documentlayout: GetComponentMetaData("DocumentLayout").name,
 			layout: GetComponentMetaData("Layout").name,
@@ -31,7 +31,7 @@ component extends="mxunit.framework.TestCase" {
 
 		var builder = new FileBuilder(variables.factory)
 
-		var path = variables.path & "/document/document.xml"
+		var path = variables.path & "/documents/document.xml"
 		try {
 			var element = builder.build(path)
 			fail("build should have thrown an exception")
@@ -55,7 +55,7 @@ component extends="mxunit.framework.TestCase" {
 
 		var builder = new FileBuilder(variables.factory)
 
-		var path = variables.path & "/element.xml"
+		var path = variables.path & "/documents/element.xml"
 		var element = builder.build(path)
 
 		// The element has constructed a component we're interested in.
@@ -72,7 +72,7 @@ component extends="mxunit.framework.TestCase" {
 		// The document depends on a tree of layouts that have to be loaded with a DirectoryBuilder.
 		var builder = new DirectoryBuilder(factory)
 
-		var path = variables.path & "/document"
+		var path = variables.path & "/documents"
 		var documents = builder.build(path)
 
 		// Compare the products with the corresponding xml documents.

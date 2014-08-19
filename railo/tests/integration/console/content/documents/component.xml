@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<g:row xmlns="http://neoneo.nl/craft" xmlns:g="http://neoneo.nl/craft/grid" xmlns:c="http://neoneo.nl/craft/controls">
+	<g:column>
+		<c:logo />
+	</g:column>
+	<g:column>
+		<include element="menu" />
+	</g:column>
+	<g:column>
+		<include element="toolbar" />
+	</g:column>
+</g:row>

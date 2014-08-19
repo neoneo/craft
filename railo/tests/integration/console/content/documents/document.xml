@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<document layout="main" xmlns="http://neoneo.nl/craft" xmlns:c="http://neoneo.nl/craft/controls">
+	<section placeholder="aside">
+
+	</section>
+	<section placeholder="content">
+		<c:button label="Previous" />
+		<c:button label="Next" />
+	</section>
+</document>

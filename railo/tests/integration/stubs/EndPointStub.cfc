@@ -1,4 +1,6 @@
-component extends="craft.request.EndPoint" accessors="true" {
+import craft.request.*;
+
+component extends="EndPoint" accessors="true" {
 
 	property String testPath;
 	property Struct testParameters;

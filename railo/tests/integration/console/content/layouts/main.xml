@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<layout ref="main" xmlns="http://neoneo.nl/craft" xmlns:g="http://neoneo.nl/craft/grid" xmlns:c="http://neoneo.nl/craft/controls">
+	<g:row>
+		<g:column>
+			<c:logo />
+		</g:column>
+		<g:column>
+			<include element="menu" />
+		</g:column>
+		<g:column>
+			<include element="toolbar" />
+		</g:column>
+	</g:row>
+	<g:row>
+		<g:column>
+			<placeholder ref="aside" />
+		</g:column>
+		<g:column span="2">
+			<placeholder ref="content" />
+		</g:column>
+	</g:row>
+</layout>

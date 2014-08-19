@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<menu ref="toolbar" xmlns="http://neoneo.nl/craft/controls">
+	<button label="Edit" />
+	<button label="Copy" />
+	<button label="Paste" />
+</menu>
