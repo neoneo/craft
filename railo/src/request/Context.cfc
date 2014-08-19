@@ -4,7 +4,14 @@
  *
  * @transient
  */
-component {
+component accessors="true" {
+
+	property String characterSet default="UTF-8";
+	property Boolean deleteFile;
+	property String downloadAs;
+	property String downloadFile;
+	property String contentType;
+	property Numeric statusCode default="200";
 
 	public void function init(required EndPoint endPoint, required PathSegment root) {
 
@@ -12,9 +19,10 @@ component {
 		variables._root = arguments.root
 
 		variables._extension = arguments.endPoint.extension()
-		variables._mimeType = arguments.endPoint.mimeType()
 		variables._requestMethod = arguments.endPoint.requestMethod()
 		variables._parameters = arguments.endPoint.requestParameters()
+
+		setContentType(arguments.endPoint.contentType())
 
 		// Parse the path. If path segments define parameters, they are appended on the parameters struct.
 		variables._pathSegment = null
@@ -34,38 +42,34 @@ component {
 		// Walk the path to get the path segment that applies to this request.
 		walk(segments, arguments.root)
 		if (variables._pathSegment === null) {
-			Throw("Path segment not found", "FileNotFoundException")
+			Throw("Path segment not found", "FileNotFoundException");
 		}
 
 	}
 
 	public PathSegment function pathSegment() {
-		return variables._pathSegment
+		return variables._pathSegment;
 	}
 
 	public Struct function parameters() {
-		return variables._parameters
+		return variables._parameters;
 	}
 
 	public String function path() {
-		return variables._endPoint.path()
+		return variables._endPoint.path();
 	}
 
 	public String function extension() {
-		return variables._extension
-	}
-
-	public String function mimeType() {
-		return variables._mimeType
+		return variables._extension;
 	}
 
 	public String function requestMethod() {
 		// TODO: implement tunnelling
-		return variables._requestMethod
+		return variables._requestMethod;
 	}
 
 	public String function createURL(required String path, Struct parameters) {
-		return variables._endPoint.createURL(argumentCollection: ArrayToStruct(arguments))
+		return variables._endPoint.createURL(argumentCollection: ArrayToStruct(arguments));
 	}
 
 	/**

@@ -16,7 +16,7 @@ component implements="Visitor" {
 		variables._viewFinder = arguments.viewFinder
 
 		// Define state. The following state variables will be modified during component traversal.
-		// The sections in Document instances are kept, so that Placeholder instances can pick them up.
+		// The sections in document instances are kept, so that placeholder instances can pick them up.
 		variables._sections = {}
 		// Generated content. At the end of the process, this variable contains the request content.
 		variables._content = null
@@ -26,36 +26,7 @@ component implements="Visitor" {
 	}
 
 	public Any function content() {
-		return variables._content
-	}
-
-	public void function visitLayout(required Layout layout) {
-		arguments.layout.section().accept(this)
-	}
-
-	public void function visitDocument(required Document document) {
-
-		// Pick up the sections / placeholders that this document is filling.
-		variables._sections.append(arguments.document.sections())
-
-		arguments.document.layout().accept(this)
-	}
-
-	public void function visitLeaf(required Leaf leaf) {
-
-		var model = arguments.leaf.model(variables._context)
-
-		// If _contents is null, rendering the view is useless.
-		if (variables._contents !== null) {
-			var viewName = arguments.leaf.view(variables._context)
-			if (viewName !== null) {
-				var view = variables._viewFinder.get(viewName)
-
-				variables._content = view.render(model, variables._context.requestMethod())
-				variables._contents.append(variables._content)
-			}
-		}
-
+		return variables._content;
 	}
 
 	public void function visitComposite(required Composite composite) {
@@ -81,12 +52,41 @@ component implements="Visitor" {
 			// Put the content of the children on the model so the view can include it.
 			model.__content__ = variables._contents
 			var view = variables._viewFinder.get(viewName)
-			variables._content = view.render(model, variables._context.requestMethod())
+			variables._content = view.render(model)
 			contents.append(variables._content)
 		}
 
 		// Revert state.
 		variables._contents = contents
+
+	}
+
+	public void function visitDocument(required Document document) {
+
+		// Pick up the sections / placeholders that this document is filling.
+		variables._sections.append(arguments.document.sections())
+
+		arguments.document.layout().accept(this)
+	}
+
+	public void function visitLayout(required Layout layout) {
+		arguments.layout.section().accept(this)
+	}
+
+	public void function visitLeaf(required Leaf leaf) {
+
+		var model = arguments.leaf.model(variables._context)
+
+		// If _contents is null, rendering the view is useless.
+		if (variables._contents !== null) {
+			var viewName = arguments.leaf.view(variables._context)
+			if (viewName !== null) {
+				var view = variables._viewFinder.get(viewName)
+
+				variables._content = view.render(model)
+				variables._contents.append(variables._content)
+			}
+		}
 
 	}
 
@@ -102,7 +102,31 @@ component implements="Visitor" {
 	}
 
 	public void function visitSection(required Section section) {
+
 		arguments.section.traverse(this)
+
+		/*
+			Place the content produced by the components in the section in variables._content.
+			The section has no view that can combine complex content, so we handle only the following
+			cases:
+			- If there is no content item, we set variables._content to null.
+			- If there is one content item, no combination is needed and we can place the one
+				element in variables._content.
+			- If all contents are strings, concatenate them. This is justified because the section
+				is primarily intended for html output.
+			- Otherwise content will be lost, and we throw an exception.
+		*/
+		if (variables._contents.isEmpty()) {
+			variables._content = null
+		} else if (variables._content.len() == 1) {
+			variables._content = variables._contents[1]
+		} else if (variables._contents.every(function (content) {
+			return IsSimpleValue(arguments.content) || arguments.content === null;
+		})) {
+			variables._content = variables._contents.toList("")
+		} else {
+			Throw("Cannot render content", "DatatypeConfigurationException", "If multiple components generate complex content, the section cannot render.")
+		}
 	}
 
 }

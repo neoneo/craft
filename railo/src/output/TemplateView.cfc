@@ -9,7 +9,7 @@ component implements="View" {
 	* Renders the view by delegating to the `TemplateRenderer`.
 	*/
 	public Any function render(required Any model) {
-		return variables._renderer.render(variables._template, arguments.model)
+		return variables._renderer.render(variables._template, arguments.model ?: {})
 	}
 
 }

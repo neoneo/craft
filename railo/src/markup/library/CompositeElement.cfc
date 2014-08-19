@@ -10,7 +10,7 @@ component extends="ComponentElement" abstract="true" {
 	public void function construct(required Scope scope) {
 
 		if (childrenReady()) {
-			var composite = createComposite(arguments.scope)
+			var composite = create(arguments.scope)
 
 			children().each(function (child) {
 				composite.addChild(arguments.child.product())
@@ -24,7 +24,7 @@ component extends="ComponentElement" abstract="true" {
 	/**
 	 * Creates the `Composite` to which the children are added.
 	 */
-	private Composite function createComposite(required Scope scope) {
+	private Composite function create(required Scope scope) {
 		abort showerror="Not implemented";
 	}
 

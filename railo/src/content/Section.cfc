@@ -26,11 +26,11 @@ component implements="Content" {
 	}
 
 	public Placeholder[] function placeholders() {
-		return placeholdersFromComponents(components())
+		return placeholdersFromComponents(components());
 	}
 
 	public Component[] function components() {
-		return variables._components.toArray()
+		return variables._components.toArray();
 	}
 
 	public void function addComponent(required Component component, Component beforeComponent) {

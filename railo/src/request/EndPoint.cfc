@@ -4,14 +4,14 @@ component {
 
 		variables._rootPath = ""
 
-		variables._mimeTypes = {
+		variables._contentTypes = {
 			html: "text/html",
 			json: "application/json",
 			xml: "application/xml",
 			pdf: "application/pdf",
 			txt: "text/plain"
 		}
-		variables._extensions = variables._mimeTypes.keyArray()
+		variables._extensions = variables._contentTypes.keyArray()
 
 	}
 
@@ -22,11 +22,11 @@ component {
 	public String function extension() {
 		var extension = path().listLast(".")
 
-		return variables._mimeTypes.keyExists(extension) ? extension : "html"
+		return variables._contentTypes.keyExists(extension) ? extension : "html"
 	}
 
-	public String function mimeType() {
-		return variables._mimeTypes[extension()]
+	public String function contentType() {
+		return variables._contentTypes[extension()]
 	}
 
 	public String[] function extensions() {
