@@ -22,17 +22,38 @@ component extends="mxunit.framework.TestCase" {
 
 	}
 
-	// public void function Component() {
-	// 	var result = testRequest("GET", "/component.xml")
+	public void function Component() {
+		var output = testRequest("GET", "/component.xml")
 
-	// 	assertTrue(IsXML(result))
-	// }
+		assertTrue(IsXML(output))
+
+		var result = XMLParse(output)
+
+		var menuElement = '<menu><button label="New" /><button label="Open" /><button label="Close" /></menu>'
+		var toolbarElement = '<menu><button label="Edit" /><button label="Copy" /><button label="Paste" /></menu>'
+		var expected = XMLParse('<row><column span="1"><logo /></column><column span="1">#menuElement#</column><column span="1">#toolbarElement#</column></row>')
+
+		assertEquals(expected, result)
+	}
 
 	public void function Document() {
-		var result = testRequest("GET", "/document.xml")
+		var output = testRequest("GET", "/document.xml")
+		// The output is not yet valid xml because it contains 2 root elements.
+		output = "<root>" & output & "</root>"
 
-		echo(result)
-		abort;
+		assertTrue(IsXML(output))
+
+		var result = XMLParse(output)
+
+		var menuElement = '<menu><button label="New" /><button label="Open" /><button label="Close" /></menu>'
+		var toolbarElement = '<menu><button label="Edit" /><button label="Copy" /><button label="Paste" /></menu>'
+		var rowElement1 = '<row><column span="1"><logo /></column><column span="1">#menuElement#</column><column span="1">#toolbarElement#</column></row>'
+		var contentElement = '<button label="Previous" /><button label="Next" />'
+		var rowElement2 = '<row><column span="1"></column><column span="2">#contentElement#</column></row>'
+
+		var expected = XMLParse("<root>" & rowElement1 & rowElement2 & "</root>")
+
+		assertEquals(expected, result)
 	}
 
 	private String function testRequest(required String method, required String path, Struct parameters) {

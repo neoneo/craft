@@ -6,7 +6,7 @@ import craft.markup.library.CompositeElement;
 
 component extends="CompositeElement" tag="composite" {
 
-	private Composite function createComposite(required Scope scope) {
+	private Composite function create(required Scope scope) {
 		return new components.Composite(getRef())
 	}
 

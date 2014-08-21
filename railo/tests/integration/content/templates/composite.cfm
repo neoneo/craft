@@ -1,0 +1,1 @@
+<cfoutput>#component#,#__content__.toList()#,#component#</cfoutput>

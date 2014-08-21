@@ -6,7 +6,7 @@ component extends="mxunit.framework.TestCase" {
 		variables.facade = new stubs.RequestFacadeStub(new stubs.CommandFactoryStub())
 		variables.endPoint = variables.facade.endPoint()
 
-		variables.facade.importRoutes("/crafttests/integration/routes/requestfacade.routes")
+		variables.facade.importRoutes("/crafttests/integration/test.routes")
 	}
 
 	public void function ArtistList() {

@@ -31,7 +31,7 @@ component extends="mxunit.framework.TestCase" {
 
 		var builder = new FileBuilder(variables.factory)
 
-		var path = variables.path & "/documents/document.xml"
+		var path = variables.path & "/content/document.xml"
 		try {
 			var element = builder.build(path)
 			fail("build should have thrown an exception")
@@ -55,7 +55,7 @@ component extends="mxunit.framework.TestCase" {
 
 		var builder = new FileBuilder(variables.factory)
 
-		var path = variables.path & "/documents/element.xml"
+		var path = variables.path & "/content/element.xml"
 		var element = builder.build(path)
 
 		// The element has constructed a component we're interested in.

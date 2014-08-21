@@ -8,7 +8,7 @@ component extends="mxunit.framework.TestCase" {
 		var context = mock(CreateObject("Context"))
 
 		var templateFinder = new TemplateFinder("cfm")
-		templateFinder.addMapping("/crafttests/integration/templates")
+		templateFinder.addMapping("/crafttests/integration/content/templates")
 		var renderer = new CFMLRenderer()
 		var viewFinder = new ViewFinder(templateFinder, renderer)
 		// We don't add a mapping yet, so that we get template views only.
@@ -19,7 +19,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function RenderLeafTemplate() {
-		var leaf = new components.Leaf("leaf")
+		var leaf = new content.components.Leaf("leaf")
 
 		variables.visitor.visitLeaf(leaf)
 
@@ -106,18 +106,18 @@ component extends="mxunit.framework.TestCase" {
 
 		var documentLayout2 = new DocumentLayout(documentLayout1)
 		var pSection = new Section()
-		pSection.addComponent(new components.Leaf("p"))
+		pSection.addComponent(new content.components.Leaf("p"))
 		documentLayout2.addSection(pSection, "p")
 
 		var p2Section = new Section()
-		p2Section.addComponent(new components.Leaf("p2"))
+		p2Section.addComponent(new content.components.Leaf("p2"))
 		documentLayout2.addSection(p2Section, "p2")
 
 		// Now remains only placeholder p3.
 
 		var documentLayout3 = new DocumentLayout(documentLayout2)
 		var p3Section = new Section()
-		p3Section.addComponent(new components.Leaf("p3"))
+		p3Section.addComponent(new content.components.Leaf("p3"))
 		documentLayout3.addSection(p3Section, "p3")
 
 		var document = new Document(documentLayout3)
@@ -137,7 +137,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function RenderNestedCompositeViewWithPlaceholders() {
 		// The main functionality has been tested in the tests above. The purpose of this test is to test the view component functionality.
-		variables.viewFinder.addMapping("/crafttests/integration/views")
+		variables.viewFinder.addMapping("/crafttests/integration/content/views")
 
 		var section = new Section()
 		section.addComponent(nestedComposite(true))
@@ -149,20 +149,19 @@ component extends="mxunit.framework.TestCase" {
 		documentLayout.addSection(p1Section, "p1")
 
 		var p2Section = new Section()
-		p2Section.addComponent(new components.Leaf("p2"))
+		p2Section.addComponent(new content.components.Leaf("p2"))
 		documentLayout.addSection(p2Section, "p2")
 
 		var p3Section = new Section()
-		p3Section.addComponent(new components.Leaf("p3"))
+		p3Section.addComponent(new content.components.Leaf("p3"))
 		documentLayout.addSection(p3Section, "p3")
 
 		var document = new Document(documentLayout)
 
 		// Fill the p placeholder, included by the simple composite.
 		var pSection = new Section()
-		pSection.addComponent(new components.Leaf("p"))
+		pSection.addComponent(new content.components.Leaf("p"))
 		document.addSection(pSection, "p")
-
 		// Start the actual test.
 		variables.visitor.visitDocument(document)
 
@@ -204,7 +203,7 @@ component extends="mxunit.framework.TestCase" {
 
 		// The layout contains placeholders p1, p2 and p3.
 		// Create a 2nd layout that only includes placeholders p1 en p2.
-		var composite = new components.Composite("composite")
+		var composite = new content.components.Composite("composite")
 		composite.addChild(new Placeholder("p1"))
 		composite.addChild(new Placeholder("p2"))
 		var section2 = new Section()
@@ -215,15 +214,15 @@ component extends="mxunit.framework.TestCase" {
 		var document = new Document(layout1)
 		// Fill all placeholders p1, p2 and p3.
 		var p1Section = new Section()
-		p1Section.addComponent(new components.Leaf("p1"))
+		p1Section.addComponent(new content.components.Leaf("p1"))
 		document.addSection(p1Section, "p1")
 
 		var p2Section = new Section()
-		p2Section.addComponent(new components.Leaf("p2"))
+		p2Section.addComponent(new content.components.Leaf("p2"))
 		document.addSection(p2Section, "p2")
 
 		var p3Section = new Section()
-		p3Section.addComponent(new components.Leaf("p3"))
+		p3Section.addComponent(new content.components.Leaf("p3"))
 		document.addSection(p3Section, "p3")
 
 		// Actual test.
@@ -248,40 +247,40 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, expected)
 	}
 
-	private components.Composite function simpleComposite(Boolean placeholder = true) {
-		var composite = new components.Composite("composite")
-		composite.addChild(new components.Leaf("leaf1"))
+	private content.components.Composite function simpleComposite(Boolean placeholder = true) {
+		var composite = new content.components.Composite("composite")
+		composite.addChild(new content.components.Leaf("leaf1"))
 		if (arguments.placeholder) {
 			composite.addChild(new Placeholder("p"))
 		}
-		composite.addChild(new components.Leaf("leaf2"))
-		composite.addChild(new components.Leaf("leaf3"))
+		composite.addChild(new content.components.Leaf("leaf2"))
+		composite.addChild(new content.components.Leaf("leaf3"))
 
-		return composite
+		return composite;
 	}
 
-	private components.Composite function nestedComposite(Boolean placeholders = false) {
-		var composite1 = new components.Composite("composite1")
-		composite1.addChild(new components.Leaf("leaf1"))
+	private content.components.Composite function nestedComposite(Boolean placeholders = false) {
+		var composite1 = new content.components.Composite("composite1")
+		composite1.addChild(new content.components.Leaf("leaf1"))
 
 		if (arguments.placeholders) {
 			composite1.addChild(new Placeholder("p1"))
 		}
 
-		var composite2 = new components.Composite("composite2")
+		var composite2 = new content.components.Composite("composite2")
 		if (arguments.placeholders) {
 			composite2.addChild(new Placeholder("p2"))
 		}
-		composite2.addChild(new components.Leaf("leaf2"))
-		composite2.addChild(new components.Leaf("leaf3"))
+		composite2.addChild(new content.components.Leaf("leaf2"))
+		composite2.addChild(new content.components.Leaf("leaf3"))
 
 		composite1.addChild(composite2)
-		composite1.addChild(new components.Leaf("leaf4"))
+		composite1.addChild(new content.components.Leaf("leaf4"))
 		if (arguments.placeholders) {
 			composite1.addChild(new Placeholder("p3"))
 		}
 
-		return composite1
+		return composite1;
 	}
 
 }
