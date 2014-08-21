@@ -53,6 +53,7 @@ component implements="Visitor" {
 			model.__content__ = variables._contents
 			var view = variables._viewFinder.get(viewName)
 			variables._content = view.render(model)
+			// Append the generated content on the 'parent' _contents array.
 			contents.append(variables._content)
 		}
 
@@ -103,6 +104,10 @@ component implements="Visitor" {
 
 	public void function visitSection(required Section section) {
 
+		// A section is like a composite without a view, so the reasoning is the same.
+		var contents = variables._contents
+		variables._contents = []
+
 		arguments.section.traverse(this)
 
 		/*
@@ -118,7 +123,7 @@ component implements="Visitor" {
 		*/
 		if (variables._contents.isEmpty()) {
 			variables._content = null
-		} else if (variables._content.len() == 1) {
+		} else if (variables._contents.len() == 1) {
 			variables._content = variables._contents[1]
 		} else if (variables._contents.every(function (content) {
 			return IsSimpleValue(arguments.content) || arguments.content === null;
@@ -127,6 +132,13 @@ component implements="Visitor" {
 		} else {
 			Throw("Cannot render content", "DatatypeConfigurationException", "If multiple components generate complex content, the section cannot render.")
 		}
+
+		// Append the generated content on the 'parent' _contents array.
+		contents.append(variables._content)
+
+		// Revert state.
+		variables._contents = contents
+
 	}
 
 }
