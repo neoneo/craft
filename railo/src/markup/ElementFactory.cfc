@@ -19,22 +19,23 @@ component {
 			var sections = GetProfileSections(settingsFile)
 			// If there is no section named 'craft', or if this section doesn't contain a namespace key, throw an exception.
 			if (!sections.keyExists("craft") || sections.craft.listFind("namespace") == 0) {
-				Throw("Namespace not found in #settingsFile#", "NoSuchElementException")
+				Throw("Namespace not found in #settingsFile#", "NoSuchElementException");
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
 			var namespaceTags = variables._tags[namespace] = {}
 
+			var registerPaths = null
 			if (sections.craft.listFind("directories") > 0) {
 				// The directories key contains a comma separated list of directories that should exist below the current one.
 				var directories = GetProfileString(settingsFile, "craft", "directories")
-				var registerPaths = directories.listToArray().map(function (directory) {
+				registerPaths = directories.listToArray().map(function (directory) {
 					var directory = arguments.directory.trim()
 					var separator = directory.startsWith("/") ? "" : "/"
-					return path & separator & directory
+					return path & separator & directory;
 				})
 			} else {
-				var registerPaths = [path]
+				registerPaths = [path]
 			}
 
 			var mapping = arguments.mapping
@@ -83,7 +84,7 @@ component {
 			var sections = GetProfileSections(settingsFile)
 			// If there is no section named 'craft', or if this section doesn't contain a namespace key, throw an exception.
 			if (!sections.keyExists("craft") || sections.craft.listFind("namespace") == 0) {
-				Throw("Namespace not found in #settingsFile#", "NoSuchElementException")
+				Throw("Namespace not found in #settingsFile#", "NoSuchElementException");
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
@@ -108,8 +109,8 @@ component {
 	public Struct function tags() {
 		return variables._tags.map(function (namespace, metadata) {
 			// The metadata argument is a struct where the keys are tag names.
-			return arguments.metadata.keyArray()
-		})
+			return arguments.metadata.keyArray();
+		});
 	}
 
 	/**
@@ -123,7 +124,7 @@ component {
 			result = extendsElement(arguments.metadata.extends)
 		}
 
-		return result
+		return result;
 	}
 
 	/**
@@ -137,7 +138,7 @@ component {
 			element.add(convert(child))
 		}
 
-		return element
+		return element;
 	}
 
 	/**
@@ -146,12 +147,12 @@ component {
 	public Element function create(required String namespace, required String tagName, Struct attributes = {}) {
 
 		if (!variables._tags.keyExists(arguments.namespace)) {
-			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException")
+			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException");
 		}
 
 		var tags = variables._tags[arguments.namespace]
 		if (!tags.keyExists(arguments.tagName)) {
-			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException")
+			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException");
 		}
 
 		var data = tags[arguments.tagName]
@@ -166,20 +167,20 @@ component {
 			var value = values[name] ?: arguments.attribute.default ?: null
 
 			if (value === null && (arguments.attribute.required ?: false)) {
-				Throw("Attribute '#name#' is required", "IllegalArgumentException")
+				Throw("Attribute '#name#' is required", "IllegalArgumentException");
 			}
 
 			if (value !== null) {
 				// Assuming we'll only encounter simple values here, we can use IsValid. We also assume that the property type is specified.
 				if (!IsValid(arguments.attribute.type, value)) {
-					Throw("Invalid value '#value#' for attribute '#name#': #arguments.attribute.type# expected", "IllegalArgumentException")
+					Throw("Invalid value '#value#' for attribute '#name#': #arguments.attribute.type# expected", "IllegalArgumentException");
 				}
 
 				constructorArguments[name] = value
 			}
 		})
 
-		return new "#data.name#"(argumentCollection: constructorArguments)
+		return new "#data.name#"(argumentCollection: constructorArguments);
 	}
 
 	private Struct[] function collectProperties(required Struct metadata) {
@@ -198,17 +199,17 @@ component {
 			}
 
 			data = data.extends ?: null
-		} while (data !== null)
+		} while (data !== null);
 
-		return properties
+		return properties;
 	}
 
 	private Struct[] function collectAttributes(required Struct metadata) {
 		// Filter the properties for those that can be attributes.
 		return collectProperties(arguments.metadata).filter(function (property) {
 			// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
-			return arguments.property.attribute ?: true
-		})
+			return arguments.property.attribute ?: true;
+		});
 	}
 
 }

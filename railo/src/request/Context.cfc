@@ -45,6 +45,8 @@ component accessors="true" {
 			Throw("Path segment not found", "FileNotFoundException");
 		}
 
+		variables._dependencies = []
+
 	}
 
 	public PathSegment function pathSegment() {
@@ -72,6 +74,14 @@ component accessors="true" {
 		return variables._endPoint.createURL(argumentCollection: ArrayToStruct(arguments));
 	}
 
+	public void function addDependency(required String dependency) {
+		variables._dependencies.append(arguments.dependency)
+	}
+
+	public String[] function dependencies() {
+		return variables._dependencies;
+	}
+
 	/**
 	 * Traverses the path to find the applicable `PathSegment`. When the `PathSegment` is found, any parameters defined by `PathSegment`s
 	 * on the path are available in the parameters.
@@ -89,7 +99,8 @@ component accessors="true" {
 				var segmentCount = child.match(arguments.path)
 				if (segmentCount > 0) {
 					// Remove the number of segments that were matched and walk the remaining path, starting at the child.
-					walk(arguments.path.mid(segmentCount + 1), child)
+					var remainingPath = segmentCount == arguments.path.len() ? [] : arguments.path.slice(segmentCount + 1)
+					walk(remainingPath, child)
 
 					if (variables._pathSegment !== null) {
 						// The complete path is traversed so the current path segment is part of the tree.

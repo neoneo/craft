@@ -6,7 +6,7 @@ import craft.markup.library.CompositeElement;
 
 component extends="CompositeElement" tag="menu" {
 
-	private Composite function create(required Scope scope) {
+	private Composite function create() {
 		return new components.Menu();
 	}
 

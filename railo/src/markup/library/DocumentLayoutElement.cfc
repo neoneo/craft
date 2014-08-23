@@ -6,11 +6,11 @@ component extends="AbstractDocumentElement" accessors="true" tag="documentlayout
 	property String extends required="true";
 
 	private String function layoutRef() {
-		return getExtends()
+		return getExtends();
 	}
 
 	private Document function createDocument(required LayoutContent layoutContent) {
-		return new DocumentLayout(arguments.layoutContent)
+		return new DocumentLayout(arguments.layoutContent);
 	}
 
 }

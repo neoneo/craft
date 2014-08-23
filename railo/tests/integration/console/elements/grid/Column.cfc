@@ -8,7 +8,7 @@ component extends="CompositeElement" accessors="true" tag="column" {
 
 	property Numeric span default="1";
 
-	private Composite function create(required Scope scope) {
+	private Composite function create() {
 		return new components.Column(getSpan());
 	}
 

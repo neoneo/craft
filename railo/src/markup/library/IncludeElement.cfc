@@ -17,7 +17,7 @@ component extends="Element" accessors="true" tag="include" {
 
 	public Boolean function childrenReady() {
 		// Ignore any children.
-		return ready()
+		return ready();
 	}
 
 }

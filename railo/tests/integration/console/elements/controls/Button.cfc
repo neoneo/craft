@@ -6,7 +6,7 @@ component extends="ComponentElement" accessors="true" tag="button" {
 
 	property String label required="true";
 
-	private Component function create(required Scope scope) {
+	private Component function create() {
 		return new components.Button(getLabel());
 	}
 

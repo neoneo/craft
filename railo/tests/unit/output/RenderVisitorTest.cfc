@@ -15,7 +15,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function VisitLeaf_Should_CallModelAndView() {
 		var model = {key: 1}
 		var view = mock(CreateObject("ViewStub"))
-			.render("{any}", "{string}").returns("done")
+			.render("{any}").returns("done")
 		var leaf = mock(CreateObject("Leaf"))
 			.model("{object}").returns(model) // Don't know why I can't pass in variables.context as the first argument..
 			.view("{object}").returns("view")
@@ -30,7 +30,7 @@ component extends="mxunit.framework.TestCase" {
 
 		variables.viewFinder.verify().get("view")
 
-		view.verify().render("{any}", "{string}")
+		view.verify().render("{any}")
 
 		// The visitor should make the rendered output ('done') available.
 		assertEquals("done", variables.visitor.content())
@@ -39,7 +39,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function VisitComposite_Should_CallModelViewAndTraverse() {
 		var model = {key: 1}
 		var view = mock(CreateObject("ViewStub"))
-			.render("{any}", "{string}").returns("done")
+			.render("{any}").returns("done")
 		var composite = mock(CreateObject("Composite"))
 			.model("{object}").returns(model)
 			.view("{object}").returns("view")
@@ -55,7 +55,7 @@ component extends="mxunit.framework.TestCase" {
 
 		variables.viewFinder.verify().get("view")
 
-		view.verify().render("{any}", "{string}")
+		view.verify().render("{any}")
 
 		assertEquals("done", variables.visitor.content())
 	}
