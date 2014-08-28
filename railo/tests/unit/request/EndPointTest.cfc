@@ -17,7 +17,7 @@ component extends="mxunit.framework.TestCase" {
 		form.a = 1
 		form.b = "string 1"
 
-		var parameters = variables.endPoint.requestParameters()
+		var parameters = variables.endPoint.requestParameters
 		var merged = {a: 1, b: "string 1", x: 2, y: "string 2"}
 
 		// The form contains fields introduced by Railo.
@@ -31,12 +31,12 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function ExtensionContentType_Should_ReturnValueOrDefault() {
 		variables.endPoint.setTestPath("/path/to/request.json")
-		assertEquals("json", variables.endPoint.extension())
-		assertEquals("application/json", variables.endPoint.contentType())
+		assertEquals("json", variables.endPoint.extension)
+		assertEquals("application/json", variables.endPoint.contentType)
 
 		variables.endPoint.setTestPath("/path/to/request.notexist")
-		assertEquals("html", variables.endPoint.extension())
-		assertEquals("text/html", variables.endPoint.contentType())
+		assertEquals("html", variables.endPoint.extension)
+		assertEquals("text/html", variables.endPoint.contentType)
 	}
 
 }

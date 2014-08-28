@@ -22,28 +22,28 @@ component extends="mxunit.framework.TestCase" {
 		var route = "GET /level1 level1command"
 		var pathSegment = variables.parser.parse(route)
 
-		assertEquals("level1", pathSegment.pattern())
+		assertEquals("level1", pathSegment.pattern)
 
 		var command = pathSegment.command("GET")
 		assertEquals("level1command", command.getIdentifier())
 		// The parent should be the root. Get it from the parser stub, that has the root() method added for this purpose.
-		assertSame(variables.root, pathSegment.parent())
+		assertSame(variables.root, pathSegment.parent)
 	}
 
 	public void function TwoLevelRoute() {
 		var route = "GET /level1/level2 level2command"
 		var pathSegment = variables.parser.parse(route)
 
-		assertEquals("level2", pathSegment.pattern())
+		assertEquals("level2", pathSegment.pattern)
 
 		var command = pathSegment.command("GET")
 		assertEquals("level2command", command.getIdentifier())
 
 		// Intermediate path segments should have been created.
-		var parent = pathSegment.parent()
-		assertEquals("level1", parent.pattern())
+		var parent = pathSegment.parent
+		assertEquals("level1", parent.pattern)
 
-		var root = parent.parent()
+		var root = parent.parent
 		assertSame(variables.root, root)
 
 		// Now add a route to the intermediate path segment:
@@ -122,10 +122,10 @@ component extends="mxunit.framework.TestCase" {
 		var pathSegment2 = variables.parser.parse(indent2)
 
 		// Since it's relative to the root, the presence of the indent should not matter.
-		assertSame(pathSegment, pathSegment1.parent())
+		assertSame(pathSegment, pathSegment1.parent)
 		var command1 = pathSegment1.command("GET")
 		assertEquals("indent1", command1.getIdentifier())
-		assertSame(pathSegment, pathSegment2.parent())
+		assertSame(pathSegment, pathSegment2.parent)
 		var command2 = pathSegment2.command("GET")
 		assertEquals("indent2", command2.getIdentifier())
 	}
@@ -144,15 +144,15 @@ component extends="mxunit.framework.TestCase" {
 		var indent3 = "GET >>> /indent3 indent3" // /index/indent1/indent2/indent3
 		var pathSegment3 = variables.parser.parse(indent3)
 
-		assertSame(pathSegment, pathSegment1.parent())
+		assertSame(pathSegment, pathSegment1.parent)
 		var command1 = pathSegment1.command("GET")
 		assertEquals("indent1", command1.getIdentifier())
 
-		assertSame(pathSegment1, pathSegment2.parent())
+		assertSame(pathSegment1, pathSegment2.parent)
 		var command2 = pathSegment2.command("GET")
 		assertEquals("indent2", command2.getIdentifier())
 
-		assertSame(pathSegment2, pathSegment3.parent())
+		assertSame(pathSegment2, pathSegment3.parent)
 		var command3 = pathSegment3.command("GET")
 		assertEquals("indent3", command3.getIdentifier())
 
@@ -160,7 +160,7 @@ component extends="mxunit.framework.TestCase" {
 		var dedent4 = "GET > /dedent4 dedent4" // /index/dedent4
 		var pathSegment4 = variables.parser.parse(dedent4)
 
-		assertSame(pathSegment, pathSegment4.parent())
+		assertSame(pathSegment, pathSegment4.parent)
 		var command4 = pathSegment4.command("GET")
 		assertEquals("dedent4", command4.getIdentifier())
 
@@ -168,7 +168,7 @@ component extends="mxunit.framework.TestCase" {
 		var indent5 = "GET >> /indent5 indent5" // /index/dedent4/indent5
 		var pathSegment5 = variables.parser.parse(indent5)
 
-		assertSame(pathSegment4, pathSegment5.parent())
+		assertSame(pathSegment4, pathSegment5.parent)
 		var command5 = pathSegment5.command("GET")
 		assertEquals("indent5", command5.getIdentifier())
 
@@ -204,7 +204,7 @@ component extends="mxunit.framework.TestCase" {
 		var pathSegment = variables.parser.parse(route)
 
 		// The route should be equal to /index.
-		assertSame(variables.root, pathSegment.parent())
+		assertSame(variables.root, pathSegment.parent)
 		var command = pathSegment.command("GET")
 		assertEquals("index", command.getIdentifier())
 	}
@@ -213,17 +213,17 @@ component extends="mxunit.framework.TestCase" {
 		var route1 = "GET /index@par1 index"
 		var pathSegment1 = variables.parser.parse(route1)
 
-		assertEquals("index", pathSegment1.pattern())
-		assertEquals("par1", pathSegment1.parameterName())
+		assertEquals("index", pathSegment1.pattern)
+		assertEquals("par1", pathSegment1.parameterName)
 		var command1 = pathSegment1.command("GET")
 		assertEquals("index", command1.getIdentifier())
 
 		var route2 = "GET /index/route@par2 route"
 		var pathSegment2 = variables.parser.parse(route2)
 
-		assertSame(pathSegment1, pathSegment2.parent())
-		assertEquals("route", pathSegment2.pattern())
-		assertEquals("par2", pathSegment2.parameterName())
+		assertSame(pathSegment1, pathSegment2.parent)
+		assertEquals("route", pathSegment2.pattern)
+		assertEquals("par2", pathSegment2.parameterName)
 		var command2 = pathSegment2.command("GET")
 		assertEquals("route", command2.getIdentifier())
 	}
@@ -232,8 +232,8 @@ component extends="mxunit.framework.TestCase" {
 		var route1 = "GET /index\@escaped@par index"
 		var pathSegment1 = variables.parser.parse(route1)
 
-		assertEquals("index@escaped", pathSegment1.pattern())
-		assertEquals("par", pathSegment1.parameterName())
+		assertEquals("index@escaped", pathSegment1.pattern)
+		assertEquals("par", pathSegment1.parameterName)
 
 		var route2 = "GET /wrong@escaped@par index"
 		try {
@@ -261,7 +261,7 @@ component extends="mxunit.framework.TestCase" {
 		var grandchild = new PathSegment("grandchild2")
 		child2.addChild(grandchild)
 
-		assertEquals(2, child2.children().len())
+		assertEquals(2, child2.children.len())
 
 		grandchild.setCommand(new CommandStub("get"), "GET")
 		grandchild.setCommand(new CommandStub("post"), "POST")
@@ -270,20 +270,20 @@ component extends="mxunit.framework.TestCase" {
 		variables.parser.remove("GET /child2/grandchild2")
 
 		// The path segment should still exist, only the GET command should be removed.
-		assertEquals(2, child2.children().len())
+		assertEquals(2, child2.children.len())
 		assertFalse(grandchild.hasCommand("GET"))
 
 		// Remove all empty path segments (in this case it's only grandchild1)
 		variables.root.trim()
 
-		assertEquals(1, child2.children().len())
+		assertEquals(1, child2.children.len())
 		assertTrue(grandchild.hasCommand("POST"))
 
 		// Now remove the last command and trim again.
 		variables.parser.remove("POST /child2/grandchild2")
 		variables.root.trim()
 
-		assertEquals(0, child2.children().len())
+		assertEquals(0, child2.children.len())
 		assertFalse(grandchild.hasCommand("POST"))
 	}
 

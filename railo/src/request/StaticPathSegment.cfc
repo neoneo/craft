@@ -5,7 +5,7 @@ component extends="PathSegment" {
 	}
 
 	public Numeric function match(required String[] path) {
-		return arguments.path.first() == pattern() ? 1 : 0
+		return arguments.path.first() == this.pattern ? 1 : 0;
 	}
 
 }

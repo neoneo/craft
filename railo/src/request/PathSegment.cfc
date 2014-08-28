@@ -5,17 +5,22 @@ import craft.util.ScopeCollection;
  *
  * @abstract
  */
-component {
+component accessors="true" {
+
+	property Array children setter="false"; // PathSegment[]
+	property String pattern;
+	property String parameterName;
+	property PathSegment parent;
 
 	public void function init(String pattern = null, String parameterName = null) {
 
-		variables._pattern = arguments.pattern
-		variables._parameterName = arguments.parameterName
+		this.pattern = arguments.pattern
+		this.parameterName = arguments.parameterName
 
-		variables._children = new ScopeCollection()
-		variables._parent = null
+		this.childCollection = new ScopeCollection()
+		this.parent = null
 
-		variables._commands = {} // Map of http methods to commands.
+		this.commands = {} // Map of http methods to commands.
 
 	}
 
@@ -23,32 +28,24 @@ component {
 	 * Sets the command to execute.
 	 */
 	public void function setCommand(required Command command, required String method) {
-		variables._commands[arguments.method] = arguments.command
+		this.commands[arguments.method] = arguments.command
 	}
 
 	public Command function command(required String method) {
 
 		if (!hasCommand(arguments.method)) {
-			Throw("Command for method '#arguments.method#' not found", "NoSuchElementException")
+			Throw("Command for method '#arguments.method#' not found", "NoSuchElementException");
 		}
 
-		return variables._commands[arguments.method]
+		return this.commands[arguments.method];
 	}
 
 	public void function removeCommand(required String method) {
-		variables._commands.delete(arguments.method)
+		this.commands.delete(arguments.method)
 	}
 
 	public Boolean function hasCommand(String method = null) {
-		return arguments.method === null ? !variables._commands.isEmpty() : variables._commands.keyExists(arguments.method)
-	}
-
-	public String function pattern() {
-		return variables._pattern
-	}
-
-	public String function parameterName() {
-		return variables._parameterName
+		return arguments.method === null ? !this.commands.isEmpty() : this.commands.keyExists(arguments.method);
 	}
 
 	/**
@@ -59,39 +56,31 @@ component {
 	}
 
 	public Boolean function hasChildren() {
-		return !variables._children.isEmpty()
+		return !this.childCollection.isEmpty();
 	}
 
-	public PathSegment[] function children() {
-		return variables._children.toArray()
+	public PathSegment[] function getChildren() {
+		return this.childCollection.toArray();
 	}
 
 	public void function addChild(required PathSegment child, PathSegment beforeChild) {
 		// TODO: implement check for duplicates
-		variables._children.add(argumentCollection: ArrayToStruct(arguments))
+		this.childCollection.add(argumentCollection: ArrayToStruct(arguments))
 		arguments.child.setParent(this)
 	}
 
 	public Boolean function removeChild(required PathSegment child) {
 
-		var success = variables._children.remove(arguments.child)
+		var success = this.childCollection.remove(arguments.child)
 		if (success) {
-			arguments.child.setParent(null)
+			arguments.child.parent = null
 		}
 
-		return success
+		return success;
 	}
 
 	public Boolean function hasParent() {
-		return variables._parent !== null
-	}
-
-	public PathSegment function parent() {
-		return variables._parent
-	}
-
-	public void function setParent(required Any parent) {
-		variables._parent = arguments.parent
+		return this.parent !== null;
 	}
 
 	/**
@@ -99,7 +88,7 @@ component {
 	 */
 	public void function trim() {
 
-		children().reverse().each(function (child) {
+		this.getChildren().reverse().each(function (child) {
 			arguments.child.trim()
 			if (!arguments.child.hasCommand() && !arguments.child.hasChildren()) {
 				removeChild(arguments.child)

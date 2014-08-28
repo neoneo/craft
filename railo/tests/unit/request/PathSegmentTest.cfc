@@ -10,8 +10,8 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function PatternAndParameterName_Should_ReturnConstructorValues() {
 		var segment = new PathSegment("pattern", "parameter")
-		assertEquals("pattern", segment.pattern())
-		assertEquals("parameter", segment.parameterName())
+		assertEquals("pattern", segment.pattern)
+		assertEquals("parameter", segment.parameterName)
 	}
 
 	public void function Command_Should_ReturnCorrespondingCommand() {
@@ -44,7 +44,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Children_Should_BeEmptyArray() {
-		assertTrue(variables.root.children().isEmpty())
+		assertTrue(variables.root.children.isEmpty())
 		assertFalse(variables.root.hasChildren())
 	}
 
@@ -56,13 +56,13 @@ component extends="mxunit.framework.TestCase" {
 
 		assertTrue(variables.root.hasChildren())
 
-		var children = variables.root.children()
+		var children = variables.root.children
 		assertEquals(2, children.len())
 		assertSame(child1, children[1])
 		assertSame(child2, children[2])
 
-		assertSame(variables.root, child1.parent())
-		assertSame(variables.root, child2.parent())
+		assertSame(variables.root, child1.parent)
+		assertSame(variables.root, child2.parent)
 	}
 
 	public void function AddChildBefore_Should_InsertChild() {
@@ -74,7 +74,7 @@ component extends="mxunit.framework.TestCase" {
 
 		// actual test
 		variables.root.addChild(test2, test3)
-		var children = variables.root.children()
+		var children = variables.root.children
 		assertEquals(3, children.len())
 		assertSame(test2, children[2])
 	}
@@ -95,14 +95,14 @@ component extends="mxunit.framework.TestCase" {
 		var removed = variables.root.removeChild(test1)
 		assertFalse(removed)
 
-		var children = variables.root.children()
+		var children = variables.root.children
 		assertEquals(1, children.len())
 		assertSame(test2, children[1])
 
 		// Try to remove test3 from the root, while it's a child of test2.
 		var removed = variables.root.removeChild(test3)
 		assertFalse(removed)
-		assertSame(test2, test3.parent())
+		assertSame(test2, test3.parent)
 	}
 
 	public void function Parent_Should_ReturnParent_IfExists() {
@@ -111,7 +111,7 @@ component extends="mxunit.framework.TestCase" {
 
 		test.setParent(variables.root)
 		assertTrue(test.hasParent())
-		assertSame(variables.root, test.parent())
+		assertSame(variables.root, test.parent)
 	}
 
 	private PathSegment function createPathSegment(required String name) {

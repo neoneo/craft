@@ -1,48 +1,52 @@
-component {
+component accessors="true" {
+
+	property String rootPath;
+
+	property Array extensions setter="false";
+	property String extension setter="false";
+	property String path setter="false";
+	property String requestMethod setter="false";
+	property Struct requestParameters setter="false";
 
 	public void function init() {
 
-		variables._rootPath = ""
+		this.rootPath = ""
 
-		variables._contentTypes = {
+		this.contentTypes = {
 			html: "text/html",
 			json: "application/json",
 			xml: "application/xml",
 			pdf: "application/pdf",
 			txt: "text/plain"
 		}
-		variables._extensions = variables._contentTypes.keyArray()
+		this.extensions = this.contentTypes.keyArray()
 
 	}
 
-	public void function setRootPath(required String rootPath) {
-		variables._rootPath = arguments.rootPath
+	public String function getExtension() {
+		var extension = this.getPath().listLast(".")
+
+		return this.contentTypes.keyExists(extension) ? extension : "html";
 	}
 
-	public String function extension() {
-		var extension = path().listLast(".")
-
-		return variables._contentTypes.keyExists(extension) ? extension : "html"
+	public String function getContentType() {
+		return this.contentTypes[this.getExtension()];
 	}
 
-	public String function contentType() {
-		return variables._contentTypes[extension()]
+	public String function getPath() {
+		return cgi.path_info;
 	}
 
-	public String[] function extensions() {
-		return variables._extensions
+	public String function getRequestMethod() {
+		return cgi.request_method;
 	}
 
-	public Struct function requestParameters() {
+	public Struct function getRequestParameters() {
 		// Merge the parameters from the form and url scopes.
 		var parameters = Duplicate(form, false)
 		parameters.append(url, false)
 
-		return parameters
-	}
-
-	public String function requestMethod() {
-		return cgi.request_method
+		return parameters;
 	}
 
 	public String function createURL(required String path, Struct parameters) {
@@ -53,7 +57,7 @@ component {
 			// Part of the path is relative, but this could be somewhere in the middle.
 			if (!path.startsWith("/")) {
 				// Prepend the current path (without the file name if present).
-				path = this.path().reReplace("/([^/.]+\.[a-z0-9]{3,4})?$", "") & "/" & path
+				path = this.getPath().reReplace("/([^/.]+\.[a-z0-9]{3,4})?$", "") & "/" & path
 			}
 			do {
 				var position = path.find("../")
@@ -64,7 +68,7 @@ component {
 					// Remove the last list item from the current path and the first from the relative path.
 					path = absolutePath.listDeleteAt(absolutePath.listLen("/"), "/") & "/" & relativePath.listRest("/")
 				}
-			} while (position > 0)
+			} while (position > 0);
 			path = path.replace("./", "", "all")
 		}
 
@@ -73,15 +77,11 @@ component {
 		if (parameters !== null && !parameters.isEmpty()) {
 			// Put the parameters on the query string.
 			queryString = "?" & parameters.reduce(function (queryString, name, value) {
-				return arguments.queryString.listAppend(arguments.name & "=" & URLEncode(value), "&")
+				return arguments.queryString.listAppend(arguments.name & "=" & URLEncode(value), "&");
 			}, queryString)
 		}
 
-		return variables._rootPath & path & queryString
-	}
-
-	public String function path() {
-		return cgi.path_info
+		return this.rootPath & path & queryString;
 	}
 
 }

@@ -1,12 +1,12 @@
 component {
 
 	public void function init(required PathSegment root, required PathSegmentFactory pathSegmentFactory, required CommandFactory commandFactory) {
-		variables._root = arguments.root
-		variables._pathSegmentFactory = arguments.pathSegmentFactory
-		variables._commandFactory = arguments.commandFactory
+		this.root = arguments.root
+		this.pathSegmentFactory = arguments.pathSegmentFactory
+		this.commandFactory = arguments.commandFactory
 
 		// Array of path segments that correspond to the indents in the routes file.
-		variables._indentLevels = []
+		this.indentLevels = []
 	}
 
 	/**
@@ -14,7 +14,7 @@ component {
 	 */
 	public void function import(required String path) {
 
-		variables._indentLevels.clear()
+		this.indentLevels.clear()
 		FileRead(arguments.path).listToArray(Chr(10)).each(function (route) {
 			// Strip off comments.
 			var route = Trim(arguments.route.reReplace("##.*$", ""))
@@ -30,7 +30,7 @@ component {
 	 */
 	public void function purge(required String path) {
 
-		variables._indentLevels.clear()
+		this.indentLevels.clear()
 		FileRead(arguments.path).listToArray(Chr(10)).each(function (route) {
 			var route = Trim(arguments.route.reReplace("##.*$", ""))
 			if (!route.isEmpty()) {
@@ -38,7 +38,7 @@ component {
 			}
 		})
 
-		variables._root.trim()
+		this.root.trim()
 
 	}
 
@@ -65,27 +65,27 @@ component {
 		var pathSegment = null
 
 		if (path == ".") {
-			if (variables._indentLevels.isEmpty()) {
-				Throw("Route '.' cannot be the first route", "NoSuchElementException")
+			if (this.indentLevels.isEmpty()) {
+				Throw("Route '.' cannot be the first route", "NoSuchElementException");
 			}
-			pathSegment = variables._indentLevels.last()
+			pathSegment = this.indentLevels.last()
 			path = ""
 		} else if (path.startsWith(">")) {
 			var level = path.len()
-			pathSegment = pick(variables._indentLevels, level)
+			pathSegment = pick(this.indentLevels, level)
 
 			index += 1
 			path = pick(words, index)
 
 			// If the indent level decreased, remove everything after the current level.
-			if (level < variables._indentLevels.len()) {
-				variables._indentLevels = variables._indentLevels.slice(1, level)
+			if (level < this.indentLevels.len()) {
+				this.indentLevels = this.indentLevels.slice(1, level)
 			}
 
 		} else {
 			// No indents.
-			pathSegment = variables._root
-			variables._indentLevels.clear()
+			pathSegment = this.root
+			this.indentLevels.clear()
 		}
 
 		// The command identifier.
@@ -99,7 +99,7 @@ component {
 			path: path,
 			identifier: identifier ?: null,
 			pathSegment: pathSegment
-		}
+		};
 	}
 
 	private Struct function tokenizeSegment(required String segment) {
@@ -115,18 +115,18 @@ component {
 			var parts = arguments.segment.split("(?<!(?<!\\)\\)@")
 			// We accept 1 or 2 parts. It's a Java array so we can't use member functions.
 			if (ArrayLen(parts) > 2) {
-				Throw("Invalid path segment '#arguments.segment#'", "IllegalArgumentException", "Escape @ signs with a \ where applicable")
+				Throw("Invalid path segment '#arguments.segment#'", "IllegalArgumentException", "Escape @ signs with a \ where applicable");
 			}
 
 			return {
 				pattern: parts[1].reReplace("\\([@\\])", "\1", "all"),
 				parameterName: ArrayLen(parts) == 2 ? parts[2] : null
-			}
+			};
 		} else {
 			return {
 				pattern: arguments.segment,
 				parameterName: null
-			}
+			};
 		}
 	}
 
@@ -144,30 +144,30 @@ component {
 			var pattern = tokens.pattern
 
 			// Try to find a path segment that has this pattern.
-			var children = arguments.pathSegment.children()
+			var children = arguments.pathSegment.children
 			var index = children.find(function (child) {
-				return arguments.child.pattern() == pattern
+				return arguments.child.pattern == pattern;
 			})
 			if (index > 0) {
 				// Found it: continue with this path segment.
-				return children[index]
+				return children[index];
 			} else {
 				// There is no path segment for this pattern, so create it.
-				var child = variables._pathSegmentFactory.create(pattern, tokens.parameterName)
+				var child = this.pathSegmentFactory.create(pattern, tokens.parameterName)
 				arguments.pathSegment.addChild(child)
 				// Continue with the child for the next iteration.
-				return child
+				return child;
 			}
 		}, tokens.pathSegment)
 
 		// The pathSegment variable now contains the path segment that corresponds to the route.
 		// Push the path segment on the indent levels in case the next parse uses indents.
-		variables._indentLevels.append(pathSegment)
+		this.indentLevels.append(pathSegment)
 
-		var command = variables._commandFactory.supply(tokens.identifier)
+		var command = this.commandFactory.supply(tokens.identifier)
 		pathSegment.setCommand(command, tokens.method)
 
-		return pathSegment
+		return pathSegment;
 	}
 
 	/**
@@ -184,15 +184,15 @@ component {
 			var tokens = tokenizeSegment(arguments.segment)
 			var pattern = tokens.pattern
 
-			var children = arguments.pathSegment.children()
+			var children = arguments.pathSegment.children
 			var index = children.find(function (child) {
-				return arguments.child.pattern() == pattern
+				return arguments.child.pattern == pattern;
 			})
 			if (index == 0) {
-				Throw("Route '#path#' not found", "NoSuchElementException")
+				Throw("Route '#path#' not found", "NoSuchElementException");
 			}
 
-			return children[index]
+			return children[index];
 		}, tokens.pathSegment)
 
 		// Remove the command.
@@ -202,10 +202,10 @@ component {
 
 	private Any function pick(required Array array, required Numeric index) {
 		if (arguments.array.len() < arguments.index) {
-			Throw("Number of items does not match", "NoSuchElementException", "Expected #arguments.index# but found #arguments.array.len()#")
+			Throw("Number of items does not match", "NoSuchElementException", "Expected #arguments.index# but found #arguments.array.len()#");
 		}
 
-		return arguments.array[arguments.index]
+		return arguments.array[arguments.index];
 	}
 
 }

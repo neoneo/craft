@@ -1,37 +1,39 @@
-component {
+component accessors="true" {
+
+	property String rootPath getter="false";
 
 	public void function init(required CommandFactory commandFactory) {
 
-		variables._endPoint = createEndPoint()
+		this.endPoint = createEndPoint()
 		var pathSegmentFactory = createPathSegmentFactory()
-		variables._root = createRoot(pathSegmentFactory)
-		variables._routesParser = createRoutesParser(variables._root, pathSegmentFactory, arguments.commandFactory)
+		this.root = createRoot(pathSegmentFactory)
+		this.routesParser = createRoutesParser(this.root, pathSegmentFactory, arguments.commandFactory)
 
 	}
 
 	public void function setRootPath(required String rootPath) {
-		variables._endPoint.setRootPath(arguments.rootPath)
+		this.endPoint.rootPath = arguments.rootPath
 	}
 
 	public void function importRoutes(required String mapping) {
-		variables._routesParser.import(ExpandPath(arguments.mapping))
+		this.routesParser.import(ExpandPath(arguments.mapping))
 	}
 
 	public void function purgeRoutes(required String mapping) {
-		variables._routesParser.purge(ExpandPath(arguments.mapping))
+		this.routesParser.purge(ExpandPath(arguments.mapping))
 	}
 
 	public void function handleRequest() {
 		try {
-			var context = new Context(variables._endPoint, variables._root)
+			var context = new Context(this.endPoint, this.root)
 		} catch (FileNotFoundException e) {
 			header statuscode="404";
 			WriteOutput("404 not found")
 			return;
 		}
 
-		var pathSegment = context.pathSegment()
-		var method = context.requestMethod()
+		var pathSegment = context.pathSegment
+		var method = context.requestMethod
 
 		if (pathSegment.hasCommand(method)) {
 			var command = pathSegment.command(method)
@@ -41,8 +43,8 @@ component {
 				header statuscode="#context.getStatusCode()#";
 				// content type="#context.getContentType()#; charset=#context.getCharacterSet()#";
 
-				if (context.getDownloadAs() !== null) {
-					header name="Content-Disposition" value="attachment; filename=#context.getDownloadAs()#";
+				if (context.downloadAs !== null) {
+					header name="Content-Disposition" value="attachment; filename=#context.downloadAs#";
 				}
 
 				switch (context.getContentType()) {
@@ -65,8 +67,8 @@ component {
 
 				if (IsBinary(output)) {
 					content variable="#output#";
-				} else if (context.getDownloadFile() !== null) {
-					content file="#context.getDownloadFile()#" deletefile="#context.getDeleteFile() ?: false#";
+				} else if (context.downloadFile !== null) {
+					content file="#context.downloadFile#" deletefile="#context.deleteFile ?: false#";
 				} else {
 					WriteOutput(output)
 				}
