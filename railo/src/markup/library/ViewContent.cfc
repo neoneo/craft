@@ -1,8 +1,8 @@
-import craft.content.Leaf;
+import craft.content.Composite;
 
 import craft.request.Context;
 
-component extends="Leaf" {
+component extends="Composite" {
 
 	public void function init(required String view) {
 		variables._view = arguments.view
@@ -13,7 +13,7 @@ component extends="Leaf" {
 	}
 
 	public Any function model(required Context context) {
-		return null;
+		return arguments.context.parameters();
 	}
 
 }

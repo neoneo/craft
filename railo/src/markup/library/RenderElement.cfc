@@ -1,11 +1,11 @@
 import craft.content.Component;
 
-component extends="ComponentElement" accessors="true" tag="render" {
+component extends="CompositeElement" accessors="true" tag="render" {
 
 	property String view required="true";
 
-	private Component function create() {
-		return new ViewComponent(getView());
+	private Composite function create() {
+		return new ViewContent(getView());
 	}
 
 }
