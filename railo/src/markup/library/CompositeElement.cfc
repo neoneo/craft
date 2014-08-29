@@ -9,14 +9,20 @@ component extends="ComponentElement" abstract="true" {
 
 	public void function construct(required Scope scope) {
 
-		if (childrenReady()) {
+		if (this.getChildrenReady()) {
 			var composite = create()
 
-			children().each(function (child) {
-				composite.addChild(arguments.child.product())
+			this.children.each(function (child) {
+				try {
+
+				composite.addChild(arguments.child.product)
+				} catch (any e) {
+					dump(arguments.child)
+					abort;
+				}
 			})
 
-			setProduct(composite)
+			this.product = composite
 		}
 
 	}

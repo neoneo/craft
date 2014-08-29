@@ -10,14 +10,14 @@ component extends="Element" accessors="true" tag="layout" {
 
 	public void function construct(required Scope scope) {
 
-		if (childrenReady()) {
+		if (this.getChildrenReady()) {
 			var section = new Section()
 
-			children().each(function (child) {
-				section.addComponent(arguments.child.product())
+			this.children.each(function (child) {
+				section.addComponent(arguments.child.product)
 			})
 
-			setProduct(new Layout(section))
+			this.product = new Layout(section)
 		}
 
 	}

@@ -2,14 +2,14 @@ import craft.markup.*;
 
 component extends="Element" {
 
-	variables._ready = false
+	this.constructed = false
 
 	public void function construct(required Scope scope) {
-		variables._ready = !hasChildren() || childrenReady()
+		this.constructed = getChildrenReady()
 	}
 
-	public Boolean function ready() {
-		return variables._ready
+	public Boolean function getReady() {
+		return this.constructed;
 	}
 
 }

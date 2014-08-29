@@ -6,22 +6,24 @@ import craft.markup.Scope;
 
 component extends="Element" abstract="true" {
 
+	property String layoutRef setter="false";
+
 	public void function construct(required Scope scope) {
 
-		var layoutRef = layoutRef()
+		var layoutRef = this.getLayoutRef()
 		if (arguments.scope.has(layoutRef)) {
 			var layout = arguments.scope.get(layoutRef)
 
-			if (layout.ready() && childrenReady()) {
-				var document = createDocument(layout.product())
+			if (layout.ready && this.getChildrenReady()) {
+				var document = this.createDocument(layout.product)
 
 				// The child elements are all section elements. Each section element may contain multiple child elements.
-				children().each(function (child) {
+				this.children.each(function (child) {
 					// Add the section under the placeholder attribute.
-					document.addSection(arguments.child.product(), arguments.child.getPlaceholder())
+					document.addSection(arguments.child.product, arguments.child.placeholder)
 				})
 
-				setProduct(document)
+				this.product = document
 			}
 		}
 
@@ -31,7 +33,7 @@ component extends="Element" abstract="true" {
 		super.add(arguments.element)
 	}
 
-	private String function layoutRef() {
+	private String function getLayoutRef() {
 		abort showerror="Not implemented";
 	}
 

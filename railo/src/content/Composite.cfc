@@ -5,9 +5,11 @@ import craft.util.ScopeCollection;
  *
  * @abstract
  */
-component extends="Component" {
+component extends="Component" accessors="true" {
 
-	variables._children = new ScopeCollection()
+	property Array children setter="false"; /* Component[] */
+
+	this.childCollection = new ScopeCollection()
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitComposite(this)
@@ -15,7 +17,7 @@ component extends="Component" {
 
 	public void function traverse(required Visitor visitor) {
 
-		for (var child in children()) {
+		for (var child in this.getChildren()) {
 			child.accept(arguments.visitor)
 		}
 
@@ -24,12 +26,12 @@ component extends="Component" {
 	/**
 	 * Returns whether the `Component` contains `Component`s.
 	 */
-	public Boolean function hasChildren() {
-		return !variables._children.isEmpty()
+	public Boolean function getHasChildren() {
+		return !this.childCollection.isEmpty();
 	}
 
-	public Component[] function children() {
-		return variables._children.toArray()
+	public Component[] function getChildren() {
+		return this.childCollection.toArray();
 	}
 
 	/**
@@ -37,9 +39,9 @@ component extends="Component" {
 	 * The optional `beforeChild` argument specifies where to move the `Component`. If `beforeChild` is null, the `Component` is moved to the end.
 	 */
 	public void function addChild(required Component child, Component beforeChild) {
-		var success = variables._children.add(argumentCollection: ArrayToStruct(arguments))
+		var success = this.childCollection.add(argumentCollection: ArrayToStruct(arguments))
 		if (success) {
-			arguments.child.setParent(this)
+			arguments.child.parent = this
 		}
 	}
 
@@ -47,9 +49,9 @@ component extends="Component" {
 	 * Removes the `Component` from this `Composite`.
 	 */
 	public void function removeChild(required Component child) {
-		var success = variables._children.remove(arguments.child)
+		var success = this.childCollection.remove(arguments.child)
 		if (success) {
-			arguments.child.setParent(null)
+			arguments.child.parent = null
 		}
 	}
 
@@ -58,7 +60,7 @@ component extends="Component" {
 	 * The optional `beforeChild` argument specifies where to move the `Component`. If `beforeChild` is null, the `Component` is moved to the end.
 	 */
 	public void function moveChild(required Component child, Component beforeChild) {
-		variables._children.move(argumentCollection: ArrayToStruct(arguments))
+		this.childCollection.move(argumentCollection: ArrayToStruct(arguments))
 	}
 
 }

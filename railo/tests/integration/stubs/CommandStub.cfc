@@ -7,11 +7,11 @@ component implements="Command" accessors="true" {
 
 	public Any function execute(required Context context) {
 		return {
-			command: getIdentifier(),
-			method: arguments.context.requestMethod(),
-			path: arguments.context.path(),
-			extension: arguments.context.extension(),
-			parameters: arguments.context.parameters()
+			command: this.identifier,
+			method: arguments.context.requestMethod,
+			path: arguments.context.path,
+			extension: arguments.context.extension,
+			parameters: arguments.context.parameters
 		}
 	}
 

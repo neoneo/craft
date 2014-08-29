@@ -13,25 +13,25 @@ import craft.request.Context;
 component implements="Command" {
 
 	public void function init(required FileBuilder fileBuilder, required String path, required ViewFinder viewFinder) {
-		variables._fileBuilder = arguments.fileBuilder
-		variables._path = arguments.path
-		variables._viewFinder = arguments.viewFinder
+		this.fileBuilder = arguments.fileBuilder
+		this.path = arguments.path
+		this.viewFinder = arguments.viewFinder
 
-		variables._content = null
+		this.content = null
 	}
 
 	public Any function execute(required Context context) {
 
-		if (variables._content === null) {
-			var element = variables._fileBuilder.build(variables._path)
-			variables._content = element.product()
+		if (this.content === null) {
+			var element = this.fileBuilder.build(this.path)
+			this.content = element.product
 		}
 
-		var visitor = new RenderVisitor(arguments.context, variables._viewFinder)
+		var visitor = new RenderVisitor(arguments.context, this.viewFinder)
 
-		variables._content.accept(visitor)
+		this.content.accept(visitor)
 
-		return visitor.content();
+		return visitor.content;
 	}
 
 }

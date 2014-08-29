@@ -1,5 +1,3 @@
-import craft.output.View;
-
 import craft.request.Context;
 
 /**
@@ -7,34 +5,21 @@ import craft.request.Context;
  *
  * @abstract
  */
-component implements="Content" {
+component implements="Content" accessors="true" {
 
-	variables._parent = null
+	property Boolean hasChildren setter="false";
+	property Boolean hasParent setter="false";
+	property Component parent;
 
 	public void function accept(required Visitor visitor) {
 		abort showerror="Not implemented";
 	}
 
-	public Boolean function hasParent() {
-		return variables._parent !== null
+	public Boolean function getHasParent() {
+		return this.parent !== null;
 	}
 
-	public Composite function parent() {
-		if (!hasParent()) {
-			Throw("Component has no parent", "NoSuchElementException")
-		}
-
-		return variables._parent
-	}
-
-	/**
-	 * Sets the parent of this `Component`. Accepted types are `Composite` or null.
-	 */
-	public void function setParent(required Any parent) {
-		variables._parent = arguments.parent
-	}
-
-	public Boolean function hasChildren() {
+	public Boolean function getHasChildren() {
 		abort showerror="Not implemented";
 	}
 

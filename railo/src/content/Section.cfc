@@ -3,7 +3,10 @@ import craft.util.ScopeCollection;
 /**
  * Represents an isolated component tree.
  */
-component implements="Content" {
+component implements="Content" accessors="true" {
+
+	property Array components setter="false"; // Component[]
+	property Array placeholders setter="false"; // Placeholder[]
 
 	/*
 		A section has functional overlap with a composite, but it is not the same thing.
@@ -11,7 +14,7 @@ component implements="Content" {
 		letting section extend composite.
 	*/
 
-	variables._components = new ScopeCollection()
+	this.componentCollection = new ScopeCollection()
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitSection(this)
@@ -19,30 +22,30 @@ component implements="Content" {
 
 	public void function traverse(required Visitor visitor) {
 
-		for (var component in components()) {
+		for (var component in this.getComponents()) {
 			component.accept(arguments.visitor)
 		}
 
 	}
 
-	public Placeholder[] function placeholders() {
-		return placeholdersFromComponents(components());
+	public Component[] function getComponents() {
+		return this.componentCollection.toArray();
 	}
 
-	public Component[] function components() {
-		return variables._components.toArray();
+	public Placeholder[] function getPlaceholders() {
+		return placeholdersFromComponents(this.getComponents());
 	}
 
 	public void function addComponent(required Component component, Component beforeComponent) {
-		variables._components.add(argumentCollection: ArrayToStruct(arguments))
+		this.componentCollection.add(argumentCollection: ArrayToStruct(arguments))
 	}
 
 	public void function removeComponent(required Component component) {
-		variables._components.remove(arguments.component)
+		this.componentCollection.remove(arguments.component)
 	}
 
 	public void function moveComponent(required Component component, Component beforeComponent) {
-		variables._components.move(argumentCollection: ArrayToStruct(arguments))
+		this.componentCollection.move(argumentCollection: ArrayToStruct(arguments))
 	}
 
 	private Placeholder[] function placeholdersFromComponents(required Component[] components) {
@@ -51,12 +54,12 @@ component implements="Content" {
 		arguments.components.each(function (component) {
 			if (IsInstanceOf(arguments.component, "Placeholder")) {
 				placeholders.append(arguments.component)
-			} else if (arguments.component.hasChildren()) {
-				placeholders.append(placeholdersFromComponents(arguments.component.children()), true)
+			} else if (arguments.component.hasChildren) {
+				placeholders.append(placeholdersFromComponents(arguments.component.children), true)
 			}
 		})
 
-		return placeholders
+		return placeholders;
 	}
 
 }

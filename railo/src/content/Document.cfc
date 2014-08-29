@@ -1,17 +1,12 @@
 component implements="Content" {
 
-	variables._sections = {}
+	property LayoutContent layout setter="false";
+	property Struct sections setter="false";
+
+	this.sections = {}
 
 	public void function init(required LayoutContent layout) {
-		variables._layout = arguments.layout
-	}
-
-	public LayoutContent function layout() {
-		return variables._layout
-	}
-
-	public Struct function sections() {
-		return variables._sections
+		this.layout = arguments.layout
 	}
 
 	public void function accept(required Visitor visitor) {
@@ -22,15 +17,18 @@ component implements="Content" {
 
 		var ref = arguments.ref
 
-		var placeholders = variables._layout.placeholders()
-		if (placeholders.find(function (placeholder) {
-			return arguments.placeholder.ref() == ref
-		}) == 0) {
-			Throw("Layout has no placeholder with ref '#ref#'", "NoSuchElementException")
+		// FIXME: for some reason, can't call getPlaceholders() using implicit notation.
+		var placeholders = this.layout.getPlaceholders()
+		if (placeholders.find(
+			function (placeholder) {
+				return arguments.placeholder.ref == ref;
+			}
+		) == 0) {
+			Throw("Layout has no placeholder with ref '#ref#'", "NoSuchElementException");
 		}
 
-		if (!variables._sections.keyExists(ref)) {
-			variables._sections[ref] = arguments.section
+		if (!this.sections.keyExists(ref)) {
+			this.sections[ref] = arguments.section
 		}
 
 	}
@@ -39,7 +37,7 @@ component implements="Content" {
 	 * Removes the `Section` that fills the placeholder with the given ref.
 	 */
 	public void function removeSection(required String ref) {
-		variables._sections.delete(arguments.ref)
+		this.sections.delete(arguments.ref)
 	}
 
 	/**
@@ -49,13 +47,13 @@ component implements="Content" {
 	public void function useLayout(required LayoutContent layout) {
 
 		// Check if the new layout has placeholders compatible with the old one.
-		var newPlaceholders = arguments.layout.placeholders()
+		var newPlaceholders = arguments.layout.getPlaceholders()
 		// Loop over all current placeholders, and remove the section if there is no compatible new placeholder.
-		variables._layout.placeholders().each(
+		this.layout.getPlaceholders().each(
 			function (placeholder) {
-				var ref = arguments.placeholder.ref()
+				var ref = arguments.placeholder.ref
 				var index = newPlaceholders.find(function (newPlaceholder) {
-					return arguments.newPlaceholder.ref() == ref
+					return arguments.newPlaceholder.ref == ref;
 				})
 				if (index == 0) {
 					// The placeholder is not used. Remove the section.
@@ -64,7 +62,7 @@ component implements="Content" {
 			}
 		)
 
-		variables._layout = arguments.layout
+		this.layout = arguments.layout
 
 	}
 

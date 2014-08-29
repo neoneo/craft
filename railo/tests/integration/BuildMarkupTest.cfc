@@ -10,12 +10,12 @@ component extends="mxunit.framework.TestCase" {
 		factory.register("/crafttests/integration/markup/elements")
 		factory.register("/craft/markup/library")
 
-		variables.factory = factory
+		this.factory = factory
 
-		variables.path = ExpandPath("/crafttests/integration/markup")
+		this.path = ExpandPath("/crafttests/integration/markup")
 
 		// The markup tags should result in specific component types.
-		variables.types = {
+		this.types = {
 			composite: GetComponentMetaData("markup.elements.components.Composite").name,
 			leaf: GetComponentMetaData("markup.elements.components.Leaf").name,
 			document: GetComponentMetaData("Document").name,
@@ -29,9 +29,9 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function FileBuilder_Should_ThrowException_When_ElementIsDependent() {
 
-		var builder = new FileBuilder(variables.factory)
+		var builder = new FileBuilder(this.factory)
 
-		var path = variables.path & "/content/document.xml"
+		var path = this.path & "/content/document.xml"
 		try {
 			var element = builder.build(path)
 			fail("build should have thrown an exception")
@@ -41,9 +41,9 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function DirectoryBuilder_Should_ThrowException_When_ElementIsDependent() {
 
-		var builder = new DirectoryBuilder(variables.factory)
+		var builder = new DirectoryBuilder(this.factory)
 
-		var path = variables.path & "/invalid"
+		var path = this.path & "/invalid"
 		try {
 			var documents = builder.build(path)
 			fail("build should have thrown an exception")
@@ -53,13 +53,13 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function ElementMarkup() {
 
-		var builder = new FileBuilder(variables.factory)
+		var builder = new FileBuilder(this.factory)
 
-		var path = variables.path & "/content/element.xml"
+		var path = this.path & "/content/element.xml"
 		var element = builder.build(path)
 
 		// The element has constructed a component we're interested in.
-		var component = element.product()
+		var component = element.product
 
 		var root = XMLParse(FileRead(path)).xmlRoot
 
@@ -72,12 +72,12 @@ component extends="mxunit.framework.TestCase" {
 		// The document depends on a tree of layouts that have to be loaded with a DirectoryBuilder.
 		var builder = new DirectoryBuilder(factory)
 
-		var path = variables.path & "/documents"
+		var path = this.path & "/documents"
 		var documents = builder.build(path)
 
 		// Compare the products with the corresponding xml documents.
 		DirectoryList(path, false, "path", "*.xml").each(function (path) {
-			var document = documents[arguments.path].product()
+			var document = documents[arguments.path].product
 			var root = XMLParse(FileRead(arguments.path)).xmlRoot
 			assertTrue(isEquivalent(document, root))
 		})
@@ -89,14 +89,14 @@ component extends="mxunit.framework.TestCase" {
 		var tagName = arguments.node.xmlName.replace(arguments.node.xmlNsPrefix & ":", "")
 
 		// The content should be of the type specified.
-		var type = variables.types[tagName]
+		var type = this.types[tagName]
 		if (!IsInstanceOf(arguments.content, type)) {
 			Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# does not produce a component of type #type#")
 		}
 
 		if (tagName == "composite" || tagName == "leaf") {
 			// The ref attribute should have been passed on to the component.
-			if (arguments.node.xmlAttributes.ref != arguments.content.getRef()) {
+			if (arguments.node.xmlAttributes.ref != arguments.content.ref) {
 				Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# does not produce a component with this ref")
 			}
 		}
@@ -104,19 +104,19 @@ component extends="mxunit.framework.TestCase" {
 		// This function can only test cases where nodes and components are in a one to one correspondence.
 		var children = null
 		if (IsInstanceOf(arguments.content, "craft.content.Component")) {
-			if (arguments.content.hasChildren()) {
-				var children = arguments.content.children()
+			if (arguments.content.hasChildren) {
+				var children = arguments.content.children
 			}
 		} else if (tagName == "layout") {
-			var children = arguments.content.section().components()
+			var children = arguments.content.section.components
 		} else if (tagName == "documentlayout" || tagName == "document") {
-			var sections = arguments.content.sections()
+			var sections = arguments.content.sections
 			// sections is a struct where the keys are the placeholder refs. We need the values (in the correct order).
 			var children = sections.keyArray().sort("text").map(function (ref) {
 				return sections[arguments.ref]
 			})
 		} else if (tagName == "section") {
-			var children = arguments.content.components()
+			var children = arguments.content.components
 		} else {
 			Throw("Unknown content instance: #tagName#")
 		}

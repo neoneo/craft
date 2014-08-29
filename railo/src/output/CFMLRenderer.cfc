@@ -13,7 +13,7 @@ component implements="TemplateRenderer" {
 			include template="#arguments.template#";
 		}
 
-		return output
+		return output;
 	}
 
 }

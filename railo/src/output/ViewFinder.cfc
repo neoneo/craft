@@ -4,11 +4,11 @@ component {
 
 	public void function init(TemplateFinder templateFinder, TemplateRenderer templateRenderer) {
 
-		variables._templateFinder = arguments.templateFinder ?: null
-		variables._templateRenderer = arguments.templateRenderer ?: null
-		if (variables._templateFinder !== null) {
+		this.templateFinder = arguments.templateFinder ?: null
+		this.templateRenderer = arguments.templateRenderer ?: null
+		if (this.templateFinder !== null) {
 			// The template renderer is now required for creating template views.
-			if (variables._templateRenderer === null) {
+			if (this.templateRenderer === null) {
 				Throw("TemplateRenderer is required", "IllegalArgumentException")
 			}
 		}
@@ -17,23 +17,23 @@ component {
 			The functionality needed for locating view components can be reused from TemplateFinder.
 			We need to map some public methods, and keep a cache of View instances, as the template finder returns paths.
 		*/
-		variables._finder = new TemplateFinder("cfc")
+		this.finder = new TemplateFinder("cfc")
 
-		variables._views = {}
+		this.views = {}
 
 	}
 
 	public void function clear() {
-		variables._finder.clear()
-		variables._views.clear()
+		this.finder.clear()
+		this.views.clear()
 	}
 
 	public void function addMapping(required String mapping) {
-		variables._finder.addMapping(arguments.mapping)
+		this.finder.addMapping(arguments.mapping)
 	}
 
 	public void function removeMapping(required String mapping) {
-		variables._finder.removeMapping(arguments.mapping)
+		this.finder.removeMapping(arguments.mapping)
 	}
 
 	/**
@@ -43,21 +43,21 @@ component {
 	 */
 	public View function get(required String viewName) {
 
-		if (!variables._views.keyExists(arguments.viewName)) {
+		if (!this.views.keyExists(arguments.viewName)) {
 			var view = null
 			try {
 				// The finder uses slash delimited paths.
-				var path = variables._finder.get(arguments.viewName.listChangeDelims("/", "."))
+				var path = this.finder.get(arguments.viewName.listChangeDelims("/", "."))
 				// Convert the returned path to a dot delimited mapping and remove the cfc extension.
 				var mapping = path.listChangeDelims(".", "/").reReplace("\.cfc$", "")
 				view = new "#mapping#"()
 
 			} catch (FileNotFoundException e) {
 				// No view component was found.
-				if (variables._templateFinder !== null) {
+				if (this.templateFinder !== null) {
 					try {
-						var template = variables._templateFinder.get(arguments.viewName)
-						view = new TemplateView(template, variables._templateRenderer)
+						var template = this.templateFinder.get(arguments.viewName)
+						view = new TemplateView(template, this.templateRenderer)
 					} catch (FileNotFoundException e) {
 						// Swallow the exception, we will throw a new one below.
 					}
@@ -65,12 +65,12 @@ component {
 			}
 
 			if (view === null) {
-				Throw("View '#arguments.viewName#' not found", "FileNotFoundException")
+				Throw("View '#arguments.viewName#' not found", "FileNotFoundException");
 			}
-			variables._views[arguments.viewName] = view
+			this.views[arguments.viewName] = view
 		}
 
-		return variables._views[arguments.viewName]
+		return this.views[arguments.viewName];
 	}
 
 }

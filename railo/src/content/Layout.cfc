@@ -1,19 +1,18 @@
-component implements="LayoutContent" {
+component implements="LayoutContent" accessors="true" {
+
+	property Section section setter="false";
+	property Array placeholders setter="false"; // Placeholder[]
 
 	public void function init(required Section section) {
-		variables._section = arguments.section
+		this.section = arguments.section
 	}
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitLayout(this)
 	}
 
-	public Section function section() {
-		return variables._section
-	}
-
-	public Placeholder[] function placeholders() {
-		return variables._section.placeholders()
+	public Placeholder[] function getPlaceholders() {
+		return this.section.getPlaceholders();
 	}
 
 }

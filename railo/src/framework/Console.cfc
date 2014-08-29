@@ -17,15 +17,15 @@ component {
 
 	public void function init() {
 
-		variables._commandFactory = null
-		variables._elementFactory = null
-		variables._requestFacade = null
-		variables._scope = null
-		variables._templateFinder = null
-		variables._viewFinder = null
+		this.commandFactory = null
+		this.elementFactory = null
+		this.requestFacade = null
+		this.scope = null
+		this.templateFinder = null
+		this.viewFinder = null
 
 		// Define dependencies among the framework objects.
-		variables._dependencies = {
+		this.dependencies = {
 			commandFactory: ["elementFactory", "scope", "viewFinder"],
 			elementFactory: [],
 			requestFacade: ["commandFactory"],
@@ -40,33 +40,33 @@ component {
 
 	private void function initialize() {
 
-		var actions = variables._actions = StructNew("linked")
+		this.actions = StructNew("linked")
 
-		actions.templateFinder = {
-			construct: variables._templateFinder === null,
+		this.actions.templateFinder = {
+			construct: this.templateFinder === null,
 			calls: []
 		}
-		actions.viewFinder = {
-			construct: variables._viewFinder === null,
+		this.actions.viewFinder = {
+			construct: this.viewFinder === null,
 			calls: []
 		}
-		actions.elementFactory = {
-			construct: variables._elementFactory === null,
+		this.actions.elementFactory = {
+			construct: this.elementFactory === null,
 			calls: []
 		}
-		actions.scope = {
-			construct: variables._scope === null,
+		this.actions.scope = {
+			construct: this.scope === null,
 			calls: []
 		}
-		actions.commandFactory = {
-			construct: variables._commandFactory === null,
+		this.actions.commandFactory = {
+			construct: this.commandFactory === null,
 			calls: []
 		}
-		actions.requestFacade = {
-			construct: variables._requestFacade === null,
+		this.actions.requestFacade = {
+			construct: this.requestFacade === null,
 			calls: []
 		}
-		actions.console = {
+		this.actions.console = {
 			construct: false,
 			calls: []
 		}
@@ -77,7 +77,7 @@ component {
 	 * Returns whether any of the framework objects have to be constructed (again) in order for the changes to take effect.
 	 */
 	public Boolean function canCommitWithoutConstruction() {
-		return variables._actions.every(function (object, data) {
+		return this.actions.every(function (object, data) {
 			return !arguments.data.construct;
 		});
 	}
@@ -88,20 +88,14 @@ component {
 	public void function commit() {
 
 		// First construct any framework objects.
-		// var instances = variables._actions.map(function (object) {
+		var instances = this.actions.map(function (object) {
 			// Call the corresponding factory method. It creates nothing if the object is not flagged.
-			// return Invoke(this, arguments.object);
-		// })
-
-		// Hopefully temporary workaround for bug where .map on a linked struct returns a regular struct.
-		var instances = StructNew("linked")
-		variables._actions.each(function (object) {
-			instances[arguments.object] = Invoke(this, arguments.object)
+			return Invoke(this, "get" & arguments.object);
 		})
 
 		// Perform method calls on the framework objects.
 		instances.each(function (object, instance) {
-			var calls = variables._actions[arguments.object].calls
+			var calls = this.actions[arguments.object].calls
 			// Loop through the calls, and remove every successful one.
 			while (!calls.isEmpty()) {
 				// Calls is an array of structs, where keys are method names, and values are argument arrays.
@@ -122,25 +116,25 @@ component {
 	}
 
 	public void function handleRequest() {
-		variables._requestFacade.handleRequest()
+		this.requestFacade.handleRequest()
 	}
 
 	// CommandFactory =============================================================================
 
 	public void function setContentMapping(required String mapping) {
-		variables._actions.commandFactory.calls.append({setPath: [ExpandPath(arguments.mapping)]})
+		this.actions.commandFactory.calls.append({setPath: [ExpandPath(arguments.mapping)]})
 	}
 
 	// ElementFactory =============================================================================
 
 	public void function registerElements(required String mapping) {
-		variables._actions.elementFactory.calls.append({register: [arguments.mapping]})
+		this.actions.elementFactory.calls.append({register: [arguments.mapping]})
 	}
 	public void function deregisterElements(required String mapping) {
-		variables._actions.elementFactory.calls.append({deregister: [arguments.mapping]})
+		this.actions.elementFactory.calls.append({deregister: [arguments.mapping]})
 	}
 	public void function deregisterNamespace(required String namespace) {
-		variables._actions.elementFactory.calls.append({deregisterNamespace: [arguments.mapping]})
+		this.actions.elementFactory.calls.append({deregisterNamespace: [arguments.mapping]})
 	}
 
 	// Markup documents
@@ -150,55 +144,55 @@ component {
 	 * intended for the loading of `Layout`s and `Document`s or included `Element`s.
 	 */
 	public void function buildContent(required String mapping) {
-		variables._actions.console.calls.append({build: [ExpandPath(arguments.mapping)]})
+		this.actions.console.calls.append({build: [ExpandPath(arguments.mapping)]})
 	}
 
 	// EndPoint ===================================================================================
 
 	public void function setRootPath(required String rootPath) {
-		variables._actions.requestFacade.calls.append({setRootPath: [arguments.rootPath]})
+		this.actions.requestFacade.calls.append({setRootPath: [arguments.rootPath]})
 	}
 
 	// RoutesParser ===============================================================================
 
 	public void function importRoutes(required String mapping) {
-		variables._actions.requestFacade.calls.append({importRoutes: [arguments.mapping]})
+		this.actions.requestFacade.calls.append({importRoutes: [arguments.mapping]})
 	}
 
 	public void function purgeRoutes(required String mapping) {
-		variables._actions.requestFacade.calls.append({purgeRoutes: [arguments.mapping]})
+		this.actions.requestFacade.calls.append({purgeRoutes: [arguments.mapping]})
 	}
 
 	// TemplateFinder =============================================================================
 
 	public void function setTemplateExtension(required String extension) {
 		flagDependencies("extension")
-		variables._actions.templateFinder.extension = arguments.extension
+		this.actions.templateFinder.extension = arguments.extension
 	}
 	public void function addTemplateMapping(required String mapping) {
-		variables._actions.templateFinder.calls.append({addMapping: [arguments.mapping]})
+		this.actions.templateFinder.calls.append({addMapping: [arguments.mapping]})
 	}
 	public void function removeTemplateMapping(required String mapping) {
-		variables._actions.templateFinder.calls.append({removeMapping: [arguments.mapping]})
+		this.actions.templateFinder.calls.append({removeMapping: [arguments.mapping]})
 	}
 	public void function clearTemplateMappings() {
-		variables._actions.templateFinder.calls.append({clear: []})
+		this.actions.templateFinder.calls.append({clear: []})
 	}
 
 	// ViewFinder =================================================================================
 
 	public void function setTemplateRenderer(required TemplateRenderer templateRenderer) {
 		flagDependencies("templateRenderer")
-		variables._actions.viewFinder.templateRenderer = arguments.templateRenderer
+		this.actions.viewFinder.templateRenderer = arguments.templateRenderer
 	}
 	public void function addViewMapping(required String mapping) {
-		variables._actions.viewFinder.calls.append({addMapping: [arguments.mapping]})
+		this.actions.viewFinder.calls.append({addMapping: [arguments.mapping]})
 	}
 	public void function removeViewMapping(required String mapping) {
-		variables._actions.viewFinder.calls.append({removeMapping: [arguments.mapping]})
+		this.actions.viewFinder.calls.append({removeMapping: [arguments.mapping]})
 	}
 	public void function clearViewMappings() {
-		variables._actions.viewFinder.calls.append({clear: []})
+		this.actions.viewFinder.calls.append({clear: []})
 	}
 
 	// Factory / wiring methods
@@ -209,9 +203,9 @@ component {
 	private void function flagDependencies(required String object) {
 
 		var object = arguments.object
-		variables._dependencies.each(function (client, dependencies) {
+		this.dependencies.each(function (client, dependencies) {
 			if (arguments.dependencies.find(object) > 0) {
-				variables._actions[arguments.client].construct = true
+				this.actions[arguments.client].construct = true
 				flagDependencies(arguments.client)
 			}
 		})
@@ -219,79 +213,79 @@ component {
 	}
 
 	private void function build(required String path) {
-		new DirectoryBuilder(elementFactory(), scope()).build(arguments.path)
+		new DirectoryBuilder(getElementFactory(), getScope()).build(arguments.path)
 	}
 
-	private CommandFactory function commandFactory() {
-		var object = variables._actions.commandFactory
+	private CommandFactory function getCommandFactory() {
+		var object = this.actions.commandFactory
 		if (object.construct) {
-			variables._commandFactory = createCommandFactory()
+			this.commandFactory = createCommandFactory()
 			object.construct = false
 		}
 
-		return variables._commandFactory;
+		return this.commandFactory;
 	}
 
-	private Console function console() {
+	private Console function getConsole() {
 		return this;
 	}
 
-	private ElementFactory function elementFactory() {
-		var object = variables._actions.elementFactory
+	private ElementFactory function getElementFactory() {
+		var object = this.actions.elementFactory
 		if (object.construct) {
-			variables._elementFactory = createElementFactory()
+			this.elementFactory = createElementFactory()
 			object.construct = false
 		}
 
-		return variables._elementFactory;
+		return this.elementFactory;
 	}
 
-	private Facade function requestFacade() {
-		var object = variables._actions.requestFacade
+	private Facade function getRequestFacade() {
+		var object = this.actions.requestFacade
 		if (object.construct) {
-			variables._requestFacade = createRequestFacade()
+			this.requestFacade = createRequestFacade()
 			object.construct = false
 		}
 
-		return variables._requestFacade;
+		return this.requestFacade;
 	}
 
-	private Scope function scope() {
-		var object = variables._actions.Scope
+	private Scope function getScope() {
+		var object = this.actions.Scope
 		if (object.construct) {
-			variables._scope = createScope()
+			this.scope = createScope()
 			object.construct = false
 		}
 
-		return variables._scope;
+		return this.scope;
 	}
 
-	private TemplateFinder function templateFinder() {
-		var object = variables._actions.templateFinder
+	private TemplateFinder function getTemplateFinder() {
+		var object = this.actions.templateFinder
 		if (object.construct) {
-			variables._extension = object.extension ?: variables._extension ?: "cfm"
-			variables._templateFinder = createTemplateFinder()
+			this.extension = object.extension ?: this.extension ?: "cfm"
+			this.templateFinder = createTemplateFinder()
 			object.construct = false
 		}
 
-		return variables._templateFinder;
+		return this.templateFinder;
 	}
 
-	private ViewFinder function viewFinder() {
-		var object = variables._actions.viewFinder
+	private ViewFinder function getViewFinder() {
+		var object = this.actions.viewFinder
 		if (object.construct) {
-			variables._templateRenderer = object.templateRenderer ?: variables._templateRenderer ?: new CFMLRenderer()
-			variables._viewFinder = createViewFinder()
+			this.templateRenderer = object.templateRenderer ?: this.templateRenderer ?: new CFMLRenderer()
+			this.viewFinder = createViewFinder()
 			object.construct = false
 		}
 
-		return variables._viewFinder;
+		return this.viewFinder;
 	}
 
 	// FACTORY METHODS ============================================================================
 
 	private CommandFactory function createCommandFactory() {
-		return new ContentCommandFactory(elementFactory(), scope(), viewFinder());
+		return new ContentCommandFactory(getElementFactory(), getScope(), getViewFinder());
 	}
 
 	private ElementFactory function createElementFactory() {
@@ -299,15 +293,15 @@ component {
 	}
 
 	private Facade function createRequestFacade() {
-		return new Facade(commandFactory());
+		return new Facade(getCommandFactory());
 	}
 
 	private TemplateFinder function createTemplateFinder() {
-		return new TemplateFinder(variables._extension);
+		return new TemplateFinder(this.extension);
 	}
 
 	private ViewFinder function createViewFinder() {
-		return new ViewFinder(templateFinder(), variables._templateRenderer);
+		return new ViewFinder(getTemplateFinder(), this.templateRenderer);
 	}
 
 	private Scope function createScope() {

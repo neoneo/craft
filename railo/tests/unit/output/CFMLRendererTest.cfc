@@ -3,12 +3,12 @@ import craft.output.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.renderer = new CFMLRenderer()
-		variables.template = "/crafttests/unit/output/templates/renderer.cfm"
+		this.renderer = new CFMLRenderer()
+		this.template = "/crafttests/unit/output/templates/renderer.cfm"
 	}
 
 	public void function Render_Should_ReturnOutputString() {
-		var output = variables.renderer.render(variables.template, {})
+		var output = this.renderer.render(this.template, {})
 		assertTrue(IsSimpleValue(output), "output should be a string")
 	}
 
@@ -19,7 +19,7 @@ component extends="mxunit.framework.TestCase" {
 			boolean: true,
 			date: Now()
 		}
-		var output = variables.renderer.render(variables.template, model)
+		var output = this.renderer.render(this.template, model)
 		assertTrue(IsJSON(output), "the output should be a valid JSON string")
 		var deserialized = DeserializeJSON(output)
 		for (var key in model) {

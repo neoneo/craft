@@ -40,14 +40,14 @@ component accessors="true" {
 			try {
 				var output = command.execute(context)
 
-				header statuscode="#context.getStatusCode()#";
-				// content type="#context.getContentType()#; charset=#context.getCharacterSet()#";
+				header statuscode="#context.statusCode#";
+				content type="#context.contentType#; charset=#context.characterSet#";
 
 				if (context.downloadAs !== null) {
 					header name="Content-Disposition" value="attachment; filename=#context.downloadAs#";
 				}
 
-				switch (context.getContentType()) {
+				switch (context.contentType) {
 					case "application/json":
 						if (IsArray(output) || IsStruct(output)) {
 							output = SerializeJSON(output)

@@ -9,12 +9,22 @@ component accessors="true" abstract="true" {
 	// All elements may have a 'ref' attribute.
 	property String ref;
 
-	variables._parent = null
-	variables._children = []
-	variables._product = null
+	property Array children setter="false" attribute="false"; // Element[]
+	property Boolean childrenReady setter="false" attribute="false";
+	property Boolean hasChildren setter="false" attribute="false";
+	property Boolean hasParent setter="false" attribute="false";
+	property Element parent attribute="false";
+	property Content product attribute="false";
+	property Boolean ready attribute="false";
+	property Array siblings setter="false" attribute="false"; // Element[]
+	property Numeric siblingIndex setter="false" attribute="false";
 
-	public Boolean function ready() {
-		return variables._product !== null
+	this.children = []
+	this.parent = null
+	this.product = null
+
+	public Boolean function getReady() {
+		return this.product !== null;
 	}
 
 	/**
@@ -31,55 +41,36 @@ component accessors="true" abstract="true" {
 	 * Sets the final product and signals that construction is complete.
 	 */
 	private void function setProduct(required Content product) {
-		variables._product = arguments.product
+		this.product = arguments.product
 	}
 
-	/**
-	 * Returns the resulting `Content` instance.
-	 */
-	public Content function product() {
-		return variables._product
-	}
-
-	public Boolean function hasParent() {
-		return variables._parent !== null
-	}
-
-	public void function setParent(required Element parent) {
-		variables._parent = arguments.parent
-	}
-
-	public Element function parent() {
-		return variables._parent
+	public Boolean function getHasParent() {
+		return this.parent !== null;
 	}
 
 	public void function add(required Element element) {
-		variables._children.append(arguments.element)
-		arguments.element.setParent(this)
+		this.children.append(arguments.element)
+		arguments.element.parent = this
 	}
 
-	public Element[] function children() {
-		return variables._children
+	public Boolean function getHasChildren() {
+		return !this.children.isEmpty();
 	}
 
-	public Boolean function hasChildren() {
-		return !variables._children.isEmpty()
+	public Boolean function getChildrenReady() {
+		return this.children.every(function (child) {
+			return arguments.child.getReady();
+		});
 	}
 
-	public Boolean function childrenReady() {
-		return children().every(function (child) {
-			return arguments.child.ready()
-		})
-	}
-
-	public Element[] function siblings() {
-		return hasParent() ? parent().children().filter(function (element) {
-			return arguments.element !== this
+	public Element[] function getSiblings() {
+		return this.getHasParent() ? this.parent.children.filter(function (element) {
+			return arguments.element !== this;
 		}) : []
 	}
 
-	public Numeric function siblingIndex() {
-		return hasParent() ? parent().children().find(this) : 0
+	public Numeric function getSiblingIndex() {
+		return this.getHasParent() ? this.parent.children.find(this) : 0
 	}
 
 }

@@ -2,7 +2,9 @@ import craft.markup.Element;
 
 component {
 
-	variables._tags = {} // Keeps metadata of tags per namespace.
+	property Struct tagNames setter="false";
+
+	this.tags = {} // Keeps metadata of tags per namespace.
 
 	/**
 	 * Registers any `Element`s found in the mapping. A craft.ini file must be present in order for any components to be inspected.
@@ -23,7 +25,7 @@ component {
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
-			var namespaceTags = variables._tags[namespace] = {}
+			var namespaceTags = this.tags[namespace] = {}
 
 			var registerPaths = null
 			if (sections.craft.listFind("directories") > 0) {
@@ -89,7 +91,7 @@ component {
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
 
-			variables._tags.delete(namespace)
+			this.tags.delete(namespace)
 
 		} else {
 			// Call again for each subdirectory.
@@ -103,11 +105,11 @@ component {
 	}
 
 	public void function deregisterNamespace(required String namespace) {
-		variables._tags.delete(arguments.namespace)
+		this.tags.delete(arguments.namespace)
 	}
 
-	public Struct function tags() {
-		return variables._tags.map(function (namespace, metadata) {
+	public Struct function getTagNames() {
+		return this.tags.map(function (namespace, metadata) {
 			// The metadata argument is a struct where the keys are tag names.
 			return arguments.metadata.keyArray();
 		});
@@ -146,11 +148,11 @@ component {
 	 */
 	public Element function create(required String namespace, required String tagName, Struct attributes = {}) {
 
-		if (!variables._tags.keyExists(arguments.namespace)) {
+		if (!this.tags.keyExists(arguments.namespace)) {
 			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException");
 		}
 
-		var tags = variables._tags[arguments.namespace]
+		var tags = this.tags[arguments.namespace]
 		if (!tags.keyExists(arguments.tagName)) {
 			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException");
 		}

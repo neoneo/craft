@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<document xmlns="http://neoneo.nl/craft" xmlns:t="http://neoneo.nl/craft/test" ref="document" layout="documentlayout1">
+<document xmlns="http://neoneo.nl/craft" xmlns:t="http://neoneo.nl/craft/test" ref="document" layout="documentlayout">
 	<section placeholder="placeholder1.1.1">
 		<t:leaf ref="leaf1.1.1.1" />
 	</section>

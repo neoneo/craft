@@ -1,77 +1,77 @@
 component extends="Collection" {
 
 	public void function init(required Cache cache) {
-		variables._cache = arguments.cache
-		variables._key = CreateGUID()
-		variables._cache.put(variables._key, [])
+		this.cache = arguments.cache
+		this.key = CreateGUID()
+		this.cache.put(this.key, [])
 	}
 
 	public Boolean function remove(required Any item) {
 
-		var items = get()
+		var items = this.get()
 		var removed = items.delete(arguments.item)
 
-		put(items)
+		this.put(items)
 
-		return removed
+		return removed;
 	}
 
 	public Boolean function contains(required Any item) {
-		return get().find(arguments.item) > 0
+		return this.get().find(arguments.item) > 0;
 	}
 
 	public Boolean function isEmpty() {
-		return get().isEmpty()
+		return this.get().isEmpty();
 	}
 
 	public Any function select(required Function predicate) {
 
-		var items = get()
+		var items = this.get()
 		var index = items.find(arguments.predicate)
 
-		return index > 0 ? items[index] : null
+		return index > 0 ? items[index] : null;
 	}
 
 	public Numeric function size() {
-		return get().len()
+		return this.get().len();
 	}
 
 	public Array function toArray() {
-		return get()
+		return this.get();
 	}
 
 	private void function append(required Any item) {
 
-		var items = get()
+		var items = this.get()
 		items.delete(arguments.item)
 		items.append(arguments.item)
 
-		put(items)
+		this.put(items)
 	}
 
 	private void function insertAt(required Numeric index, required Any item) {
-		var items = get()
+		var items = this.get()
 		items.insertAt(arguments.index, arguments.item)
-		put(items)
+		this.put(items)
 	}
 
 	private void function deleteAt(required Numeric index) {
-		var items = get()
+		var items = this.get()
 		items.deleteAt(arguments.index)
-		put(items)
+		this.put(items)
 	}
 
 	private Numeric function indexOf(required Any item) {
-		return get().find(arguments.item)
+		return this.get().find(arguments.item);
 	}
 
-	private Array function get() {
-		return variables._cache.get(variables._key)
+	private Array function this.get() {
+		return this.cache.get(this.key);
 	}
 
 	private void function put(required Array items) {
-		variables._cache.remove(variables._key)
-		variables._cache.put(variables._key, arguments.items)
+		this.cache.remove(this.key)
+		this.cache.put(this.key, arguments.items)
 	}
 
 }

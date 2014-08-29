@@ -3,33 +3,33 @@ import craft.markup.ElementFactory;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.factory = new ElementFactory()
-		variables.mapping = "/crafttests/unit/markup/stubs"
+		this.factory = new ElementFactory()
+		this.mapping = "/crafttests/unit/markup/stubs"
 	}
 
 	public void function RegisterWithNoSettings_ShouldNot_RegisterAnything() {
-		variables.factory.register(variables.mapping & "/nosettings")
-		assertTrue(variables.factory.tags().isEmpty())
+		this.factory.register(this.mapping & "/nosettings")
+		assertTrue(this.factory.tagNames.isEmpty())
 	}
 
 	public void function RegisterWithNoCraftSection_Should_ThrowNoSuchElementException() {
 		try {
-			variables.factory.register(variables.mapping & "/nocraftsection")
+			this.factory.register(this.mapping & "/nocraftsection")
 			fail("if there is no section named 'craft' in craft.ini, an exception should be thrown")
 		} catch (NoSuchElementException e) {}
 	}
 
 	public void function RegisterWithNoNamespace_Should_ThrowNoSuchElementException() {
 		try {
-			variables.factory.register(variables.mapping & "/nonamespace")
+			this.factory.register(this.mapping & "/nonamespace")
 			fail("if no namespace is defined in craft.ini, an exception should be thrown")
 		} catch (NoSuchElementException e) {}
 	}
 
 	public void function RegisterWithSimpleSettings_Should_RegisterOnlyNonAbstractElements() {
-		variables.factory.register(variables.mapping & "/recursive/dir2/sub")
+		this.factory.register(this.mapping & "/recursive/dir2/sub")
 
-		var tags = variables.factory.tags()
+		var tags = this.factory.tagNames
 
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir2"), "there should be a key for the namespace as defined in craft.ini")
 		tagNames = tags["http://neoneo.nl/craft/dir2"]
@@ -41,9 +41,9 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Register_Should_LookInSubdirectories() {
-		variables.factory.register(variables.mapping & "/recursive/dir1")
+		this.factory.register(this.mapping & "/recursive/dir1")
 
-		var tags = variables.factory.tags()
+		var tags = this.factory.tagNames
 
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
 		tagNames = tags["http://neoneo.nl/craft/dir1"]
@@ -56,17 +56,17 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function Register_Should_RegisterMultipleNamespaces() {
 		// This test combines the previous two tests by registering the parent directory.
-		variables.factory.register(variables.mapping & "/recursive")
+		this.factory.register(this.mapping & "/recursive")
 
-		var tags = variables.factory.tags()
+		var tags = this.factory.tagNames
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir2"))
 	}
 
 	public void function RegisterWithDirectory_Should_OnlyRegisterWhereIndicated() {
-		variables.factory.register(variables.mapping & "/directory")
+		this.factory.register(this.mapping & "/directory")
 
-		var tags = variables.factory.tags()
+		var tags = this.factory.tagNames
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/directory"))
 		tagNames = tags["http://neoneo.nl/craft/directory"]
 
@@ -82,62 +82,62 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function Deregister_Should_RemoveNamespace() {
 		// First register some namespaces.
-		variables.factory.register(variables.mapping & "/recursive")
+		this.factory.register(this.mapping & "/recursive")
 
 		// Deregister one of the mappings.
-		variables.factory.deregister(variables.mapping & "/recursive/dir2")
+		this.factory.deregister(this.mapping & "/recursive/dir2")
 
 		// Test.
-		var tags = variables.factory.tags()
+		var tags = this.factory.tagNames
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
 		assertFalse(tags.keyExists("http://neoneo.nl/craft/dir2"))
 	}
 
 	public void function DeregisterNamespace_Should_RemoveNamespace() {
-		variables.factory.register(variables.mapping & "/recursive")
+		this.factory.register(this.mapping & "/recursive")
 
-		variables.factory.deregisterNamespace("http://neoneo.nl/craft/dir2")
+		this.factory.deregisterNamespace("http://neoneo.nl/craft/dir2")
 
 		// Test.
-		var tags = variables.factory.tags()
+		var tags = this.factory.tagNames
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
 		assertFalse(tags.keyExists("http://neoneo.nl/craft/dir2"))
 	}
 
 	public void function Create_Should_ThrowException_When_NonExistentNamespace() {
-		variables.factory.register(variables.mapping & "/create")
+		this.factory.register(this.mapping & "/create")
 
 		try {
-			var element = variables.factory.create("http://doesnotexist", "tagelement")
+			var element = this.factory.create("http://doesnotexist", "tagelement")
 			fail("create should have thrown an exception")
 		} catch (NoSuchElementException e) {}
 	}
 
 	public void function Create_Should_ThrowException_When_NonExistentTag() {
-		variables.factory.register(variables.mapping & "/create")
+		this.factory.register(this.mapping & "/create")
 
 		try {
-			var element = variables.factory.create("http://neoneo.nl/craft", "doesnotexist")
+			var element = this.factory.create("http://neoneo.nl/craft", "doesnotexist")
 			fail("create should have thrown an exception")
 		} catch (NoSuchElementException e) {}
 	}
 
 	public void function Create_Should_ReturnElement_When_Tag() {
-		variables.factory.register(variables.mapping & "/create")
+		this.factory.register(this.mapping & "/create")
 
-		var element = variables.factory.create("http://neoneo.nl/craft", "tagelement")
+		var element = this.factory.create("http://neoneo.nl/craft", "tagelement")
 
 		assertTrue(IsInstanceOf(element, "TagElement"))
 	}
 
 	public void function Create_Should_ReturnElementWithAttributes_When_TagAndAttributes() {
-		variables.factory.register(variables.mapping & "/create")
+		this.factory.register(this.mapping & "/create")
 
 		var attributes = {
 			ref: CreateUniqueId(),
 			name: CreateGUID()
 		}
-		var element = variables.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
+		var element = this.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
 
 		assertTrue(IsInstanceOf(element, "TagElement"))
 		assertEquals(attributes.ref, element.getRef())
@@ -145,21 +145,21 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Create_Should_ReturnElement_When_Component() {
-		variables.factory.register(variables.mapping & "/create")
+		this.factory.register(this.mapping & "/create")
 
-		var element = variables.factory.create("http://neoneo.nl/craft", "crafttests.unit.markup.stubs.create.NoTagElement")
+		var element = this.factory.create("http://neoneo.nl/craft", "crafttests.unit.markup.stubs.create.NoTagElement")
 
 		assertTrue(IsInstanceOf(element, "NoTagElement"))
 	}
 
 	public void function Create_Should_ReturnElementWithAttributes_When_ComponentAndAttributes() {
-		variables.factory.register(variables.mapping & "/create")
+		this.factory.register(this.mapping & "/create")
 
 		var attributes = {
 			ref: CreateUniqueId(),
 			name: CreateGUID()
 		}
-		var element = variables.factory.create("http://neoneo.nl/craft", "crafttests.unit.markup.stubs.create.NoTagElement", attributes)
+		var element = this.factory.create("http://neoneo.nl/craft", "crafttests.unit.markup.stubs.create.NoTagElement", attributes)
 
 		assertTrue(IsInstanceOf(element, "NoTagElement"))
 		assertEquals(attributes.ref, element.getRef())
@@ -167,14 +167,14 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Create_Should_ReturnElementWithoutAttributes_When_TagAndUndefinedAttributes() {
-		variables.factory.register(variables.mapping & "/create")
+		this.factory.register(this.mapping & "/create")
 
 		var attributes = {
 			foo: CreateUniqueId(),
 			bar: CreateGUID(),
 			ref: CreateUniqueId()
 		}
-		var element = variables.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
+		var element = this.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
 
 		assertTrue(IsInstanceOf(element, "TagElement"))
 		assertEquals(attributes.ref, element.getRef())
@@ -182,7 +182,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Convert_Should_ReturnElementTree() {
-		variables.factory = new ElementFactoryMock()
+		this.factory = new ElementFactoryMock()
 
 		var document = XMLNew()
 
@@ -208,7 +208,7 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(rootNode.xmlAttributes.ref, root.getRef())
 		assertEquals(rootNode.xmlName, root.getName())
 
-		var children = root.children()
+		var children = root.children
 		var child1 = children[1]
 		assertEquals(childNode1.xmlAttributes.ref, child1.getRef())
 		assertEquals(rootNode.xmlName, root.getName())
@@ -221,7 +221,7 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(childNode3.xmlAttributes.ref, child3.getRef())
 		assertEquals(childNode3.xmlName, child3.getName())
 
-		var grandchildren = child2.children()
+		var grandchildren = child2.children
 
 		var grandchild1 = grandchildren[1]
 		assertEquals(grandchildNode1.xmlAttributes.ref, grandchild1.getRef())
@@ -236,7 +236,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Convert_Should_HandleMultipleNamespaces() {
-		variables.factory = new ElementFactoryMock()
+		this.factory = new ElementFactoryMock()
 
 		var document = XMLNew()
 		var rootNode = XMLElemNew(document, "http://neoneo.nl/craft/test", "t:composite")
@@ -251,7 +251,7 @@ component extends="mxunit.framework.TestCase" {
 		// getName() returns the tag name without the namespace prefix.
 		assertEquals(rootNode.xmlName, "t:" & root.getName())
 
-		var child = root.children()[1]
+		var child = root.children[1]
 		assertEquals(childNode.xmlAttributes.ref, child.getRef())
 		assertEquals(childNode.xmlName, child.getName())
 

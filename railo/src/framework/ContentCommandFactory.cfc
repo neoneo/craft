@@ -10,28 +10,22 @@ import craft.request.CommandFactory;
 /**
  * `CommandFactory` implementation that returns `ContentCommand` instances.
  */
-component implements="CommandFactory" {
+component implements="CommandFactory" accessors="true" {
 
+	property String path;
 
 	public void function init(required ElementFactory elementFactory, required Scope scope, required ViewFinder viewFinder) {
-		variables._elementFactory = arguments.elementFactory
-		variables._scope = arguments.scope
-		variables._viewFinder = arguments.viewFinder
+		this.elementFactory = arguments.elementFactory
+		this.scope = arguments.scope
+		this.viewFinder = arguments.viewFinder
 
-		variables._fileBuilder = new FileBuilder(variables._elementFactory, variables._scope)
-		variables._commands = {}
-		variables._path = null
-	}
-
-	/**
-	 * Sets the path to the root folder where the xml documents are stored.
-	 */
-	public void function setPath(required String path) {
-		variables._path = arguments.path
+		this.fileBuilder = new FileBuilder(this.elementFactory, this.scope)
+		this.commands = {}
+		this.path = null
 	}
 
 	public void function clear() {
-		variables._commands.clear()
+		this.commands.clear()
 	}
 
 	/**
@@ -39,13 +33,13 @@ component implements="CommandFactory" {
 	 */
 	public Command function supply(required String identifier) {
 
-		if (variables._commands.keyExists(arguments.identifier)) {
-			return variables._commands[arguments.identifier];
+		if (this.commands.keyExists(arguments.identifier)) {
+			return this.commands[arguments.identifier];
 		} else {
 			// Pass the file builder and the path. The command will use them when first requested.
-			var command = new ContentCommand(variables._fileBuilder, variables._path & "/" & arguments.identifier, variables._viewFinder)
+			var command = new ContentCommand(this.fileBuilder, this.path & "/" & arguments.identifier, this.viewFinder)
 
-			variables._commands[arguments.identifier] = command
+			this.commands[arguments.identifier] = command
 
 			return command;
 		}

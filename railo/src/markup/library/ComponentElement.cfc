@@ -5,8 +5,8 @@ import craft.markup.Scope;
 
 component extends="Element" abstract="true" {
 
-	public void function construct(required Scope scope) {
-		setProduct(create())
+	public void function construct( Scope scope) {
+		this.product = create()
 	}
 
 	/**
@@ -19,8 +19,8 @@ component extends="Element" abstract="true" {
 	/**
 	 * The product of a `ComponentElement` can only be a `Component`.
 	 */
-	public Component function product() {
-		return super.product();
+	public Component function getProduct() {
+		return this.product
 	}
 
 }

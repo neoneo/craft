@@ -6,16 +6,16 @@ component extends="EndPoint" accessors="true" {
 	property Struct testParameters;
 	property String testRequestMethod;
 
-	public String function path() {
-		return getTestPath()
+	public String function getPath() {
+		return getTestPath();
 	}
 
-	public Struct function requestParameters() {
-		return getTestParameters() ?: {}
+	public Struct function getRequestParameters() {
+		return getTestParameters() ?: {};
 	}
 
-	public String function requestMethod() {
-		return getTestRequestMethod()
+	public String function getRequestMethod() {
+		return getTestRequestMethod();
 	}
 
 }

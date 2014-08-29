@@ -3,21 +3,21 @@ import craft.markup.Scope;
 
 component extends="Element" accessors="true" tag="include" {
 
-	property String element;
+	property String element required="true";
 
 	public void function construct(required Scope scope) {
 
-		var elementRef = getElement()
+		var elementRef = this.element
 		if (arguments.scope.has(elementRef)) {
 			var element = arguments.scope.get(elementRef)
-			setProduct(element.product())
+			this.product = element.product
 		}
 
 	}
 
 	public Boolean function childrenReady() {
 		// Ignore any children.
-		return ready();
+		return this.getReady();
 	}
 
 }

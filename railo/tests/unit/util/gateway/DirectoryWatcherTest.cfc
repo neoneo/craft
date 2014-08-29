@@ -3,106 +3,106 @@ import craft.util.gateway.DirectoryWatcher;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.watcher = null
-		variables.directory = Replace(GetTempDirectory(), "\", "/", "all") & CreateGUID()
-		DirectoryCreate(variables.directory)
-		DirectoryCreate(variables.directory & "/sub1") // create a subdirectory for recursive tests
+		this.watcher = null
+		this.directory = Replace(GetTempDirectory(), "\", "/", "all") & CreateGUID()
+		DirectoryCreate(this.directory)
+		DirectoryCreate(this.directory & "/sub1") // create a subdirectory for recursive tests
 		// create some files for the tests
-		FileWrite(variables.directory & "/nodir", "nodir")
-		FileWrite(variables.directory & "/delete.txt", "delete")
-		FileWrite(variables.directory & "/modify.txt", "modify")
-		FileWrite(variables.directory & "/rename.txt", "rename")
+		FileWrite(this.directory & "/nodir", "nodir")
+		FileWrite(this.directory & "/delete.txt", "delete")
+		FileWrite(this.directory & "/modify.txt", "modify")
+		FileWrite(this.directory & "/rename.txt", "rename")
 
-		variables.wait = 10100 // the watcher checks once every 10 seconds
+		this.wait = 10100 // the watcher checks once every 10 seconds
 	}
 
 	public void function tearDown() {
-		if (variables.watcher !== null) {
-			variables.watcher.close()
+		if (this.watcher !== null) {
+			this.watcher.close()
 		}
-		DirectoryDelete(variables.directory, true)
+		DirectoryDelete(this.directory, true)
 	}
 
 	public void function WatchingNonExistingDirectory_Should_ThrowInvalidArgumentException() {
 		try {
-			variables.watcher = createWatcher(variables.directory & "0", false)
-			variables.watcher.close()
+			this.watcher = createWatcher(this.directory & "0", false)
+			this.watcher.close()
 			fail("trying to watch a directory that does not exist should throw an exception")
 		} catch (FileNotFoundException e) {}
 	}
 
 	public void function WatchingExistingFile_Should_ThrowInvalidArgumentException() {
 		try {
-			variables.watcher = createWatcher(variables.directory & "/nodir", false)
-			variables.watcher.close()
+			this.watcher = createWatcher(this.directory & "/nodir", false)
+			this.watcher.close()
 			fail("trying to watch a directory that is not a directory should throw an exception")
 		} catch (FileNotFoundException e) {}
 	}
 
 	public void function AfterCreatingFile_Watcher_Should_ReturnCreateEvent() {
-		variables.watcher = createWatcher(variables.directory, false)
+		this.watcher = createWatcher(this.directory, false)
 
-		FileWrite(variables.directory & "/created.txt", "created")
+		FileWrite(this.directory & "/created.txt", "created")
 		// due to the sleep calls the test will take about a minute
 		Sleep(wait)
-		var events = variables.watcher.poll()
+		var events = this.watcher.poll()
 		assertEquals(1, events.len(), "after creating a file, the watcher should return a single event when polled")
 		assertEquals("ENTRY_CREATE", events[1].type, "after creating a file, the resulting event type should be 'ENTRY_CREATE'")
-		assertEquals(variables.directory & "/created.txt", ToString(events[1].file), "after creating a file, the file path should be the path of the created file")
+		assertEquals(this.directory & "/created.txt", ToString(events[1].file), "after creating a file, the file path should be the path of the created file")
 	}
 
 	public void function AfterDeletingFile_Watcher_Should_ReturnDeleteEvent() {
-		variables.watcher = createWatcher(variables.directory, false)
+		this.watcher = createWatcher(this.directory, false)
 
-		FileDelete(variables.directory & "/delete.txt")
+		FileDelete(this.directory & "/delete.txt")
 		Sleep(wait)
-		var events = variables.watcher.poll()
+		var events = this.watcher.poll()
 		assertEquals(1, events.len(), "after deleting a file, the watcher should return a single event when polled")
 		assertEquals("ENTRY_DELETE", events[1].type, "after deleting a file, the resulting event type should be 'ENTRY_DELETE'")
-		assertEquals(variables.directory & "/delete.txt", ToString(events[1].file), "after deleting a file, the file path should be the path of the deleted file")
+		assertEquals(this.directory & "/delete.txt", ToString(events[1].file), "after deleting a file, the file path should be the path of the deleted file")
 	}
 
 	public void function AfterModifyingFile_Watcher_Should_ReturnModifyEvent() {
-		variables.watcher = createWatcher(variables.directory, false)
+		this.watcher = createWatcher(this.directory, false)
 
-		FileWrite(variables.directory & "/modify.txt", "modified")
+		FileWrite(this.directory & "/modify.txt", "modified")
 		Sleep(wait)
-		var events = variables.watcher.poll()
+		var events = this.watcher.poll()
 		assertEquals(1, events.len(), "after modifying a file, the watcher should return a single event when polled")
 		assertEquals("ENTRY_MODIFY", events[1].type, "after modifying a file, the resulting event type should be 'ENTRY_MODIFY'")
-		assertEquals(variables.directory & "/modify.txt", ToString(events[1].file), "after modifying a file, the file path should be the path of the modified file")
+		assertEquals(this.directory & "/modify.txt", ToString(events[1].file), "after modifying a file, the file path should be the path of the modified file")
 	}
 
 	public void function AfterRenamingFile_Watcher_Should_ReturnCreateAndDeleteEvent() {
-		variables.watcher = createWatcher(variables.directory, false)
+		this.watcher = createWatcher(this.directory, false)
 
-		FileMove(variables.directory & "/rename.txt", variables.directory & "/renamed.txt")
+		FileMove(this.directory & "/rename.txt", this.directory & "/renamed.txt")
 		Sleep(wait)
-		var events = variables.watcher.poll()
+		var events = this.watcher.poll()
 		assertEquals(2, events.len(), "after renaming a file, the watcher should return 2 events when polled")
 		var index = findEvent(events, "ENTRY_DELETE")
 		assertTrue(index > 0, "after renaming a file, one of the resulting event types should be 'ENTRY_DELETE'")
-		assertEquals(variables.directory & "/rename.txt", ToString(events[index].file), "after renaming a file, the file path of the ENTRY_DELETE event should be the original path")
+		assertEquals(this.directory & "/rename.txt", ToString(events[index].file), "after renaming a file, the file path of the ENTRY_DELETE event should be the original path")
 		var index = findEvent(events, "ENTRY_CREATE")
 		assertTrue(index > 0, "after renaming a file, one of the resulting event types should be 'ENTRY_CREATE'")
-		assertEquals(variables.directory & "/renamed.txt", ToString(events[index].file), "after renaming a file, the file path of the ENTRY_CREATE event should be the new path")
+		assertEquals(this.directory & "/renamed.txt", ToString(events[index].file), "after renaming a file, the file path of the ENTRY_CREATE event should be the new path")
 	}
 
 	public void function AfterClosing_Watcher_Should_ThrowExceptionWhen_Polled() {
-		variables.watcher = createWatcher(variables.directory, false)
-		variables.watcher.close()
+		this.watcher = createWatcher(this.directory, false)
+		this.watcher.close()
 		try {
-			var events = variables.watcher.poll()
+			var events = this.watcher.poll()
 			fail("polling a closed watcher should throw an exception")
 		} catch (java.nio.file.ClosedWatchServiceException e) {}
 	}
 
 	public void function AfterWritingInSubDir_Watcher_ShouldNot_ReturnEvents() {
-		variables.watcher = createWatcher(variables.directory, false)
+		this.watcher = createWatcher(this.directory, false)
 
-		FileWrite(variables.directory & "/sub1/invisible.txt", "invisible")
+		FileWrite(this.directory & "/sub1/invisible.txt", "invisible")
 		Sleep(wait)
-		var events = variables.watcher.poll()
+		var events = this.watcher.poll()
 		// the directory sub1 may signal modification, ignore this
 		for (var event in events) {
 			if (event.file.isFile()) {
@@ -112,32 +112,32 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function AfterWritingInSubDir_RecursiveWatcher_Should_ReturnEvents() {
-		variables.watcher = createWatcher(variables.directory, true)
+		this.watcher = createWatcher(this.directory, true)
 
-		FileWrite(variables.directory & "/sub1/visible.txt", "visible")
+		FileWrite(this.directory & "/sub1/visible.txt", "visible")
 		Sleep(wait)
-		var events = variables.watcher.poll()
+		var events = this.watcher.poll()
 		assertEquals(1, events.len(), "after creating a file, the watcher should return a single event when polled")
 		assertEquals("ENTRY_CREATE", events[1].type, "after creating a file, the resulting event type should be 'ENTRY_CREATE'")
-		assertEquals(variables.directory & "/sub1/visible.txt", ToString(events[1].file), "after creating a file, the file path should be the path of the created file")
+		assertEquals(this.directory & "/sub1/visible.txt", ToString(events[1].file), "after creating a file, the file path should be the path of the created file")
 	}
 
 	public void function AfterCreatingDirectory_RecursiveWatcher_Should_WatchDirectory() {
-		variables.watcher = createWatcher(variables.directory, true)
+		this.watcher = createWatcher(this.directory, true)
 
-		DirectoryCreate(variables.directory & "/sub2")
+		DirectoryCreate(this.directory & "/sub2")
 		Sleep(wait)
-		var events = variables.watcher.poll()
+		var events = this.watcher.poll()
 		assertEquals(1, events.len(), "after creating a directory, the watcher should return a single event when polled")
 		assertEquals("ENTRY_CREATE", events[1].type, "after creating a directory, the resulting event type should be 'ENTRY_CREATE'")
-		assertEquals(variables.directory & "/sub2", ToString(events[1].file), "after creating a directory, the directory path should be the path of the created directory")
+		assertEquals(this.directory & "/sub2", ToString(events[1].file), "after creating a directory, the directory path should be the path of the created directory")
 
-		FileWrite(variables.directory & "/sub2/visible.txt", "visible")
+		FileWrite(this.directory & "/sub2/visible.txt", "visible")
 		Sleep(wait)
-		var events = variables.watcher.poll()
+		var events = this.watcher.poll()
 		assertEquals(1, events.len(), "after creating a file, the watcher should return a single event when polled")
 		assertEquals("ENTRY_CREATE", events[1].type, "after creating a file, the resulting event type should be 'ENTRY_CREATE'")
-		assertEquals(variables.directory & "/sub2/visible.txt", ToString(events[1].file), "after creating a file, the file path should be the path of the created file")
+		assertEquals(this.directory & "/sub2/visible.txt", ToString(events[1].file), "after creating a file, the file path should be the path of the created file")
 
 	}
 

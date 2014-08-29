@@ -7,37 +7,37 @@ component {
 			Throw("Directory '#arguments.directory#' does not exist or is not a directory", "FileNotFoundException")
 		}
 
-		variables._watcher = CreateObject("java", "java.nio.file.FileSystems").getDefault().newWatchService()
-		variables._keys = CreateObject("java", "java.util.HashMap").init() // We can't use a struct because the keys are not strings.
-		variables._recursive = arguments.recursive
+		this.watcher = CreateObject("java", "java.nio.file.FileSystems").getDefault().newWatchService()
+		this.keys = CreateObject("java", "java.util.HashMap").init() // We can't use a struct because the keys are not strings.
+		this.recursive = arguments.recursive
 
-		variables._kinds = CreateObject("java", "java.nio.file.StandardWatchEventKinds")
+		this.kinds = CreateObject("java", "java.nio.file.StandardWatchEventKinds")
 
 		register(file.toPath(), arguments.recursive)
 
 	}
 
 	public Struct[] function poll() {
-		return handleEvents(variables._watcher.poll())
+		return handleEvents(this.watcher.poll())
 	}
 
 	public Struct[] function take() {
-		return handleEvents(variables._watcher.take())
+		return handleEvents(this.watcher.take())
 	}
 
 	public void function close() {
-		variables._watcher.close()
+		this.watcher.close()
 	}
 
 	private Array function handleEvents(required Any key = null) {
 
 		var events = []
 		if (arguments.key !== null) {
-			var path = variables._keys.get(arguments.key)
+			var path = this.keys.get(arguments.key)
 			if (path === null) {
 				for (var event in arguments.key.pollEvents()) {
 					var kind = event.kind()
-					if (kind !== variables._kinds.OVERFLOW) {
+					if (kind !== this.kinds.OVERFLOW) {
 						var relativePath = event.context()
 						/*
 							In the case of ENTRY_CREATE, ENTRY_DELETE, and ENTRY_MODIFY events, the context is a Path that is the relative path between the
@@ -46,9 +46,9 @@ component {
 						var affectedPath = path.resolve(relativePath)
 						var file = affectedPath.toFile()
 
-						if (variables._recursive && kind === variables._kinds.ENTRY_CREATE) {
+						if (this.recursive && kind === this.kinds.ENTRY_CREATE) {
 							if (file.isDirectory()) {
-								register(affectedPath, variables._recursive)
+								register(affectedPath, this.recursive)
 							}
 						}
 
@@ -58,7 +58,7 @@ component {
 
 				var valid = arguments.key.reset()
 				if (!valid) {
-					variables._keys.remove(arguments.key)
+					this.keys.remove(arguments.key)
 				}
 			}
 		}
@@ -68,8 +68,8 @@ component {
 
 	private void function register(required Any path, required Boolean recursive) {
 
-		var key = arguments.path.register(variables._watcher, [variables._kinds.ENTRY_CREATE, variables._kinds.ENTRY_MODIFY, variables._kinds.ENTRY_DELETE])
-		variables._keys.put(key, arguments.path)
+		var key = arguments.path.register(this.watcher, [this.kinds.ENTRY_CREATE, this.kinds.ENTRY_MODIFY, this.kinds.ENTRY_DELETE])
+		this.keys.put(key, arguments.path)
 
 		if (arguments.recursive) {
 			var files = arguments.path.toFile().listFiles()

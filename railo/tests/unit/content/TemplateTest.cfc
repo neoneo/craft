@@ -3,33 +3,35 @@ import craft.content.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.section = mock(CreateObject("Section"))
-		variables.layout = new Layout(variables.section)
+		this.section = mock(CreateObject("Section"))
+		this.layout = new Layout(this.section)
 	}
 
 	public void function Section_Should_Work() {
-		var section = variables.layout.section()
-		assertSame(variables.section, section)
+		var section = this.layout.section
+		assertSame(this.section, section)
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = mock(new VisitorStub()).visitLayout(variables.layout)
-		variables.layout.accept(visitor)
+		var visitor = mock(new VisitorStub()).visitLayout(this.layout)
+		this.layout.accept(visitor)
 
-		visitor.verify().visitLayout(variables.layout)
+		visitor.verify().visitLayout(this.layout)
 	}
 
 	public void function Placeholders_Should_ReturnSectionPlaceholders() {
-		var placeholder1 = mock(CreateObject("Placeholder")).ref().returns("p1")
-		var placeholder2 = mock(CreateObject("Placeholder")).ref().returns("p2")
-		variables.section.placeholders().returns([placeholder1, placeholder2])
+		var placeholder1 = mock(CreateObject("Placeholder"))
+		placeholder1.ref = "p1"
+		var placeholder2 = mock(CreateObject("Placeholder"))
+		placeholder2.ref = "p2"
+		this.section.getPlaceholders().returns([placeholder1, placeholder2])
 
-		var placeholders = variables.layout.placeholders()
+		var placeholders = this.layout.placeholders
 		assertEquals(2, placeholders.len())
 		(["p1", "p2"]).each(function (ref) {
 			var ref = arguments.ref
 			assertTrue(placeholders.find(function (placeholder) {
-				return arguments.placeholder.ref() == ref
+				return arguments.placeholder.ref == ref;
 			}) > 0)
 		})
 

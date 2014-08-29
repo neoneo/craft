@@ -3,7 +3,7 @@ import craft.content.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.section = new Section()
+		this.section = new Section()
 	}
 
 	public void function Components_Should_ReturnComponents() {
@@ -11,11 +11,11 @@ component extends="mxunit.framework.TestCase" {
 		var component1 = mock(CreateObject("Leaf")).unique()
 		var component2 = mock(CreateObject("Leaf")).unique()
 
-		variables.section.addComponent(component1)
-		variables.section.addComponent(component2)
+		this.section.addComponent(component1)
+		this.section.addComponent(component2)
 
 		// Test.
-		var components = section.components()
+		var components = section.components
 
 		// Assert.
 		assertEquals(2, components.len())
@@ -24,13 +24,13 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = mock(new VisitorStub()).visitSection(variables.section)
+		var visitor = mock(new VisitorStub()).visitSection(this.section)
 
 		// Actual test.
-		variables.section.accept(visitor)
+		this.section.accept(visitor)
 
 		// Verify.
-		visitor.verify().visitSection(variables.section)
+		visitor.verify().visitSection(this.section)
 	}
 
 	public void function Traverse_Should_CallAcceptOnAllChildren() {
@@ -40,11 +40,11 @@ component extends="mxunit.framework.TestCase" {
 		var component2 = mock(CreateObject("Leaf")).accept(visitor)
 		var component3 = mock(CreateObject("Leaf")).accept(visitor)
 
-		variables.section.addComponent(component1)
-		variables.section.addComponent(component2)
-		variables.section.addComponent(component3)
+		this.section.addComponent(component1)
+		this.section.addComponent(component2)
+		this.section.addComponent(component3)
 
-		variables.section.traverse(visitor)
+		this.section.traverse(visitor)
 
 		component1.verify().accept(visitor)
 		component2.verify().accept(visitor)
@@ -55,12 +55,12 @@ component extends="mxunit.framework.TestCase" {
 
 		// Build a tree with placeholders at several levels.
 		// TODO: use mock objects.
-		variables.section.addComponent(new Placeholder("p1"))
-		variables.section.addComponent(new Composite())
+		this.section.addComponent(new Placeholder("p1"))
+		this.section.addComponent(new Composite())
 
 		var level1 = new Composite()
 		level1.addChild(new Leaf())
-		variables.section.addComponent(level1)
+		this.section.addComponent(level1)
 
 		var level2 = new Composite()
 		level2.addChild(new Placeholder("p3"))
@@ -70,7 +70,7 @@ component extends="mxunit.framework.TestCase" {
 		level1.addChild(new Placeholder("p2"))
 
 		// Test.
-		var placeholders = section.placeholders()
+		var placeholders = section.placeholders
 
 		// Assert.
 		assertEquals(3, placeholders.len())
@@ -79,7 +79,7 @@ component extends="mxunit.framework.TestCase" {
 		(["p1", "p2", "p3"]).each(function (ref) {
 			var ref = arguments.ref
 			assertTrue(placeholders.find(function (placeholder) {
-				return arguments.placeholder.ref() == ref
+				return arguments.placeholder.ref == ref
 			}) > 0)
 		})
 

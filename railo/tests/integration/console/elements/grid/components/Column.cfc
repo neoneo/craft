@@ -5,7 +5,7 @@ import craft.request.Context;
 component extends="Composite" {
 
 	public void function init(required Numeric span) {
-		variables._span = span
+		this.span = span
 	}
 
 	public String function view(required Context context) {
@@ -14,7 +14,7 @@ component extends="Composite" {
 
 	public Any function model(required Context context) {
 		return {
-			span: variables._span
+			span: this.span
 		};
 	}
 

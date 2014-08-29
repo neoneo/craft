@@ -3,14 +3,14 @@ import craft.content.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.composite = new Composite()
+		this.composite = new Composite()
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = mock(new VisitorStub()).visitComposite(variables.composite)
-		variables.composite.accept(visitor)
+		var visitor = mock(new VisitorStub()).visitComposite(this.composite)
+		this.composite.accept(visitor)
 
-		visitor.verify().visitComposite(variables.composite)
+		visitor.verify().visitComposite(this.composite)
 	}
 
 	public void function Traverse_Should_CallAcceptOnAllChildren() {
@@ -20,11 +20,11 @@ component extends="mxunit.framework.TestCase" {
 		var component2 = mock(CreateObject("Leaf")).accept(visitor)
 		var component3 = mock(CreateObject("Leaf")).accept(visitor)
 
-		variables.composite.addChild(component1)
-		variables.composite.addChild(component2)
-		variables.composite.addChild(component3)
+		this.composite.addChild(component1)
+		this.composite.addChild(component2)
+		this.composite.addChild(component3)
 
-		variables.composite.traverse(visitor)
+		this.composite.traverse(visitor)
 
 		component1.verify().accept(visitor)
 		component2.verify().accept(visitor)

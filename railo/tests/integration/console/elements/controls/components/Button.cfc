@@ -5,7 +5,7 @@ import craft.request.Context;
 component extends="Leaf" {
 
 	public void function init(required String label) {
-		variables._label = label
+		this.label = label
 	}
 
 	public String function view(required Context context) {
@@ -14,7 +14,7 @@ component extends="Leaf" {
 
 	public Any function model(required Context context) {
 		return {
-			label: variables._label
+			label: this.label
 		};
 	}
 

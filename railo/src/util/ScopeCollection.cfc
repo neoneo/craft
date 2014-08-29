@@ -1,47 +1,47 @@
 component extends="Collection" {
 
-	variables._items = []
+	this.items = []
 
 	public Boolean function remove(required Any item) {
-		return variables._items.delete(arguments.item)
+		return this.items.delete(arguments.item);
 	}
 
 	public Boolean function contains(required Any item) {
-		return variables._items.find(arguments.item) > 0
+		return this.items.find(arguments.item) > 0;
 	}
 
 	public Boolean function isEmpty() {
-		return variables._items.isEmpty()
+		return this.items.isEmpty();
 	}
 
 	public Any function select(required Function predicate) {
-		var index = variables._items.find(arguments.predicate)
-		return index > 0 ? variables._items[index] : null
+		var index = this.items.find(arguments.predicate)
+		return index > 0 ? this.items[index] : null;
 	}
 
 	public Numeric function size() {
-		return variables._items.len()
+		return this.items.len();
 	}
 
 	public Array function toArray() {
-		return variables._items
+		return this.items;
 	}
 
 	private void function append(required Any item) {
 		remove(arguments.item)
-		variables._items.append(arguments.item)
+		this.items.append(arguments.item)
 	}
 
 	private void function insertAt(required Numeric index, required Any item) {
-		variables._items.insertAt(arguments.index, arguments.item)
+		this.items.insertAt(arguments.index, arguments.item)
 	}
 
 	private void function deleteAt(required Numeric index) {
-		variables._items.deleteAt(arguments.index)
+		this.items.deleteAt(arguments.index)
 	}
 
 	private Numeric function indexOf(required Any item) {
-		return variables._items.find(arguments.item)
+		return this.items.find(arguments.item);
 	}
 
 }

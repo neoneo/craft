@@ -8,9 +8,11 @@ import craft.util.ScopeCollection;
 component accessors="true" {
 
 	property Array children setter="false"; // PathSegment[]
-	property String pattern;
-	property String parameterName;
+	property Boolean hasChildren setter="false";
+	property Boolean hasParent setter="false";
+	property String parameterName setter="false";
 	property PathSegment parent;
+	property String pattern setter="false";
 
 	public void function init(String pattern = null, String parameterName = null) {
 
@@ -33,7 +35,7 @@ component accessors="true" {
 
 	public Command function command(required String method) {
 
-		if (!hasCommand(arguments.method)) {
+		if (!this.hasCommand(arguments.method)) {
 			Throw("Command for method '#arguments.method#' not found", "NoSuchElementException");
 		}
 
@@ -55,7 +57,7 @@ component accessors="true" {
 		abort showerror="Not implemented";
 	}
 
-	public Boolean function hasChildren() {
+	public Boolean function getHasChildren() {
 		return !this.childCollection.isEmpty();
 	}
 
@@ -66,7 +68,7 @@ component accessors="true" {
 	public void function addChild(required PathSegment child, PathSegment beforeChild) {
 		// TODO: implement check for duplicates
 		this.childCollection.add(argumentCollection: ArrayToStruct(arguments))
-		arguments.child.setParent(this)
+		arguments.child.parent = this
 	}
 
 	public Boolean function removeChild(required PathSegment child) {
@@ -79,7 +81,7 @@ component accessors="true" {
 		return success;
 	}
 
-	public Boolean function hasParent() {
+	public Boolean function getHasParent() {
 		return this.parent !== null;
 	}
 
@@ -90,7 +92,7 @@ component accessors="true" {
 
 		this.getChildren().reverse().each(function (child) {
 			arguments.child.trim()
-			if (!arguments.child.hasCommand() && !arguments.child.hasChildren()) {
+			if (!arguments.child.hasCommand() && !arguments.child.getHasChildren()) {
 				removeChild(arguments.child)
 			}
 		})

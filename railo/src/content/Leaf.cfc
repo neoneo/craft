@@ -9,8 +9,8 @@ component extends="Component" {
 		arguments.visitor.visitLeaf(this)
 	}
 
-	public Boolean function hasChildren() {
-		return false
+	public Boolean function getHasChildren() {
+		return false;
 	}
 
 }

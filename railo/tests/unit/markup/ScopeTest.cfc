@@ -9,7 +9,8 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function HasSlashGet_Should_ReturnTrueSlashElement_When_RefExists() {
 		var scope = new Scope()
-		var element = mock(CreateObject("Element")).getRef().returns("ref")
+		var element = mock(CreateObject("Element"))
+		element.ref = "ref"
 
 		scope.put(element)
 
@@ -20,15 +21,18 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function Methods_Should_SearchParentScope() {
 		var scope1 = new Scope()
-		var element1 = mock(CreateObject("Element")).getRef().returns("ref1")
+		var element1 = mock(CreateObject("Element"))
+		element1.ref = "ref1"
 		scope1.put(element1)
 
 		var scope2 = new Scope(scope1)
-		var element2 = mock(CreateObject("Element")).getRef().returns("ref2")
+		var element2 = mock(CreateObject("Element"))
+		element2.ref = "ref2"
 		scope2.put(element2)
 
 		var scope3 = new Scope(scope2)
-		var element3 = mock(CreateObject("Element")).getRef().returns("ref3")
+		var element3 = mock(CreateObject("Element"))
+		element3.ref = "ref3"
 		scope3.put(element3)
 
 		assertTrue(scope3.has("ref3"))

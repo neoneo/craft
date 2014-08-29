@@ -3,12 +3,14 @@ import craft.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
-		variables.endPoint = new stubs.EndPointStub()
-		var pathSegmentFactory = new PathSegmentFactory()
-		variables.root = pathSegmentFactory.create("/")
-		variables.parser = new RoutesParser(root, pathSegmentFactory, new stubs.CommandFactoryStub())
+		content type="text/html" reset="false";
 
-		variables.parser.import(ExpandPath("/crafttests/integration/test.routes"))
+		this.endPoint = new stubs.EndPointStub()
+		var pathSegmentFactory = new PathSegmentFactory()
+		this.rootPathSegment = pathSegmentFactory.create("/")
+		this.parser = new RoutesParser(this.rootPathSegment, pathSegmentFactory, new stubs.CommandFactoryStub())
+
+		this.parser.import(ExpandPath("/crafttests/integration/test.routes"))
 	}
 
 	public void function Root() {
@@ -93,16 +95,16 @@ component extends="mxunit.framework.TestCase" {
 
 	private Struct function testRequest(required String method, required String path, Struct parameters) {
 
-		variables.endPoint.setTestRequestMethod(arguments.method)
-		variables.endPoint.setTestPath(arguments.path)
+		this.endPoint.setTestRequestMethod(arguments.method)
+		this.endPoint.setTestPath(arguments.path)
 
 		var parameters = arguments.parameters ?: null
 		if (parameters !== null) {
-			variables.endPoint.setTestParameters(parameters)
+			this.endPoint.setTestParameters(parameters)
 		}
 
-		var context = new Context(variables.endPoint, variables.root)
-		var pathSegment = context.pathSegment()
+		var context = new Context(this.endPoint, this.rootPathSegment)
+		var pathSegment = context.pathSegment
 		var command = pathSegment.command(arguments.method)
 
 		return command.execute(context)

@@ -1,15 +1,15 @@
 component implements="View" {
 
 	public void function init(required String template, required TemplateRenderer renderer) {
-		variables._template = arguments.template
-		variables._renderer = arguments.renderer
+		this.template = arguments.template
+		this.renderer = arguments.renderer
 	}
 
 	/**
 	* Renders the view by delegating to the `TemplateRenderer`.
 	*/
 	public Any function render(required Any model) {
-		return variables._renderer.render(variables._template, arguments.model ?: {})
+		return this.renderer.render(this.template, arguments.model ?: {});
 	}
 
 }

@@ -5,8 +5,8 @@ component extends="AbstractDocumentElement" accessors="true" tag="document" {
 
 	property String layout required="true";
 
-	private String function layoutRef() {
-		return getLayout();
+	private String function getLayoutRef() {
+		return this.layout;
 	}
 
 	private Document function createDocument(required LayoutContent layoutContent) {

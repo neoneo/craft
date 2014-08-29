@@ -5,11 +5,11 @@ import craft.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.context = mock(CreateObject("Context"))
-			.requestMethod().returns("get")
-		variables.viewFinder = mock(CreateObject("ViewFinder"))
+		this.context = mock(CreateObject("Context"))
+		context.requestMethod = "get"
+		this.viewFinder = mock(CreateObject("ViewFinder"))
 
-		variables.visitor = new RenderVisitor(variables.context, variables.viewFinder)
+		this.visitor = new RenderVisitor(this.context, this.viewFinder)
 	}
 
 	public void function VisitLeaf_Should_CallModelAndView() {
@@ -17,23 +17,23 @@ component extends="mxunit.framework.TestCase" {
 		var view = mock(CreateObject("ViewStub"))
 			.render("{any}").returns("done")
 		var leaf = mock(CreateObject("Leaf"))
-			.model("{object}").returns(model) // Don't know why I can't pass in variables.context as the first argument..
+			.model("{object}").returns(model) // Don't know why I can't pass in this.context as the first argument..
 			.view("{object}").returns("view")
-		variables.viewFinder
+		this.viewFinder
 			.get("view").returns(view)
 
 		// Call the component under test.
-		variables.visitor.visitLeaf(leaf)
+		this.visitor.visitLeaf(leaf)
 
 		leaf.verify().model("{object}")
 		leaf.verify().view("{object}")
 
-		variables.viewFinder.verify().get("view")
+		this.viewFinder.verify().get("view")
 
 		view.verify().render("{any}")
 
 		// The visitor should make the rendered output ('done') available.
-		assertEquals("done", variables.visitor.content())
+		assertEquals("done", this.visitor.content)
 	}
 
 	public void function VisitComposite_Should_CallModelViewAndTraverse() {
@@ -43,21 +43,21 @@ component extends="mxunit.framework.TestCase" {
 		var composite = mock(CreateObject("Composite"))
 			.model("{object}").returns(model)
 			.view("{object}").returns("view")
-			.traverse(variables.visitor)
-		variables.viewFinder
+			.traverse("{any}")
+		this.viewFinder
 			.get("view").returns(view)
 
-		variables.visitor.visitComposite(composite)
+		this.visitor.visitComposite(composite)
 
 		composite.verify().model("{object}")
 		composite.verify().view("{object}")
-		composite.verify().traverse(variables.visitor)
+		composite.verify().traverse("{any}")
 
-		variables.viewFinder.verify().get("view")
+		this.viewFinder.verify().get("view")
 
 		view.verify().render("{any}")
 
-		assertEquals("done", variables.visitor.content())
+		assertEquals("done", this.visitor.content)
 	}
 
 	public void function VisitLeafWithoutView_Should_ReturnNoContent() {
@@ -66,16 +66,16 @@ component extends="mxunit.framework.TestCase" {
 			.model("{object}").returns(model)
 			.view("{object}").returns(null) // No view.
 
-		variables.visitor.visitLeaf(leaf)
+		this.visitor.visitLeaf(leaf)
 
 		leaf.verify().model("{object}")
 		leaf.verify().view("{object}")
 
 		// No view should be retrieved or rendered.
-		variables.viewFinder.verify(0).get("{any}")
+		this.viewFinder.verify(0).get("{any}")
 
 		// The rendered content should be null.
-		var content = variables.visitor.content()
+		var content = this.visitor.content
 		assertTrue(content === null, "content should be null, but returned '#content#'")
 	}
 
@@ -99,84 +99,88 @@ component extends="mxunit.framework.TestCase" {
 		// Mock the view of the child. This should never be used in this test.
 		var view = mock(CreateObject("ViewStub"))
 			.render("{any}", "{string}").returns("done")
-		variables.viewFinder
+		this.viewFinder
 			.get("view").returns(view)
 
 		// Actual test.
-		variables.visitor.visitComposite(composite)
+		this.visitor.visitComposite(composite)
 
 		composite.verify().model("{object}")
 		composite.verify().view("{object}")
 
 		child.verify().model("{object}")
 		child.verify(0).view("{object}") // Should not be called.
-		variables.viewFinder.verify(0).get("{any}") // No views should be retrieved.
+		this.viewFinder.verify(0).get("{any}") // No views should be retrieved.
 		view.verify(0).render("{any}", "{string}") // And this view should therefore not be rendered.
 
 		// The rendered content should be null.
-		var content = variables.visitor.content()
+		var content = this.visitor.content
 		assertTrue(content === null, "content should be null, but returned '#content#'")
 	}
 
 	public void function VisitLayout_Should_CallSectionAccept() {
-		var section = mock(CreateObject("Section")).accept(variables.visitor)
-		var layout = mock(CreateObject("Layout")).section().returns(section)
+		var section = mock(CreateObject("Section")).accept(this.visitor)
+		var layout = mock(CreateObject("Layout"))
+		layout.section = section
 
-		variables.visitor.visitLayout(layout)
+		this.visitor.visitLayout(layout)
 
-		section.verify().accept(variables.visitor)
+		section.verify().accept(this.visitor)
 	}
 
 	public void function VisitDocument_Should_CallLayoutAccept() {
-		var layout = mock(CreateObject("Layout")).accept(variables.visitor)
+		var layout = mock(CreateObject("Layout")).accept(this.visitor)
 		var document = mock(CreateObject("Document"))
-			.layout().returns(layout)
-			.sections().returns({})
+		document.layout = layout
+		document.sections = {}
 
-		variables.visitor.visitDocument(document)
+		this.visitor.visitDocument(document)
 
-		layout.verify().accept(variables.visitor)
+		layout.verify().accept(this.visitor)
 	}
 
 	public void function VisitPlaceholder_ShouldNot_CallAccept_When_NoSections() {
-		var placeholder = mock(CreateObject("Placeholder")).ref().returns("p1").accept(variables.visitor)
+		var placeholder = mock(CreateObject("Placeholder")).accept(this.visitor)
+		placeholder.ref = "p1"
 
-		variables.visitor.visitPlaceholder(placeholder)
+		this.visitor.visitPlaceholder(placeholder)
 
-		placeholder.verify(0).accept(variables.visitor)
+		placeholder.verify(0).accept(this.visitor)
 	}
 
 	public void function VisitPlaceholder_Should_CallSectionAccept_When_MatchingSection() {
 		// To add sections to the visitor we have to utilize a document mock.
 		// The document will contain a section linked to placeholder 'p2'.
 		// The layout is needed because the visitor will try to get it from the document while visiting.
-		var layout = mock(CreateObject("Layout")).accept(variables.visitor)
-		var section = mock(CreateObject("Section")).accept(variables.visitor)
+		var layout = mock(CreateObject("Layout")).accept("{any}")
+		var section = mock(CreateObject("Section")).accept("{any}")
 		var document = mock(CreateObject("Document"))
-			.sections().returns({"p2": section})
-			.layout().returns(layout)
+		document.layout = layout
+		document.sections = {"p2": section}
 
 		// Add the section by visiting the document. Unfortunately the visitor does not provide another way to do this.
-		variables.visitor.visitDocument(document)
+		this.visitor.visitDocument(document)
 
 		// Now the actual test.
-		var placeholder1 = mock(CreateObject("Placeholder")).ref().returns("p1")
-		variables.visitor.visitPlaceholder(placeholder1)
+		var placeholder1 = mock(CreateObject("Placeholder"))
+		placeholder1.ref = "p1"
+		this.visitor.visitPlaceholder(placeholder1)
 		// The section should not have been called.
-		section.verify(0).accept(variables.visitor)
+		section.verify(0).accept("{any}")
 
-		var placeholder2 = mock(CreateObject("Placeholder")).ref().returns("p2")
-		variables.visitor.visitPlaceholder(placeholder2)
+		var placeholder2 = mock(CreateObject("Placeholder"))
+		placeholder2.ref = "p2"
+		this.visitor.visitPlaceholder(placeholder2)
 		// Now we expect a call to the section.
-		section.verify().accept(variables.visitor)
+		section.verify().accept("{any}")
 	}
 
 	public void function VisitSection_Should_CallTraverse() {
-		var section = mock(CreateObject("Section")).traverse(variables.visitor)
+		var section = mock(CreateObject("Section")).traverse("{any}")
 
-		variables.visitor.visitSection(section)
+		this.visitor.visitSection(section)
 
-		section.verify().traverse(variables.visitor)
+		section.verify().traverse("{any}")
 	}
 
 }

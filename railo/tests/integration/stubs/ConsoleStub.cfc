@@ -3,11 +3,11 @@ import craft.framework.Console;
 component extends="Console" {
 
 	private Facade function createRequestFacade() {
-		return new RequestFacadeStub(commandFactory());
+		return new RequestFacadeStub(getCommandFactory());
 	}
 
-	public EndPoint function endPoint() {
-		return variables._requestFacade.endPoint()
+	public EndPoint function getEndPoint() {
+		return this.requestFacade.getEndPoint()
 	}
 
 }

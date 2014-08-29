@@ -6,34 +6,34 @@ component {
 	public Boolean function add(required Any item, Any beforeItem = null) {
 
 		var added = false
-		if (!contains(arguments.item)) {
-			if (arguments.beforeItem === null || contains(arguments.beforeItem)) {
-				append(arguments.item)
+		if (!this.contains(arguments.item)) {
+			if (arguments.beforeItem === null || this.contains(arguments.beforeItem)) {
+				this.append(arguments.item)
 				added = true
 				if (arguments.beforeItem !== null) {
-					move(arguments.item, arguments.beforeItem)
+					this.move(arguments.item, arguments.beforeItem)
 				}
 			}
 		}
 
-		return added
+		return added;
 	}
 
 	public Boolean function move(required Any item, Any beforeItem = null) {
 
 		var moved = false
-		var currentIndex = indexOf(arguments.item)
+		var currentIndex = this.indexOf(arguments.item)
 		// The item must be in the collection already.
 		if (currentIndex > 0) {
 			if (arguments.beforeItem === null) {
 				if (currentIndex < size()) {
-					append(arguments.item)
+					this.append(arguments.item)
 					moved = true
 				}
 			} else {
-				var newIndex = indexOf(arguments.beforeItem)
+				var newIndex = this.indexOf(arguments.beforeItem)
 				if (newIndex > 0 && newIndex != currentIndex) {
-					insertAt(newIndex, arguments.item)
+					this.insertAt(newIndex, arguments.item)
 					if (newIndex < currentIndex) {
 						currentIndex += 1
 					}
@@ -41,11 +41,11 @@ component {
 				}
 			}
 			if (moved) {
-				deleteAt(currentIndex)
+				this.deleteAt(currentIndex)
 			}
 		}
 
-		return moved
+		return moved;
 	}
 
 	public Boolean function remove(required Any item) {

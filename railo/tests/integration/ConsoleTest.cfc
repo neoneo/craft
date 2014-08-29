@@ -17,8 +17,8 @@ component extends="mxunit.framework.TestCase" {
 
 		console.commit()
 
-		variables.console = console
-		variables.endPoint = console.endPoint()
+		this.console = console
+		this.endPoint = console.getEndPoint()
 
 	}
 
@@ -58,16 +58,16 @@ component extends="mxunit.framework.TestCase" {
 
 	private String function testRequest(required String method, required String path, Struct parameters) {
 
-		variables.endPoint.setTestRequestMethod(arguments.method)
-		variables.endPoint.setTestPath(arguments.path)
+		this.endPoint.setTestRequestMethod(arguments.method)
+		this.endPoint.setTestPath(arguments.path)
 
 		var parameters = arguments.parameters ?: null
 		if (parameters !== null) {
-			variables.endPoint.setTestParameters(parameters)
+			this.endPoint.setTestParameters(parameters)
 		}
 
 		savecontent variable="local.output" {
-			variables.console.handleRequest()
+			this.console.handleRequest()
 		}
 
 		return Trim(output)

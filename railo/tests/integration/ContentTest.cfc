@@ -13,26 +13,26 @@ component extends="mxunit.framework.TestCase" {
 		var viewFinder = new ViewFinder(templateFinder, renderer)
 		// We don't add a mapping yet, so that we get template views only.
 		// Put the view finder in the variables scope to be able to change that later.
-		variables.viewFinder = viewFinder
+		this.viewFinder = viewFinder
 
-		variables.visitor = new RenderVisitor(context, viewFinder)
+		this.visitor = new RenderVisitor(context, viewFinder)
 	}
 
 	public void function RenderLeafTemplate() {
 		var leaf = new content.components.Leaf("leaf")
 
-		variables.visitor.visitLeaf(leaf)
+		this.visitor.visitLeaf(leaf)
 
-		var content = variables.visitor.content().trim()
+		var content = this.visitor.content.trim()
 		var expected = "leaf"
 
 		assertEquals(expected, content)
 	}
 
 	public void function RenderCompositeTemplate() {
-		variables.visitor.visitComposite(simpleComposite())
+		this.visitor.visitComposite(simpleComposite())
 
-		var content = variables.visitor.content().trim()
+		var content = this.visitor.content.trim()
 		var expected = "composite,leaf1,leaf2,leaf3,composite"
 
 		assertEquals(expected, content)
@@ -41,9 +41,9 @@ component extends="mxunit.framework.TestCase" {
 	public void function RenderNestedCompositeTemplate() {
 		var composite = nestedComposite()
 
-		variables.visitor.visitComposite(composite)
+		this.visitor.visitComposite(composite)
 
-		var content = variables.visitor.content().trim()
+		var content = this.visitor.content.trim()
 		var expected = "composite1,leaf1,composite2,leaf2,leaf3,composite2,leaf4,composite1"
 
 		assertEquals(expected, content)
@@ -56,9 +56,9 @@ component extends="mxunit.framework.TestCase" {
 		var layout = new Layout(section)
 		var document = new Document(layout)
 
-		variables.visitor.visitDocument(document)
+		this.visitor.visitDocument(document)
 
-		var content = variables.visitor.content()
+		var content = this.visitor.content
 
 		var expected = "composite1,leaf1,composite2,leaf2,leaf3,composite2,leaf4,composite1"
 
@@ -79,9 +79,9 @@ component extends="mxunit.framework.TestCase" {
 		p3Section.addComponent(simpleComposite())
 		document.addSection(p3Section, "p3")
 
-		variables.visitor.visitDocument(document)
+		this.visitor.visitDocument(document)
 
-		var content = variables.visitor.content()
+		var content = this.visitor.content
 
 		var expected = "composite1,leaf1,p1,composite2,leaf2,leaf3,composite2,leaf4,p3,composite1"
 		var placeholder = "composite,leaf1,leaf2,leaf3,composite"
@@ -123,9 +123,9 @@ component extends="mxunit.framework.TestCase" {
 		var document = new Document(documentLayout3)
 
 		// Start the actual test.
-		variables.visitor.visitDocument(document)
+		this.visitor.visitDocument(document)
 
-		var content = variables.visitor.content()
+		var content = this.visitor.content
 
 		var expected = "composite1,leaf1,p1,composite2,p2,leaf2,leaf3,composite2,leaf4,p3,composite1"
 		// p1 is filled with the simple composite (with a placeholder p)
@@ -137,7 +137,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function RenderNestedCompositeViewWithPlaceholders() {
 		// The main functionality has been tested in the tests above. The purpose of this test is to test the view component functionality.
-		variables.viewFinder.addMapping("/crafttests/integration/content/views")
+		this.viewFinder.addMapping("/crafttests/integration/content/views")
 
 		var section = new Section()
 		section.addComponent(nestedComposite(true))
@@ -163,9 +163,9 @@ component extends="mxunit.framework.TestCase" {
 		pSection.addComponent(new content.components.Leaf("p"))
 		document.addSection(pSection, "p")
 		// Start the actual test.
-		variables.visitor.visitDocument(document)
+		this.visitor.visitDocument(document)
 
-		var content = variables.visitor.content()
+		var content = this.visitor.content
 
 		var expected = {
 			component: "composite1",
@@ -228,9 +228,9 @@ component extends="mxunit.framework.TestCase" {
 		// Actual test.
 		document.useLayout(layout2)
 
-		variables.visitor.visitDocument(document)
+		this.visitor.visitDocument(document)
 
-		var content = variables.visitor.content()
+		var content = this.visitor.content
 
 		var expected = "composite,p1,p2,composite"
 
@@ -238,9 +238,9 @@ component extends="mxunit.framework.TestCase" {
 
 		// Put the previous layout back. The content of p3 should have been removed earlier, and should therefore not be rendered.
 		document.useLayout(layout1)
-		variables.visitor.visitDocument(document)
+		this.visitor.visitDocument(document)
 
-		var content = variables.visitor.content()
+		var content = this.visitor.content
 
 		var expected = "composite1,leaf1,p1,composite2,p2,leaf2,leaf3,composite2,leaf4,composite1"
 

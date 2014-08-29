@@ -1,12 +1,12 @@
 component {
 
 	public void function init(required String id, required Struct config, required DirectoryListener listener) {
-		variables._state = "stopped"
-		variables._id = arguments.id
-		variables._config = arguments.config
-		variables._listener = arguments.listener
+		this.state = "stopped"
+		this.id = arguments.id
+		this.config = arguments.config
+		this.listener = arguments.listener
 
-		variables._methods = {
+		this.methods = {
 			ENTRY_CREATE: "entryCreated",
 			ENTRY_MODIFY: "entryModified",
 			ENTRY_DELETE: "entryDeleted"
@@ -15,34 +15,34 @@ component {
 
 	public void function start() {
 
-		lock name="DirectoryWatcherGateway#variables._id#" type="exclusive" timeout="10" {
-			if (variables._state != "running") {
-				variables._state = "running"
-				var directory = variables._config.directory & (variables._config.recursive ? " (recursively)" : "")
+		lock name="DirectoryWatcherGateway#this.id#" type="exclusive" timeout="10" {
+			if (this.state != "running") {
+				this.state = "running"
+				var directory = this.config.directory & (this.config.recursive ? " (recursively)" : "")
 				log log="application" type="information" text="directory watcher gateway: starting";
 
 				var watcher = null
 				try {
-					watcher = new DirectoryWatcher(variables._config.directory, variables._config.recursive)
+					watcher = new DirectoryWatcher(this.config.directory, this.config.recursive)
 					log log="application" type="information" text="directory watcher gateway: watching #directory#";
 
-					running:while (variables._state == "running") {
+					running:while (this.state == "running") {
 						var events = watcher.poll()
 						if (!events.isEmpty()) {
 							for (var event in events) {
-								var method = variables._methods[event.type]
-								variables._listener[method](event.file)
+								var method = this.methods[event.type]
+								this.listener[method](event.file)
 							}
 						}
 
 						// Sleep until the next run, but cut it into half seconds, so we can stop the gateway easily.
 						var sleepStep = 500
 						var time = 0
-						while (time < variables._config.interval) {
-							sleepStep = Min(sleepStep, variables._config.interval - time)
+						while (time < this.config.interval) {
+							sleepStep = Min(sleepStep, this.config.interval - time)
 							time += sleepStep
 							Sleep(sleepStep)
-							if (variables._state != "running") {
+							if (this.state != "running") {
 								break running;
 							}
 						}
@@ -53,7 +53,7 @@ component {
 					if (watcher !== null) {
 						watcher.close()
 					}
-					variables._state = "stopped"
+					this.state = "stopped"
 					log log="application" type="information" text="directory watcher gateway: stopped watching #directory#");
 				}
 			}
@@ -62,8 +62,8 @@ component {
 	}
 
 	public void function stop() {
-		if (variables._state == "running") {
-			variables._state = "stopping"
+		if (this.state == "running") {
+			this.state = "stopping"
 			log log="application" type="information" text="directory watcher gateway: stopping";
 		}
 	}
@@ -74,7 +74,7 @@ component {
 	}
 
 	public String function getState() {
-		return variables._state
+		return this.state
 	}
 
 	public String function sendMessage(required Struct data) {

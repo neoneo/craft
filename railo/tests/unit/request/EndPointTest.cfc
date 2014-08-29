@@ -5,7 +5,7 @@ import craft.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		variables.endPoint = new EndPointStub()
+		this.endPoint = new EndPointStub()
 	}
 
 	public void function RequestParameters_Should_ReturnMergedUrlAndFormScopes() {
@@ -17,7 +17,7 @@ component extends="mxunit.framework.TestCase" {
 		form.a = 1
 		form.b = "string 1"
 
-		var parameters = variables.endPoint.requestParameters
+		var parameters = this.endPoint.requestParameters
 		var merged = {a: 1, b: "string 1", x: 2, y: "string 2"}
 
 		// The form contains fields introduced by Railo.
@@ -30,13 +30,13 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function ExtensionContentType_Should_ReturnValueOrDefault() {
-		variables.endPoint.setTestPath("/path/to/request.json")
-		assertEquals("json", variables.endPoint.extension)
-		assertEquals("application/json", variables.endPoint.contentType)
+		this.endPoint.setTestPath("/path/to/request.json")
+		assertEquals("json", this.endPoint.extension)
+		assertEquals("application/json", this.endPoint.contentType)
 
-		variables.endPoint.setTestPath("/path/to/request.notexist")
-		assertEquals("html", variables.endPoint.extension)
-		assertEquals("text/html", variables.endPoint.contentType)
+		this.endPoint.setTestPath("/path/to/request.notexist")
+		assertEquals("html", this.endPoint.extension)
+		assertEquals("text/html", this.endPoint.contentType)
 	}
 
 }

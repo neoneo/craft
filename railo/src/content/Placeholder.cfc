@@ -1,22 +1,22 @@
-component extends="Component" {
+import craft.request.Context;
+
+component extends="Component" accessors="true" {
+
+	property String ref setter="false";
 
 	public void function init(required String ref) {
-		variables._ref = arguments.ref
-	}
-
-	public String function ref() {
-		return variables._ref
+		this.ref = arguments.ref
 	}
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitPlaceholder(this)
 	}
 
-	public Boolean function hasChildren() {
-		return false
+	public Boolean function getHasChildren() {
+		return false;
 	}
 
-	public View function view(required Context context) {
+	public String function view(required Context context) {
 		Throw("Not supported", "UnsupportedOperationException")
 	}
 

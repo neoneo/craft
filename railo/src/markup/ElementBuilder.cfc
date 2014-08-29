@@ -1,19 +1,19 @@
 component {
 
 	public void function init(required ElementFactory factory, required Scope scope) {
-		variables._factory = arguments.factory
-		variables._scope = arguments.scope
+		this.factory = arguments.factory
+		this.scope = arguments.scope
 	}
 
 	public Element function build(required XML document) {
 
-		var element = variables._factory.convert(arguments.document.xmlRoot)
+		var element = this.factory.convert(arguments.document.xmlRoot)
 
 		/*
 			Create a scope for local elements. We don't want elements from outside this document to be able to refer to inside elements.
 			The parent scope contains only root elements.
 		*/
-		var localScope = new Scope(variables._scope)
+		var localScope = new Scope(this.scope)
 
 		// construct() returns an array of elements whose construction could not complete in one go.
 		var deferred = construct(element, localScope)
@@ -28,26 +28,26 @@ component {
 			deferred = deferred.filter(function (element) {
 				arguments.element.construct(localScope)
 
-				if (arguments.element.ready()) {
+				if (arguments.element.ready) {
 					localScope.put(arguments.element)
 				}
 
-				return !arguments.element.ready()
+				return !arguments.element.ready;
 			})
 
 			// If no elements could be completed in this loop, we have elements pointing to each other or elements depending on unknown elements.
 			if (count == deferred.len()) {
-				Throw("Could not construct all elements", "InstantiationException", "One or more elements have undefined dependencies, or are referring to each other. Circular references cannot be resolved.")
+				Throw("Could not construct all elements", "InstantiationException", "One or more elements have undefined dependencies, or are referring to each other. Circular references cannot be resolved.");
 			}
 		}
 
 		// If the element is not ready yet, give it one more try. Just in case it was waiting for some other deferred element.
-		if (!element.ready()) {
+		if (!element.ready) {
 			element.construct(localScope)
 		}
 
 		// Return the element whether it's ready or not. It's the responsibility of other objects to handle this.
-		return element
+		return element;
 	}
 
 	/**
@@ -57,9 +57,9 @@ component {
 
 		var deferred = []
 		// Construct the tree depth first. Most of the time, parent elements need their children to be ready.
-		for (var child in arguments.element.children()) {
+		for (var child in arguments.element.children) {
 			// The element could have been deferred before, in which case the child may have been constructed already.
-			if (!child.ready()) {
+			if (!child.ready) {
 				// Construct the child element and append the elements that could not be constructed.
 				deferred.append(construct(child, arguments.scope), true)
 			}
@@ -67,13 +67,13 @@ component {
 
 		arguments.element.construct(arguments.scope)
 
-		if (!arguments.element.ready()) {
+		if (!arguments.element.ready) {
 			deferred.append(arguments.element)
 		} else {
 			arguments.scope.put(arguments.element)
 		}
 
-		return deferred
+		return deferred;
 	}
 
 }

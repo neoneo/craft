@@ -3,10 +3,12 @@ import craft.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
-		variables.facade = new stubs.RequestFacadeStub(new stubs.CommandFactoryStub())
-		variables.endPoint = variables.facade.endPoint()
+		content type="text/html" reset="false";
 
-		variables.facade.importRoutes("/crafttests/integration/test.routes")
+		this.facade = new stubs.RequestFacadeStub(new stubs.CommandFactoryStub())
+		this.endPoint = this.facade.endPoint
+
+		this.facade.importRoutes("/crafttests/integration/test.routes")
 	}
 
 	public void function ArtistList() {
@@ -22,16 +24,16 @@ component extends="mxunit.framework.TestCase" {
 
 	private Struct function testRequest(required String method, required String path, Struct parameters) {
 
-		variables.endPoint.setTestRequestMethod(arguments.method)
-		variables.endPoint.setTestPath(arguments.path)
+		this.endPoint.setTestRequestMethod(arguments.method)
+		this.endPoint.setTestPath(arguments.path)
 
 		var parameters = arguments.parameters ?: null
 		if (parameters !== null) {
-			variables.endPoint.setTestParameters(parameters)
+			this.endPoint.setTestParameters(parameters)
 		}
 
 		savecontent variable="local.output" {
-			variables.facade.handleRequest()
+			this.facade.handleRequest()
 		}
 
 		return DeserializeJSON(output)
