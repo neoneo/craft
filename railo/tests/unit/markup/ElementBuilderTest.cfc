@@ -1,11 +1,14 @@
+import craft.content.*;
+
 import craft.markup.*;
 
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		this.factory = mock(CreateObject("ElementFactory"))
+		this.elementFactory = mock(CreateObject("ElementFactory"))
+		this.contentFactory = mock(CreateObject("ContentFactory"))
 
-		this.builder = new ElementBuilder(this.factory, new Scope())
+		this.builder = new ElementBuilder(this.elementFactory, new Scope())
 
 		// Create a fake xml document for the call to build().
 		this.document = XMLNew()
@@ -17,7 +20,7 @@ component extends="mxunit.framework.TestCase" {
 
 		// Mock the convert() method, which is called by the builder.
 		// The {xml} datatype expects xml strings, not nodes, so we use struct.
-		this.factory.convert("{struct}").returns(element)
+		this.elementFactory.convert("{struct}").returns(element)
 
 		var result = this.builder.build(this.document)
 
@@ -30,7 +33,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function BuildElementTree() {
 		var root = createElementTree()
 
-		this.factory.convert("{struct}").returns(root)
+		this.elementFactory.convert("{struct}").returns(root)
 
 		var result = this.builder.build(this.document)
 
@@ -44,14 +47,14 @@ component extends="mxunit.framework.TestCase" {
 
 		var children = root.children
 		var until = children[2].children[3] // The last element to be traversed.
-		var deferred1 = new stubs.build.DeferredElementMock(ref: "deferred1", until: until)
-		var deferred2 = new stubs.build.DeferredElementMock(ref: "deferred2", until: deferred1)
+		var deferred1 = new stubs.build.DeferredElementMock(this.contentFactory, {ref: "deferred1", until: until})
+		var deferred2 = new stubs.build.DeferredElementMock(this.contentFactory, {ref: "deferred2", until: deferred1})
 		// Add deferred1 to the first child. The build process should pass through here first.
 		// Add deferred2 to the last child. In case the algorithm changes, we still have an element whose construction is deferred.
 		children[1].add(deferred1)
 		children[3].add(deferred2)
 
-		this.factory.convert("{struct}").returns(root)
+		this.elementFactory.convert("{struct}").returns(root)
 
 		var result = this.builder.build(this.document)
 
@@ -62,13 +65,13 @@ component extends="mxunit.framework.TestCase" {
 	public void function BuildCircularTree_Should_ThrowConstructionException() {
 		var root = createElementTree()
 		var until = root.children[2].children[3] // The last element to be traversed.
-		var deferred1 = new stubs.build.DeferredElementMock(ref: "deferred1", until: until)
-		var deferred2 = new stubs.build.DeferredElementMock(ref: "deferred2", until: deferred1)
+		var deferred1 = new stubs.build.DeferredElementMock(this.contentFactory, {ref: "deferred1", until: until})
+		var deferred2 = new stubs.build.DeferredElementMock(this.contentFactory, {ref: "deferred2", until: deferred1})
 
 		root.children[1].add(deferred1)
 		until.add(deferred2)
 
-		this.factory.convert("{struct}").returns(root)
+		this.elementFactory.convert("{struct}").returns(root)
 
 		// Deferred2 waits for deferred1. Deferred1 waits for until. Until waits for deferred2.
 		try {
@@ -86,7 +89,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	private Element function createElement(required String ref) {
-		return new stubs.build.ElementMock(ref: arguments.ref);
+		return new stubs.build.ElementMock(this.contentFactory, {ref: arguments.ref});
 	}
 
 	private Element function createElementTree() {

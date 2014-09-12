@@ -1,6 +1,6 @@
 import craft.output.*;
 
-component implements="View" {
+component extends="View" {
 
 	public Any function render(required Any model) {
 		return null

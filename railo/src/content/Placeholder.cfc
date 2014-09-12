@@ -4,7 +4,7 @@ component extends="Component" accessors="true" {
 
 	property String ref setter="false";
 
-	public void function init(required String ref) {
+	private void function configure(required String ref) {
 		this.ref = arguments.ref
 	}
 
@@ -16,8 +16,8 @@ component extends="Component" accessors="true" {
 		return false;
 	}
 
-	public String function view(required Context context) {
-		Throw("Not supported", "UnsupportedOperationException")
+	public Any function view(required Context context) {
+		Throw("Not supported", "UnsupportedOperationException");
 	}
 
 }

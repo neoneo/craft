@@ -24,6 +24,7 @@ component accessors="true" {
 	}
 
 	public void function handleRequest() {
+
 		try {
 			var context = new Context(this.endPoint, this.root)
 		} catch (FileNotFoundException e) {

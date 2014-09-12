@@ -1,7 +1,7 @@
 import craft.markup.FileBuilder;
 
 import craft.output.RenderVisitor;
-import craft.output.ViewFinder;
+import craft.output.ViewFactory;
 
 import craft.request.Command;
 import craft.request.Context;
@@ -12,10 +12,9 @@ import craft.request.Context;
  */
 component implements="Command" {
 
-	public void function init(required FileBuilder fileBuilder, required String path, required ViewFinder viewFinder) {
+	public void function init(required FileBuilder fileBuilder, required String path) {
 		this.fileBuilder = arguments.fileBuilder
 		this.path = arguments.path
-		this.viewFinder = arguments.viewFinder
 
 		this.content = null
 	}
@@ -27,7 +26,7 @@ component implements="Command" {
 			this.content = element.product
 		}
 
-		var visitor = new RenderVisitor(arguments.context, this.viewFinder)
+		var visitor = new RenderVisitor(arguments.context)
 
 		this.content.accept(visitor)
 

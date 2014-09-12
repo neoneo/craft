@@ -1,8 +1,8 @@
 interface {
 
 	/**
-	 * Returns the `Command` that corresponds to the idenfifier. The `CommandFactory` may return a cached `Command` instance.
+	 * Returns the `Command` that corresponds to the idenfifier.
 	 */
-	public Command function supply(required String identifier);
+	public Command function create(required String identifier);
 
 }

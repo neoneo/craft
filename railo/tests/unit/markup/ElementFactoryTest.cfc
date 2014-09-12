@@ -1,9 +1,12 @@
-import craft.markup.ElementFactory;
+import craft.content.*;
+
+import craft.markup.*;
 
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		this.factory = new ElementFactory()
+		this.contentFactory = mock(CreateObject("ContentFactory"))
+		this.factory = new ElementFactory(this.contentFactory)
 		this.mapping = "/crafttests/unit/markup/stubs"
 	}
 
@@ -182,7 +185,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Convert_Should_ReturnElementTree() {
-		this.factory = new ElementFactoryMock()
+		this.factory = new ElementFactoryMock(this.contentFactory)
 
 		var document = XMLNew()
 
@@ -236,7 +239,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Convert_Should_HandleMultipleNamespaces() {
-		this.factory = new ElementFactoryMock()
+		this.factory = new ElementFactoryMock(this.contentFactory)
 
 		var document = XMLNew()
 		var rootNode = XMLElemNew(document, "http://neoneo.nl/craft/test", "t:composite")

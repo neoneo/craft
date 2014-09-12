@@ -20,32 +20,12 @@ component implements="Content" accessors="true" {
 		arguments.visitor.visitSection(this)
 	}
 
-	public void function traverse(required Visitor visitor) {
-
-		for (var component in this.getComponents()) {
-			component.accept(arguments.visitor)
-		}
-
-	}
-
 	public Component[] function getComponents() {
 		return this.componentCollection.toArray();
 	}
 
 	public Placeholder[] function getPlaceholders() {
 		return placeholdersFromComponents(this.getComponents());
-	}
-
-	public void function addComponent(required Component component, Component beforeComponent) {
-		this.componentCollection.add(argumentCollection: ArrayToStruct(arguments))
-	}
-
-	public void function removeComponent(required Component component) {
-		this.componentCollection.remove(arguments.component)
-	}
-
-	public void function moveComponent(required Component component, Component beforeComponent) {
-		this.componentCollection.move(argumentCollection: ArrayToStruct(arguments))
 	}
 
 	private Placeholder[] function placeholdersFromComponents(required Component[] components) {
@@ -60,6 +40,24 @@ component implements="Content" accessors="true" {
 		})
 
 		return placeholders;
+	}
+
+	public void function addComponent(required Component component, Component beforeComponent) {
+		this.componentCollection.add(argumentCollection: ArrayToStruct(arguments))
+	}
+
+	public void function removeComponent(required Component component) {
+		this.componentCollection.remove(arguments.component)
+	}
+
+	public void function moveComponent(required Component component, Component beforeComponent) {
+		this.componentCollection.move(argumentCollection: ArrayToStruct(arguments))
+	}
+
+	public void function traverse(required Visitor visitor) {
+		for (var component in this.getComponents()) {
+			component.accept(arguments.visitor)
+		}
 	}
 
 }

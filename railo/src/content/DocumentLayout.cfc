@@ -26,12 +26,8 @@ component extends="Document" implements="LayoutContent" accessors="true" {
 				placeholders.append(sections[ref].getPlaceholders(), true) // Concatenate the descendants array.
 			}
 		})
-try {
+
 		return placeholders;
-		} catch (any e) {
-			dump(placeholders)
-			abort;
-		}
 	}
 
 }

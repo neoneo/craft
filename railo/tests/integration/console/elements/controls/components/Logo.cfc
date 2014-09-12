@@ -8,7 +8,7 @@ component extends="Leaf" {
 		return "logo";
 	}
 
-	public Any function model(required Context context) {
+	public Any function process(required Context context) {
 		return null;
 	}
 

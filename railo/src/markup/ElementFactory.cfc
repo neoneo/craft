@@ -1,10 +1,15 @@
+import craft.content.ContentFactory;
+
 import craft.markup.Element;
 
 component {
 
 	property Struct tagNames setter="false";
 
-	this.tags = {} // Keeps metadata of tags per namespace.
+	public void function init(required ContentFactory contentFactory) {
+		this.contentFactory = arguments.contentFactory
+		this.tags = {} // Keeps metadata of tags per namespace.
+	}
 
 	/**
 	 * Registers any `Element`s found in the mapping. A craft.ini file must be present in order for any components to be inspected.
@@ -120,13 +125,13 @@ component {
 	 */
 	private Boolean function extendsElement(required Struct metadata) {
 
-		var result = arguments.metadata.name == GetComponentMetadata("Element").name
+		var success = arguments.metadata.name == GetComponentMetadata("Element").name
 
-		if (!result && arguments.metadata.keyExists("extends")) {
-			result = extendsElement(arguments.metadata.extends)
+		if (!success && arguments.metadata.keyExists("extends")) {
+			success = extendsElement(arguments.metadata.extends)
 		}
 
-		return result;
+		return success;
 	}
 
 	/**
@@ -158,12 +163,11 @@ component {
 		}
 
 		var data = tags[arguments.tagName]
-		// Create an argument collection for the constructor. Passing this in will call setters for each argument.
-		var constructorArguments = {}
+		// Create a struct with attribute name/value pairs to pass to the element instance.
+		var properties = {}
 		// Loop over the attributes defined in the component, and pick them up from the attributes that were passed in.
 		// This means that any attributes not defined in the component are ignored.
-		// Make the attribute values available in the closure.
-		var values = arguments.attributes
+		var values = arguments.attributes // Make the attribute values available in the closure.
 		data.attributes.each(function (attribute) {
 			var name = arguments.attribute.name
 			var value = values[name] ?: arguments.attribute.default ?: null
@@ -178,11 +182,11 @@ component {
 					Throw("Invalid value '#value#' for attribute '#name#': #arguments.attribute.type# expected", "IllegalArgumentException");
 				}
 
-				constructorArguments[name] = value
+				properties[name] = value
 			}
 		})
 
-		return new "#data.name#"(argumentCollection: constructorArguments);
+		return new "#data.name#"(this.contentFactory, properties);
 	}
 
 	private Struct[] function collectProperties(required Struct metadata) {

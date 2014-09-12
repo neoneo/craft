@@ -1,3 +1,5 @@
+import craft.output.ViewFactory;
+
 import craft.request.Context;
 
 /**
@@ -10,6 +12,15 @@ component implements="Content" accessors="true" {
 	property Boolean hasChildren setter="false";
 	property Boolean hasParent setter="false";
 	property Component parent;
+	property ViewFactory viewFactory getter="false" setter="false";
+
+	public void function init(required ViewFactory viewFactory, Struct parameters = {}) {
+		this.parent = null
+		this.viewFactory = arguments.viewFactory
+		this.configure(argumentCollection: arguments.parameters)
+	}
+
+	private void function configure() {}
 
 	public void function accept(required Visitor visitor) {
 		abort showerror="Not implemented";
@@ -24,16 +35,16 @@ component implements="Content" accessors="true" {
 	}
 
 	/**
-	 * Returns the name of the view that renders this `Component`.
+	 * Returns the `View` that renders this `Component`, or null.
 	 */
-	public String function view(required Context context) {
+	public Any function view(required Context context) {
 		abort showerror="Not implemented";
 	}
 
 	/**
-	 * Processes the request and returns data for the view.
+	 * Processes the request and returns data for the view, or null.
 	 */
-	public Any function model(required Context context) {
+	public Any function process(required Context context) {
 		abort showerror="Not implemented";
 	}
 

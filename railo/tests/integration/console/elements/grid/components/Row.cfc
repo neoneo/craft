@@ -12,7 +12,7 @@ component extends="Composite" {
 		return "row";
 	}
 
-	public Any function model(required Context context) {
+	public Any function process(required Context context) {
 		return null;
 	}
 

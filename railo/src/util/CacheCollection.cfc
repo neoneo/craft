@@ -65,7 +65,7 @@ component extends="Collection" {
 		return this.get().find(arguments.item);
 	}
 
-	private Array function this.get() {
+	private Array function get() {
 		return this.cache.get(this.key);
 	}
 

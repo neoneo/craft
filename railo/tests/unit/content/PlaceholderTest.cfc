@@ -1,9 +1,12 @@
 import craft.content.*;
 
+import craft.output.*;
+
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		this.placeholder = new Placeholder("ref")
+		this.viewFactory = mock(CreateObject("ViewFactory"))
+		this.placeholder = new Placeholder(this.viewFactory, {ref: "ref"})
 	}
 
 	public void function Ref_Should_Return_Ref() {

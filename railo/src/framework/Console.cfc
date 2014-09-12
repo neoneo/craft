@@ -5,6 +5,7 @@ import craft.markup.Scope;
 import craft.output.CFMLRenderer;
 import craft.output.TemplateFinder;
 import craft.output.TemplateRenderer;
+import craft.output.ViewFactory;
 import craft.output.ViewFinder;
 
 import craft.request.Facade;
@@ -22,16 +23,18 @@ component {
 		this.requestFacade = null
 		this.scope = null
 		this.templateFinder = null
+		this.viewFactory = null
 		this.viewFinder = null
 
 		// Define dependencies among the framework objects.
 		this.dependencies = {
-			commandFactory: ["elementFactory", "scope", "viewFinder"],
+			commandFactory: ["elementFactory", "scope", "viewFactory"],
 			elementFactory: [],
 			requestFacade: ["commandFactory"],
 			scope: [],
 			templateFinder: ["extension"],
-			viewFinder: ["templateFinder", "templateRenderer"]
+			viewFactory: ["templateFinder", "viewFinder"],
+			viewFinder: []
 		}
 
 		initialize()
@@ -40,6 +43,7 @@ component {
 
 	private void function initialize() {
 
+		// The actions
 		this.actions = StructNew("linked")
 
 		this.actions.templateFinder = {
@@ -48,6 +52,10 @@ component {
 		}
 		this.actions.viewFinder = {
 			construct: this.viewFinder === null,
+			calls: []
+		}
+		this.actions.viewFactory = {
+			construct: this.viewFactory === null,
 			calls: []
 		}
 		this.actions.elementFactory = {
@@ -82,6 +90,13 @@ component {
 		});
 	}
 
+	public void function reset() {
+		this.actions.each(function (object, data) {
+			// Flag all objects for construction, except the console.
+			arguments.data.construct = arguments.object != "console"
+		})
+	}
+
 	/**
 	 * Carries out the changes.
 	 */
@@ -111,7 +126,7 @@ component {
 	/**
 	 * Reverts any uncommitted changes to the settings.
 	 */
-	public void function revert() {
+	public void function rollback() {
 		initialize()
 	}
 
@@ -183,7 +198,7 @@ component {
 
 	public void function setTemplateRenderer(required TemplateRenderer templateRenderer) {
 		flagDependencies("templateRenderer")
-		this.actions.viewFinder.templateRenderer = arguments.templateRenderer
+		this.actions.viewFactory.calls.append({setTemplateRenderer: arguments.templateRenderer})
 	}
 	public void function addViewMapping(required String mapping) {
 		this.actions.viewFinder.calls.append({addMapping: [arguments.mapping]})
@@ -271,10 +286,19 @@ component {
 		return this.templateFinder;
 	}
 
+	private ViewFactory function getViewFactory() {
+		var object = this.actions.viewFactory
+		if (object.construct) {
+			this.viewFactory = createViewFactory()
+			object.construct = false
+		}
+
+		return this.viewFactory;
+	}
+
 	private ViewFinder function getViewFinder() {
 		var object = this.actions.viewFinder
 		if (object.construct) {
-			this.templateRenderer = object.templateRenderer ?: this.templateRenderer ?: new CFMLRenderer()
 			this.viewFinder = createViewFinder()
 			object.construct = false
 		}
@@ -285,7 +309,7 @@ component {
 	// FACTORY METHODS ============================================================================
 
 	private CommandFactory function createCommandFactory() {
-		return new ContentCommandFactory(getElementFactory(), getScope(), getViewFinder());
+		return new ContentCommandFactory(getElementFactory(), getScope(), getViewFactory());
 	}
 
 	private ElementFactory function createElementFactory() {
@@ -300,8 +324,12 @@ component {
 		return new TemplateFinder(this.extension);
 	}
 
+	private ViewFactory function createViewFactory() {
+		return new ViewFactory(getTemplateFinder(), getViewFinder());
+	}
+
 	private ViewFinder function createViewFinder() {
-		return new ViewFinder(getTemplateFinder(), this.templateRenderer);
+		return new ViewFinder();
 	}
 
 	private Scope function createScope() {

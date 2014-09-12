@@ -7,6 +7,7 @@ component {
 
 		// Array of path segments that correspond to the indents in the routes file.
 		this.indentLevels = []
+		this.commands = {}
 	}
 
 	/**
@@ -164,8 +165,10 @@ component {
 		// Push the path segment on the indent levels in case the next parse uses indents.
 		this.indentLevels.append(pathSegment)
 
-		var command = this.commandFactory.supply(tokens.identifier)
-		pathSegment.setCommand(command, tokens.method)
+		if (!this.commands.keyExists(tokens.identifier)) {
+			this.commands[tokens.identifier] = this.commandFactory.create(tokens.identifier)
+		}
+		pathSegment.setCommand(this.commands[tokens.identifier], tokens.method)
 
 		return pathSegment;
 	}

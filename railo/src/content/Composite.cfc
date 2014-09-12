@@ -7,20 +7,12 @@ import craft.util.ScopeCollection;
  */
 component extends="Component" accessors="true" {
 
-	property Array children setter="false"; /* Component[] */
+	property Array children setter="false"; // Component[]
 
 	this.childCollection = new ScopeCollection()
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitComposite(this)
-	}
-
-	public void function traverse(required Visitor visitor) {
-
-		for (var child in this.getChildren()) {
-			child.accept(arguments.visitor)
-		}
-
 	}
 
 	/**
@@ -61,6 +53,12 @@ component extends="Component" accessors="true" {
 	 */
 	public void function moveChild(required Component child, Component beforeChild) {
 		this.childCollection.move(argumentCollection: ArrayToStruct(arguments))
+	}
+
+	public void function traverse(required Visitor visitor) {
+		for (var child in this.getChildren()) {
+			child.accept(arguments.visitor)
+		}
 	}
 
 }

@@ -12,10 +12,9 @@ component implements="Visitor" accessors="true" {
 
 	property Any content setter="false";
 
-	public void function init(required Context context, required ViewFinder viewFinder) {
+	public void function init(required Context context) {
 
 		this.context = arguments.context
-		this.viewFinder = arguments.viewFinder
 
 		// Define state. The following state variables will be modified during component traversal.
 		// The sections in document instances are kept, so that placeholder instances can pick them up.
@@ -32,20 +31,19 @@ component implements="Visitor" accessors="true" {
 		// Keep state in local variables.
 		var output = this.output
 
-		var model = arguments.composite.model(this.context)
-		var viewName = output !== null ? arguments.composite.view(this.context) : null
+		var model = arguments.composite.process(this.context)
+		var view = output !== null ? arguments.composite.view(this.context) : null
 
 		// Overwrite state. Set output to null if there is no view defined.
 		// As a consequence, children will not be rendered either.
-		this.output = viewName !== null ? [] : null
+		this.output = view !== null ? [] : null
 
 		// During traversal, the output of the children will be appended to the output array.
 		arguments.composite.traverse(this)
 
-		if (viewName !== null) {
+		if (view !== null) {
 			// Put the content of the children on the model so the view can include it.
 			model.__content__ = this.output
-			var view = this.viewFinder.get(viewName)
 			this.content = view.render(model)
 			// Append the generated content on the 'parent' output array.
 			output.append(this.content)
@@ -70,14 +68,12 @@ component implements="Visitor" accessors="true" {
 
 	public void function visitLeaf(required Leaf leaf) {
 
-		var model = arguments.leaf.model(this.context)
+		var model = arguments.leaf.process(this.context)
 
 		// If output is null, rendering the view is useless.
 		if (this.output !== null) {
-			var viewName = arguments.leaf.view(this.context)
-			if (viewName !== null) {
-				var view = this.viewFinder.get(viewName)
-
+			var view = arguments.leaf.view(this.context)
+			if (view !== null) {
 				this.content = view.render(model)
 				this.output.append(this.content)
 			}
@@ -102,7 +98,7 @@ component implements="Visitor" accessors="true" {
 		var output = this.output
 		this.output = []
 
-		arguments.section.traverse(this)
+		section.traverse(this)
 
 		/*
 			Place the content produced by the components in the section in this.content.

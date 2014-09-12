@@ -1,5 +1,7 @@
 import craft.content.*;
 
+import craft.output.*;
+
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
@@ -55,19 +57,20 @@ component extends="mxunit.framework.TestCase" {
 
 		// Build a tree with placeholders at several levels.
 		// TODO: use mock objects.
-		this.section.addComponent(new Placeholder("p1"))
-		this.section.addComponent(new Composite())
+		var viewFactory = mock(CreateObject("ViewFactory"))
+		this.section.addComponent(new Placeholder(viewFactory, {ref: "p1"}))
+		this.section.addComponent(new Composite(viewFactory))
 
-		var level1 = new Composite()
-		level1.addChild(new Leaf())
+		var level1 = new Composite(viewFactory)
+		level1.addChild(new Leaf(viewFactory))
 		this.section.addComponent(level1)
 
-		var level2 = new Composite()
-		level2.addChild(new Placeholder("p3"))
-		level2.addChild(new Leaf())
+		var level2 = new Composite(viewFactory)
+		level2.addChild(new Placeholder(viewFactory, {ref: "p3"}))
+		level2.addChild(new Leaf(viewFactory))
 
 		level1.addChild(level2)
-		level1.addChild(new Placeholder("p2"))
+		level1.addChild(new Placeholder(viewFactory, {ref: "p2"}))
 
 		// Test.
 		var placeholders = section.placeholders

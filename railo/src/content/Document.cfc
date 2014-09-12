@@ -17,7 +17,6 @@ component implements="Content" {
 
 		var ref = arguments.ref
 
-		// FIXME: for some reason, can't call getPlaceholders() using implicit notation.
 		var placeholders = this.layout.getPlaceholders()
 		if (placeholders.find(
 			function (placeholder) {

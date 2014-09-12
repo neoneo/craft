@@ -12,7 +12,7 @@ component extends="Leaf" {
 		return "button";
 	}
 
-	public Any function model(required Context context) {
+	public Any function process(required Context context) {
 		return {
 			label: this.label
 		};

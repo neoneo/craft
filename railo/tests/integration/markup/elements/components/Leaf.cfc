@@ -6,7 +6,7 @@ component extends="craft.content.Leaf" accessors="true" {
 		setRef(arguments.ref)
 	}
 
-	public Struct function model(required Context context) {
+	public Struct function process(required Context context) {
 		return {
 			component: getRef()
 		}

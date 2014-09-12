@@ -4,15 +4,15 @@ import craft.request.Context;
 
 component extends="Composite" {
 
-	public void function init(required String view) {
-		this.view = arguments.view
+	public void function configure(required String view) {
+		this.viewObject = this.viewFactory.create(arguments.view)
 	}
 
-	public String function view(required Context context) {
-		return this.view;
+	public Any function view(required Context context) {
+		return this.viewObject;
 	}
 
-	public Any function model(required Context context) {
+	public Any function process(required Context context) {
 		return arguments.context.parameters;
 	}
 

@@ -38,9 +38,9 @@ component {
 	public String function get(required String template) {
 
 		if (!this.templatePaths.keyExists(arguments.template)) {
-			var fileName = locate(arguments.template)
+			var fileName = this.locate(arguments.template)
 			if (fileName === null) {
-				Throw("Template '#arguments.template#' not found", "FileNotFoundException");
+				Throw("File '#arguments.template#' not found", "FileNotFoundException");
 			}
 			this.templatePaths[arguments.template] = fileName
 		}
@@ -67,7 +67,7 @@ component {
 	}
 
 	public Boolean function exists(required String template) {
-		return locate(arguments.template) !== null;
+		return this.templatePaths.keyExists(arguments.template) || this.locate(arguments.template) !== null;
 	}
 
 }
