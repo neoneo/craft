@@ -1,10 +1,8 @@
-component accessors="true" {
+component {
 
-	property TemplateRenderer templateRenderer;
-
-	public void function init(required TemplateFinder templateFinder, required ViewFinder viewFinder) {
-		this.templateFinder = arguments.templateFinder
+	public void function init(required ViewFinder viewFinder, required ViewRenderer viewRenderer) {
 		this.viewFinder = arguments.viewFinder
+		this.viewRenderer = arguments.viewRenderer
 	}
 
 	/**
@@ -15,16 +13,13 @@ component accessors="true" {
 	 * (in the case) of a `TemplateView`), as additional properties.
 	 */
 	public View function create(required String name, Struct properties = {}) {
-
-		try {
+		if (this.viewFinder.exists(arguments.name)) {
 			var viewComponent = this.viewFinder.get(arguments.name)
 
-			return new "#viewComponent#"(this.templateFinder, this.templateRenderer, arguments.properties);
-
-		} catch (FileNotFoundException e) {
-			return new TemplateView(this.templateFinder, this.templateRenderer, arguments.properties);
+			return new "#viewComponent#"(this.viewRenderer, arguments.properties);
+		} else {
+			return new TemplateView(this.viewRenderer, {template: arguments.name, properties: arguments.properties});
 		}
-
 	}
 
 }

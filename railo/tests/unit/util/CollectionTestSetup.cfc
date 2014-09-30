@@ -28,7 +28,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Add_Should_ReturnFalse_IfInsertedBeforeNotExists() {
-		assertFalse(collection.add({id: "A"}, {id: "B"}), "collection.add should return false if the item should be moved before an item that is not in the list")
+		assertFalse(this.collection.add({id: "A"}, {id: "B"}), "collection.add should return false if the item should be moved before an item that is not in the list")
 	}
 
 	public void function Contains_Should_ReturnCorrectBooleanValue() {
@@ -70,7 +70,7 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(this.collection.remove(this.item1))
 		assertFalse(this.collection.contains(this.item1), "collection.contains should return false if the item is removed")
 		assertFalse(this.collection.remove(this.item1), "collection.remove should return false if the item is not in the list")
-		assertEquals(2, collection.size())
+		assertEquals(2, this.collection.size())
 	}
 
 	public void function Remove_Should_ReturnFalse_IfNotExists() {
@@ -110,7 +110,7 @@ component extends="mxunit.framework.TestCase" {
 		})
 		assertSame(selected, this.item1, "collection.select should return item1")
 		var noChild = {id: "A"}
-		var selected = collection.select(function (item) {
+		var selected = this.collection.select(function (item) {
 			return arguments.item === noChild
 		})
 		assertTrue(selected === null, "collection.select should return null if the predicate is not met")

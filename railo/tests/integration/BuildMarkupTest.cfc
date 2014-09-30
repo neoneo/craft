@@ -2,11 +2,20 @@ import craft.content.*;
 
 import craft.markup.*;
 
+import craft.output.*;
+
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
 
-		var factory = new ElementFactory()
+		var viewFinder = new ViewFinder()
+		var templateFinder = new TemplateFinder("cfm")
+		var viewRenderer = mock(CreateObject("ViewRenderer"))
+
+		var viewFactory = new ViewFactory(viewFinder, viewRenderer)
+		var contentFactory = new ContentFactory(viewFactory)
+
+		var factory = new ElementFactory(contentFactory)
 		factory.register("/crafttests/integration/markup/elements")
 		factory.register("/craft/markup/library")
 

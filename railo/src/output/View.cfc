@@ -5,12 +5,10 @@
  */
 component accessors="true" {
 
-	property TemplateFinder templateFinder setter="false";
-	property TemplateRenderer templateRenderer setter="false";
+	property ViewRenderer viewRenderer setter="false";
 
-	public void function init(required TemplateFinder templateFinder, required TemplateRenderer templateRenderer, Struct properties) {
-		this.templateFinder = arguments.templateFinder
-		this.templateRenderer = arguments.templateRenderer
+	public void function init(required ViewRenderer viewRenderer, Struct properties) {
+		this.viewRenderer = arguments.viewRenderer
 
 		this.configure(argumentCollection: arguments.properties)
 	}

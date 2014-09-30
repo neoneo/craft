@@ -2,7 +2,7 @@ component extends="craft.content.Leaf" accessors="true" {
 
 	property String ref;
 
-	public void function init(required String ref) {
+	private void function configure(required String ref) {
 		setRef(arguments.ref)
 	}
 
@@ -12,8 +12,8 @@ component extends="craft.content.Leaf" accessors="true" {
 		}
 	}
 
-	public String function view(required Context context) {
-		return "leaf"
+	public View function view(required Context context) {
+		return this.viewFactory.create("leaf")
 	}
 
 }

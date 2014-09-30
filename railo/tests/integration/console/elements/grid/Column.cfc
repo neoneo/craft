@@ -9,7 +9,7 @@ component extends="CompositeElement" accessors="true" tag="column" {
 	property Numeric span default="1";
 
 	private Composite function create() {
-		return new components.Column(getSpan());
+		return this.contentFactory.create(GetComponentMetaData("components.Column").name, {span: getSpan()});
 	}
 
 }

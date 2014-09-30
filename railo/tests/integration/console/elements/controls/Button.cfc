@@ -7,7 +7,7 @@ component extends="ComponentElement" accessors="true" tag="button" {
 	property String label required="true";
 
 	private Component function create() {
-		return new components.Button(getLabel());
+		return this.contentFactory.create(GetComponentMetaData("components.Button").name, {label: getLabel()});
 	}
 
 }

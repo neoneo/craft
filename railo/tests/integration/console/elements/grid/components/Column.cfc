@@ -4,12 +4,12 @@ import craft.request.Context;
 
 component extends="Composite" {
 
-	public void function init(required Numeric span) {
+	private void function configure(required Numeric span) {
 		this.span = span
 	}
 
-	public String function view(required Context context) {
-		return "column";
+	public Any function view(required Context context) {
+		return this.viewFactory.create("column");
 	}
 
 	public Any function process(required Context context) {

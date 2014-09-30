@@ -1,11 +1,16 @@
-import craft.util.ScopeCache;
-
 component extends="TemplateFinder" {
 
 	public void function init() {
 		super.init("cfc")
 
 		this.viewMappings = {}
+	}
+
+	public void function removeMapping(required String mapping) {
+		super.removeMapping(arguments.mapping)
+		this.viewMappings = this.viewMappings.filter(function () {
+
+		})
 	}
 
 	public String function get(required String view) {

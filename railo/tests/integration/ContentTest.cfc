@@ -7,19 +7,28 @@ component extends="mxunit.framework.TestCase" {
 	public void function setUp() {
 		var context = mock(CreateObject("Context"))
 
+		var templateRenderer = new CFMLRenderer()
 		var templateFinder = new TemplateFinder("cfm")
 		templateFinder.addMapping("/crafttests/integration/content/templates")
-		var renderer = new CFMLRenderer()
-		var viewFinder = new ViewFinder(templateFinder, renderer)
+
+		var viewFinder = new ViewFinder()
+		var viewRenderer = new ViewRenderer(templateRenderer, templateFinder)
+
+		var viewFactory = new ViewFactory(viewFinder, viewRenderer)
+		this.viewFactory = viewFactory
+
+		this.contentFactory = new ContentFactory(viewFactory)
+		this.contentFactory.setMapping("/crafttests/integration/content/components")
+
 		// We don't add a mapping yet, so that we get template views only.
 		// Put the view finder in the variables scope to be able to change that later.
 		this.viewFinder = viewFinder
 
-		this.visitor = new RenderVisitor(context, viewFinder)
+		this.visitor = new RenderVisitor(context)
 	}
 
 	public void function RenderLeafTemplate() {
-		var leaf = new content.components.Leaf("leaf")
+		var leaf = this.contentFactory.create("Leaf", {ref: "leaf"})
 
 		this.visitor.visitLeaf(leaf)
 
@@ -106,18 +115,18 @@ component extends="mxunit.framework.TestCase" {
 
 		var documentLayout2 = new DocumentLayout(documentLayout1)
 		var pSection = new Section()
-		pSection.addComponent(new content.components.Leaf("p"))
+		pSection.addComponent(this.contentFactory.create("Leaf", {ref: "p"}))
 		documentLayout2.addSection(pSection, "p")
 
 		var p2Section = new Section()
-		p2Section.addComponent(new content.components.Leaf("p2"))
+		p2Section.addComponent(this.contentFactory.create("Leaf", {ref: "p2"}))
 		documentLayout2.addSection(p2Section, "p2")
 
 		// Now remains only placeholder p3.
 
 		var documentLayout3 = new DocumentLayout(documentLayout2)
 		var p3Section = new Section()
-		p3Section.addComponent(new content.components.Leaf("p3"))
+		p3Section.addComponent(this.contentFactory.create("Leaf", {ref: "p3"}))
 		documentLayout3.addSection(p3Section, "p3")
 
 		var document = new Document(documentLayout3)
@@ -149,18 +158,18 @@ component extends="mxunit.framework.TestCase" {
 		documentLayout.addSection(p1Section, "p1")
 
 		var p2Section = new Section()
-		p2Section.addComponent(new content.components.Leaf("p2"))
+		p2Section.addComponent(this.contentFactory.create("Leaf", {ref: "p2"}))
 		documentLayout.addSection(p2Section, "p2")
 
 		var p3Section = new Section()
-		p3Section.addComponent(new content.components.Leaf("p3"))
+		p3Section.addComponent(this.contentFactory.create("Leaf", {ref: "p3"}))
 		documentLayout.addSection(p3Section, "p3")
 
 		var document = new Document(documentLayout)
 
 		// Fill the p placeholder, included by the simple composite.
 		var pSection = new Section()
-		pSection.addComponent(new content.components.Leaf("p"))
+		pSection.addComponent(this.contentFactory.create("Leaf", {ref: "p"}))
 		document.addSection(pSection, "p")
 		// Start the actual test.
 		this.visitor.visitDocument(document)
@@ -203,9 +212,9 @@ component extends="mxunit.framework.TestCase" {
 
 		// The layout contains placeholders p1, p2 and p3.
 		// Create a 2nd layout that only includes placeholders p1 en p2.
-		var composite = new content.components.Composite("composite")
-		composite.addChild(new Placeholder("p1"))
-		composite.addChild(new Placeholder("p2"))
+		var composite = this.contentFactory.create("Composite", {ref: "composite"})
+		composite.addChild(new Placeholder(this.viewFactory, {ref: "p1"}))
+		composite.addChild(new Placeholder(this.viewFactory, {ref: "p2"}))
 		var section2 = new Section()
 		section2.addComponent(composite)
 		var layout2 = new Layout(section2)
@@ -214,15 +223,15 @@ component extends="mxunit.framework.TestCase" {
 		var document = new Document(layout1)
 		// Fill all placeholders p1, p2 and p3.
 		var p1Section = new Section()
-		p1Section.addComponent(new content.components.Leaf("p1"))
+		p1Section.addComponent(this.contentFactory.create("Leaf", {ref: "p1"}))
 		document.addSection(p1Section, "p1")
 
 		var p2Section = new Section()
-		p2Section.addComponent(new content.components.Leaf("p2"))
+		p2Section.addComponent(this.contentFactory.create("Leaf", {ref: "p2"}))
 		document.addSection(p2Section, "p2")
 
 		var p3Section = new Section()
-		p3Section.addComponent(new content.components.Leaf("p3"))
+		p3Section.addComponent(this.contentFactory.create("Leaf", {ref: "p3"}))
 		document.addSection(p3Section, "p3")
 
 		// Actual test.
@@ -247,37 +256,37 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(expected, expected)
 	}
 
-	private content.components.Composite function simpleComposite(Boolean placeholder = true) {
-		var composite = new content.components.Composite("composite")
-		composite.addChild(new content.components.Leaf("leaf1"))
+	private Composite function simpleComposite(Boolean placeholder = true) {
+		var composite = this.contentFactory.create("Composite", {ref: "composite"})
+		composite.addChild(this.contentFactory.create("Leaf", {ref: "leaf1"}))
 		if (arguments.placeholder) {
-			composite.addChild(new Placeholder("p"))
+			composite.addChild(new Placeholder(this.viewFactory, {ref: "p"}))
 		}
-		composite.addChild(new content.components.Leaf("leaf2"))
-		composite.addChild(new content.components.Leaf("leaf3"))
+		composite.addChild(this.contentFactory.create("Leaf", {ref: "leaf2"}))
+		composite.addChild(this.contentFactory.create("Leaf", {ref: "leaf3"}))
 
 		return composite;
 	}
 
-	private content.components.Composite function nestedComposite(Boolean placeholders = false) {
-		var composite1 = new content.components.Composite("composite1")
-		composite1.addChild(new content.components.Leaf("leaf1"))
+	private Composite function nestedComposite(Boolean placeholders = false) {
+		var composite1 = this.contentFactory.create("Composite", {ref: "composite1"})
+		composite1.addChild(this.contentFactory.create("Leaf", {ref: "leaf1"}))
 
 		if (arguments.placeholders) {
-			composite1.addChild(new Placeholder("p1"))
+			composite1.addChild(new Placeholder(this.viewFactory, {ref: "p1"}))
 		}
 
-		var composite2 = new content.components.Composite("composite2")
+		var composite2 = this.contentFactory.create("Composite", {ref: "composite2"})
 		if (arguments.placeholders) {
-			composite2.addChild(new Placeholder("p2"))
+			composite2.addChild(new Placeholder(this.viewFactory, {ref: "p2"}))
 		}
-		composite2.addChild(new content.components.Leaf("leaf2"))
-		composite2.addChild(new content.components.Leaf("leaf3"))
+		composite2.addChild(this.contentFactory.create("Leaf", {ref: "leaf2"}))
+		composite2.addChild(this.contentFactory.create("Leaf", {ref: "leaf3"}))
 
 		composite1.addChild(composite2)
-		composite1.addChild(new content.components.Leaf("leaf4"))
+		composite1.addChild(this.contentFactory.create("Leaf", {ref: "leaf4"}))
 		if (arguments.placeholders) {
-			composite1.addChild(new Placeholder("p3"))
+			composite1.addChild(new Placeholder(this.viewFactory, {ref: "p3"}))
 		}
 
 		return composite1;

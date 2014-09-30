@@ -9,7 +9,7 @@ component extends="ElementMock" accessors="true" {
 	}
 
 	public Boolean function getReady() {
-		return getUntil().constructed;
+		return this.until.constructed;
 	}
 
 }

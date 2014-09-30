@@ -6,22 +6,19 @@ component extends="mxunit.framework.TestCase" {
 		this.template = "template"
 		this.model = {key: 1}
 
-		this.templateFinder = mock(CreateObject("TemplateFinder"))
-			.get(this.template).returns(this.template)
-
-		this.renderer = mock(CreateObject("TemplateRendererStub"))
-			.render(this.template, this.model).returns("done")
+		this.viewRenderer = mock(CreateObject("ViewRenderer"))
+			.render(this.template, this.model).returns(this.template)
 
 	}
 
 	public void function Render_Should_CallRenderer() {
 
-		var view = new TemplateView(this.templateFinder, this.renderer, {template: this.template})
+		var view = new TemplateView(this.viewRenderer, {template: this.template})
 
-		var result = view.render(model)
-		assertEquals("done", result)
+		var output = view.render(this.model)
+		assertEquals(this.template, output)
 
-		this.renderer.verify().render(this.template, this.model)
+		this.viewRenderer.verify().render(this.template, this.model)
 	}
 
 	public void function Render_Should_PassPropertiesToTemplate() {
@@ -30,16 +27,16 @@ component extends="mxunit.framework.TestCase" {
 			property2: "two",
 			property3: "three"
 		}
-		var view = new TemplateView(this.templateFinder, this.renderer, {template: this.template, properties: properties})
+		var view = new TemplateView(this.viewRenderer, {template: this.template, properties: properties})
 
 		// The model being rendered is the model and the properties combined.
 		var renderedModel = Duplicate(this.model, false).append(properties)
-		this.renderer.render(this.template, renderedModel).returns("done")
+		this.viewRenderer.render(this.template, renderedModel).returns(this.template & "augmented")
 		// The view uses the model without the properties, as that is what the component would produce.
-		var result = view.render(this.model)
-		assertEquals("done", result)
+		var output = view.render(this.model)
+		assertEquals(this.template & "augmented", output)
 
-		this.renderer.verify().render(this.template, renderedModel)
+		this.viewRenderer.verify().render(this.template, renderedModel)
 	}
 
 }

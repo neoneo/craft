@@ -4,12 +4,12 @@ import craft.request.Context;
 
 component extends="Leaf" {
 
-	public void function init(required String label) {
+	private void function configure(required String label) {
 		this.label = label
 	}
 
-	public String function view(required Context context) {
-		return "button";
+	public Any function view(required Context context) {
+		return this.viewFactory.create("button");
 	}
 
 	public Any function process(required Context context) {

@@ -18,18 +18,18 @@ component {
 	}
 
 	public Struct[] function poll() {
-		return handleEvents(this.watcher.poll())
+		return handleEvents(this.watcher.poll());
 	}
 
 	public Struct[] function take() {
-		return handleEvents(this.watcher.take())
+		return handleEvents(this.watcher.take());
 	}
 
 	public void function close() {
 		this.watcher.close()
 	}
 
-	private Array function handleEvents(required Any key = null) {
+	private Struct[] function handleEvents(required Any key = null) {
 
 		var events = []
 		if (arguments.key !== null) {
@@ -63,7 +63,7 @@ component {
 			}
 		}
 
-		return events
+		return events;
 	}
 
 	private void function register(required Any path, required Boolean recursive) {

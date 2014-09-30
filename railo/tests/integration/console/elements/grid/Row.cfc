@@ -7,7 +7,7 @@ import craft.markup.library.CompositeElement;
 component extends="CompositeElement" tag="row" {
 
 	private Composite function create() {
-		return new components.Row();
+		return this.contentFactory.create(GetComponentMetaData("components.Row").name);
 	}
 
 	public void function add(required Column element) {

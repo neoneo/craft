@@ -10,7 +10,7 @@ component extends="mxunit.framework.TestCase" {
 		console.buildContent(mapping & "/content/layouts")
 		console.registerElements("/craft/markup/library")
 		console.registerElements(mapping & "/elements")
-		console.addTemplateMapping(mapping & "/templates")
+		console.addViewMapping(mapping & "/templates")
 		console.setTemplateExtension("cfm")
 		console.addViewMapping(mapping & "/views")
 		console.importRoutes(mapping & "/console.routes")
@@ -24,6 +24,8 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function Component() {
 		var output = testRequest("GET", "/component.xml")
+		echo(output)
+		abort;
 
 		assertTrue(IsXML(output))
 

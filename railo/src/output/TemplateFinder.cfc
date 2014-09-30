@@ -22,11 +22,8 @@ component {
 			this.mappingPaths.delete(arguments.mapping)
 			// The mapping serves as the prefix for all keys to be removed from the cache.
 			var prefix = arguments.mapping
-			// Get a key array first and then delete from the cache.
-			this.templatePaths.keyArray().each(function (key) {
-				if (arguments.key.startsWith(prefix)) {
-					this.templatePaths.delete(arguments.key)
-				}
+			this.templatePaths = this.templatePaths.filter(function (mapping, path) {
+				return !arguments.mapping.startsWith(prefix)
 			})
 		}
 	}
@@ -35,22 +32,22 @@ component {
 	 * Returns the path including the mapping for the given template.
 	 * The template should be passed in without the extension.
 	 */
-	public String function get(required String template) {
+	public String function get(required String name) {
 
-		if (!this.templatePaths.keyExists(arguments.template)) {
-			var fileName = this.locate(arguments.template)
-			if (fileName === null) {
-				Throw("File '#arguments.template#' not found", "FileNotFoundException");
+		if (!this.templatePaths.keyExists(arguments.name)) {
+			var templatePath = this.locate(arguments.name)
+			if (templatePath === null) {
+				Throw("File '#arguments.name#' not found", "FileNotFoundException");
 			}
-			this.templatePaths[arguments.template] = fileName
+			this.templatePaths[arguments.name] = templatePath
 		}
 
-		return this.templatePaths[arguments.template];
+		return this.templatePaths[arguments.name];
 	}
 
-	private Any function locate(required String template) {
+	private Any function locate(required String name) {
 
-		var filename = arguments.template & "." & this.extension
+		var filename = arguments.name & "." & this.extension
 		var templatePath = null
 
 		this.mappingPaths.some(function (mapping, directory) {
@@ -66,8 +63,8 @@ component {
 		return templatePath;
 	}
 
-	public Boolean function exists(required String template) {
-		return this.templatePaths.keyExists(arguments.template) || this.locate(arguments.template) !== null;
+	public Boolean function exists(required String name) {
+		return this.templatePaths.keyExists(arguments.name) || this.locate(arguments.name) !== null;
 	}
 
 }

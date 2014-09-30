@@ -1,3 +1,5 @@
+import craft.content.ContentFactory;
+
 import craft.markup.DirectoryBuilder;
 import craft.markup.ElementFactory;
 import craft.markup.Scope;
@@ -7,6 +9,7 @@ import craft.output.TemplateFinder;
 import craft.output.TemplateRenderer;
 import craft.output.ViewFactory;
 import craft.output.ViewFinder;
+import craft.output.ViewRenderer;
 
 import craft.request.Facade;
 
@@ -18,23 +21,33 @@ component {
 
 	public void function init() {
 
+		this.contentFactory = null
 		this.commandFactory = null
 		this.elementFactory = null
+		this.extension = null
 		this.requestFacade = null
 		this.scope = null
 		this.templateFinder = null
+		this.templateRenderer = null
 		this.viewFactory = null
 		this.viewFinder = null
+		this.viewRenderer = null
 
-		// Define dependencies among the framework objects.
+		/*
+			Define dependencies among the framework objects, where keys are dependent objects, and values are arrays of objects being depended upon.
+			These dependencies define when an object needs to be recreated. Not all dependencies are present here, because some dependencies can be set.
+			In other words, these are the constructor dependencies.
+		*/
 		this.dependencies = {
-			commandFactory: ["elementFactory", "scope", "viewFactory"],
-			elementFactory: [],
+			contentFactory: ["viewFactory"],
+			commandFactory: ["elementFactory", "scope"],
+			elementFactory: ["contentFactory"],
 			requestFacade: ["commandFactory"],
 			scope: [],
 			templateFinder: ["extension"],
-			viewFactory: ["templateFinder", "viewFinder"],
-			viewFinder: []
+			viewFactory: ["viewFinder", "viewRenderer"],
+			viewFinder: [],
+			viewRenderer: ["templateFinder"]
 		}
 
 		initialize()
@@ -43,7 +56,7 @@ component {
 
 	private void function initialize() {
 
-		// The actions
+		// The actions on commit should be performed in fixed order.
 		this.actions = StructNew("linked")
 
 		this.actions.templateFinder = {
@@ -54,8 +67,16 @@ component {
 			construct: this.viewFinder === null,
 			calls: []
 		}
+		this.actions.viewRenderer = {
+			construct: this.viewRenderer === null,
+			calls: []
+		}
 		this.actions.viewFactory = {
 			construct: this.viewFactory === null,
+			calls: []
+		}
+		this.actions.contentFactory = {
+			construct: this.contentFactory === null,
 			calls: []
 		}
 		this.actions.elementFactory = {
@@ -184,30 +205,34 @@ component {
 		flagDependencies("extension")
 		this.actions.templateFinder.extension = arguments.extension
 	}
-	public void function addTemplateMapping(required String mapping) {
-		this.actions.templateFinder.calls.append({addMapping: [arguments.mapping]})
-	}
-	public void function removeTemplateMapping(required String mapping) {
-		this.actions.templateFinder.calls.append({removeMapping: [arguments.mapping]})
-	}
-	public void function clearTemplateMappings() {
-		this.actions.templateFinder.calls.append({clear: []})
+	// public void function addTemplateMapping(required String mapping) {
+	// 	this.actions.templateFinder.calls.append({addMapping: [arguments.mapping]})
+	// }
+	// public void function removeTemplateMapping(required String mapping) {
+	// 	this.actions.templateFinder.calls.append({removeMapping: [arguments.mapping]})
+	// }
+	// public void function clearTemplateMappings() {
+	// 	this.actions.templateFinder.calls.append({clear: []})
+	// }
+
+	public void function setTemplateRenderer(required TemplateRenderer templateRenderer) {
+		flagDependencies("templateRenderer")
+		this.actions.viewRenderer.calls.append({setTemplateRenderer: [arguments.templateRenderer]})
 	}
 
 	// ViewFinder =================================================================================
 
-	public void function setTemplateRenderer(required TemplateRenderer templateRenderer) {
-		flagDependencies("templateRenderer")
-		this.actions.viewFactory.calls.append({setTemplateRenderer: arguments.templateRenderer})
-	}
 	public void function addViewMapping(required String mapping) {
 		this.actions.viewFinder.calls.append({addMapping: [arguments.mapping]})
+		this.actions.templateFinder.calls.append({addMapping: [arguments.mapping]})
 	}
 	public void function removeViewMapping(required String mapping) {
 		this.actions.viewFinder.calls.append({removeMapping: [arguments.mapping]})
+		this.actions.templateFinder.calls.append({removeMapping: [arguments.mapping]})
 	}
 	public void function clearViewMappings() {
 		this.actions.viewFinder.calls.append({clear: []})
+		this.actions.templateFinder.calls.append({clear: []})
 	}
 
 	// Factory / wiring methods
@@ -229,6 +254,16 @@ component {
 
 	private void function build(required String path) {
 		new DirectoryBuilder(getElementFactory(), getScope()).build(arguments.path)
+	}
+
+	private ContentFactory function getContentFactory() {
+		var object = this.actions.contentFactory
+		if (object.construct) {
+			this.contentFactory = createContentFactory()
+			object.construct = false
+		}
+
+		return this.contentFactory;
 	}
 
 	private CommandFactory function getCommandFactory() {
@@ -306,14 +341,28 @@ component {
 		return this.viewFinder;
 	}
 
+	private ViewRenderer function getViewRenderer() {
+		var object = this.actions.viewRenderer
+		if (object.construct) {
+			this.viewRenderer = createViewRenderer()
+			object.construct = false
+		}
+
+		return this.viewFinder;
+	}
+
 	// FACTORY METHODS ============================================================================
+
+	private ContentFactory function createContentFactory() {
+		return new ContentFactory(getViewFactory());
+	}
 
 	private CommandFactory function createCommandFactory() {
 		return new ContentCommandFactory(getElementFactory(), getScope(), getViewFactory());
 	}
 
 	private ElementFactory function createElementFactory() {
-		return new ElementFactory();
+		return new ElementFactory(getContentFactory());
 	}
 
 	private Facade function createRequestFacade() {
@@ -325,11 +374,15 @@ component {
 	}
 
 	private ViewFactory function createViewFactory() {
-		return new ViewFactory(getTemplateFinder(), getViewFinder());
+		return new ViewFactory(getViewFinder());
 	}
 
 	private ViewFinder function createViewFinder() {
 		return new ViewFinder();
+	}
+
+	private ViewRenderer function createViewRenderer() {
+		return new ViewRenderer(getTemplateFinder());
 	}
 
 	private Scope function createScope() {

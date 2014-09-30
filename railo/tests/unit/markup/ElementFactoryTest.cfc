@@ -143,8 +143,8 @@ component extends="mxunit.framework.TestCase" {
 		var element = this.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
 
 		assertTrue(IsInstanceOf(element, "TagElement"))
-		assertEquals(attributes.ref, element.getRef())
-		assertEquals(attributes.name, element.getName())
+		assertEquals(attributes.ref, element.ref)
+		assertEquals(attributes.name, element.name)
 	}
 
 	public void function Create_Should_ReturnElement_When_Component() {
@@ -165,8 +165,8 @@ component extends="mxunit.framework.TestCase" {
 		var element = this.factory.create("http://neoneo.nl/craft", "crafttests.unit.markup.stubs.create.NoTagElement", attributes)
 
 		assertTrue(IsInstanceOf(element, "NoTagElement"))
-		assertEquals(attributes.ref, element.getRef())
-		assertEquals(attributes.name, element.getName())
+		assertEquals(attributes.ref, element.ref)
+		assertEquals(attributes.name, element.name)
 	}
 
 	public void function Create_Should_ReturnElementWithoutAttributes_When_TagAndUndefinedAttributes() {
@@ -180,8 +180,8 @@ component extends="mxunit.framework.TestCase" {
 		var element = this.factory.create("http://neoneo.nl/craft", "tagelement", attributes)
 
 		assertTrue(IsInstanceOf(element, "TagElement"))
-		assertEquals(attributes.ref, element.getRef())
-		assertTrue(element.getName() === null)
+		assertEquals(attributes.ref, element.ref)
+		assertTrue(element.name === null)
 	}
 
 	public void function Convert_Should_ReturnElementTree() {
@@ -207,34 +207,34 @@ component extends="mxunit.framework.TestCase" {
 		rootNode.xmlChildren = [childNode1, childNode2, childNode3]
 
 		// Test.
-		var root = factory.convert(rootNode)
-		assertEquals(rootNode.xmlAttributes.ref, root.getRef())
-		assertEquals(rootNode.xmlName, root.getName())
+		var root = this.factory.convert(rootNode)
+		assertEquals(rootNode.xmlAttributes.ref, root.ref)
+		assertEquals(rootNode.xmlName, root.name)
 
 		var children = root.children
 		var child1 = children[1]
-		assertEquals(childNode1.xmlAttributes.ref, child1.getRef())
-		assertEquals(rootNode.xmlName, root.getName())
+		assertEquals(childNode1.xmlAttributes.ref, child1.ref)
+		assertEquals(rootNode.xmlName, root.name)
 
 		var child2 = children[2]
-		assertEquals(childNode2.xmlAttributes.ref, child2.getRef())
-		assertEquals(childNode2.xmlName, child2.getName())
+		assertEquals(childNode2.xmlAttributes.ref, child2.ref)
+		assertEquals(childNode2.xmlName, child2.name)
 
 		var child3 = children[3]
-		assertEquals(childNode3.xmlAttributes.ref, child3.getRef())
-		assertEquals(childNode3.xmlName, child3.getName())
+		assertEquals(childNode3.xmlAttributes.ref, child3.ref)
+		assertEquals(childNode3.xmlName, child3.name)
 
 		var grandchildren = child2.children
 
 		var grandchild1 = grandchildren[1]
-		assertEquals(grandchildNode1.xmlAttributes.ref, grandchild1.getRef())
-		assertEquals(grandchildNode1.xmlName, grandchild1.getName())
+		assertEquals(grandchildNode1.xmlAttributes.ref, grandchild1.ref)
+		assertEquals(grandchildNode1.xmlName, grandchild1.name)
 		var grandchild2 = grandchildren[2]
-		assertEquals(grandchildNode2.xmlAttributes.ref, grandchild2.getRef())
-		assertEquals(grandchildNode2.xmlName, grandchild2.getName())
+		assertEquals(grandchildNode2.xmlAttributes.ref, grandchild2.ref)
+		assertEquals(grandchildNode2.xmlName, grandchild2.name)
 		var grandchild3 = grandchildren[3]
-		assertEquals(grandchildNode3.xmlAttributes.ref, grandchild3.getRef())
-		assertEquals(grandchildNode3.xmlName, grandchild3.getName())
+		assertEquals(grandchildNode3.xmlAttributes.ref, grandchild3.ref)
+		assertEquals(grandchildNode3.xmlName, grandchild3.name)
 
 	}
 
@@ -249,14 +249,14 @@ component extends="mxunit.framework.TestCase" {
 
 		rootNode.xmlChildren = [childNode]
 
-		var root = factory.convert(rootNode)
-		assertEquals(rootNode.xmlAttributes.ref, root.getRef())
+		var root = this.factory.convert(rootNode)
+		assertEquals(rootNode.xmlAttributes.ref, root.ref)
 		// getName() returns the tag name without the namespace prefix.
-		assertEquals(rootNode.xmlName, "t:" & root.getName())
+		assertEquals(rootNode.xmlName, "t:" & root.name)
 
 		var child = root.children[1]
-		assertEquals(childNode.xmlAttributes.ref, child.getRef())
-		assertEquals(childNode.xmlName, child.getName())
+		assertEquals(childNode.xmlAttributes.ref, child.ref)
+		assertEquals(childNode.xmlName, child.name)
 
 	}
 

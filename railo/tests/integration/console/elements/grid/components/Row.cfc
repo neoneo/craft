@@ -8,8 +8,8 @@ component extends="Composite" {
 		super.addChild(argumentCollection: ArrayToStruct(arguments))
 	}
 
-	public String function view(required Context context) {
-		return "row";
+	public Any function view(required Context context) {
+		return this.viewFactory.create("row");
 	}
 
 	public Any function process(required Context context) {
