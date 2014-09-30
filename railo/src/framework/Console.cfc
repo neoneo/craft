@@ -5,11 +5,8 @@ import craft.markup.ElementFactory;
 import craft.markup.Scope;
 
 import craft.output.CFMLRenderer;
-import craft.output.TemplateFinder;
 import craft.output.TemplateRenderer;
 import craft.output.ViewFactory;
-import craft.output.ViewFinder;
-import craft.output.ViewRenderer;
 
 import craft.request.Facade;
 
@@ -24,14 +21,10 @@ component {
 		this.contentFactory = null
 		this.commandFactory = null
 		this.elementFactory = null
-		this.extension = null
 		this.requestFacade = null
 		this.scope = null
-		this.templateFinder = null
 		this.templateRenderer = null
 		this.viewFactory = null
-		this.viewFinder = null
-		this.viewRenderer = null
 
 		/*
 			Define dependencies among the framework objects, where keys are dependent objects, and values are arrays of objects being depended upon.
@@ -44,10 +37,8 @@ component {
 			elementFactory: ["contentFactory"],
 			requestFacade: ["commandFactory"],
 			scope: [],
-			templateFinder: ["extension"],
-			viewFactory: ["viewFinder", "viewRenderer"],
-			viewFinder: [],
-			viewRenderer: ["templateFinder"]
+			viewFactory: ["templateRenderer"],
+			templateRenderer: []
 		}
 
 		initialize()
@@ -59,16 +50,8 @@ component {
 		// The actions on commit should be performed in fixed order.
 		this.actions = StructNew("linked")
 
-		this.actions.templateFinder = {
-			construct: this.templateFinder === null,
-			calls: []
-		}
-		this.actions.viewFinder = {
-			construct: this.viewFinder === null,
-			calls: []
-		}
-		this.actions.viewRenderer = {
-			construct: this.viewRenderer === null,
+		this.actions.templateRenderer = {
+			construct: this.templateRenderer === null,
 			calls: []
 		}
 		this.actions.viewFactory = {
@@ -170,14 +153,14 @@ component {
 		this.actions.elementFactory.calls.append({deregister: [arguments.mapping]})
 	}
 	public void function deregisterNamespace(required String namespace) {
-		this.actions.elementFactory.calls.append({deregisterNamespace: [arguments.mapping]})
+		this.actions.elementFactory.calls.append({deregisterNamespace: [arguments.namespace]})
 	}
 
 	// Markup documents
 	/**
 	 * Builds the content in the mapped directory and nakes it available for use by the `ContentCommand`s (via the `ref` attribute).
 	 * Do not build content that is directly available via a route; the `ContentCommand` takes care of that. This method is
-	 * intended for the loading of `Layout`s and `Document`s or included `Element`s.
+	 * intended for preloading content such as `Layout`s, `Document`s and included `Element`s.
 	 */
 	public void function buildContent(required String mapping) {
 		this.actions.console.calls.append({build: [ExpandPath(arguments.mapping)]})
@@ -194,45 +177,32 @@ component {
 	public void function importRoutes(required String mapping) {
 		this.actions.requestFacade.calls.append({importRoutes: [arguments.mapping]})
 	}
-
 	public void function purgeRoutes(required String mapping) {
 		this.actions.requestFacade.calls.append({purgeRoutes: [arguments.mapping]})
 	}
 
-	// TemplateFinder =============================================================================
+	// TemplateRenderer ===========================================================================
 
-	public void function setTemplateExtension(required String extension) {
-		flagDependencies("extension")
-		this.actions.templateFinder.extension = arguments.extension
+	public void function addTemplateMapping(required String mapping) {
+		this.actions.templateRenderer.calls.append({addMapping: [arguments.mapping]})
 	}
-	// public void function addTemplateMapping(required String mapping) {
-	// 	this.actions.templateFinder.calls.append({addMapping: [arguments.mapping]})
-	// }
-	// public void function removeTemplateMapping(required String mapping) {
-	// 	this.actions.templateFinder.calls.append({removeMapping: [arguments.mapping]})
-	// }
-	// public void function clearTemplateMappings() {
-	// 	this.actions.templateFinder.calls.append({clear: []})
-	// }
-
-	public void function setTemplateRenderer(required TemplateRenderer templateRenderer) {
-		flagDependencies("templateRenderer")
-		this.actions.viewRenderer.calls.append({setTemplateRenderer: [arguments.templateRenderer]})
+	public void function removeTemplateMapping(required String mapping) {
+		this.actions.templateRenderer.calls.append({removeMapping: [arguments.mapping]})
+	}
+	public void function clearTemplateMappings() {
+		this.actions.templateRenderer.calls.append({clearMappings: []})
 	}
 
-	// ViewFinder =================================================================================
+	// ViewFactory ================================================================================
 
 	public void function addViewMapping(required String mapping) {
-		this.actions.viewFinder.calls.append({addMapping: [arguments.mapping]})
-		this.actions.templateFinder.calls.append({addMapping: [arguments.mapping]})
+		this.actions.viewFactory.calls.append({addMapping: [arguments.mapping]})
 	}
 	public void function removeViewMapping(required String mapping) {
-		this.actions.viewFinder.calls.append({removeMapping: [arguments.mapping]})
-		this.actions.templateFinder.calls.append({removeMapping: [arguments.mapping]})
+		this.actions.viewFactory.calls.append({removeMapping: [arguments.mapping]})
 	}
 	public void function clearViewMappings() {
-		this.actions.viewFinder.calls.append({clear: []})
-		this.actions.templateFinder.calls.append({clear: []})
+		this.actions.viewFactory.calls.append({clearMappings: []})
 	}
 
 	// Factory / wiring methods
@@ -301,7 +271,7 @@ component {
 	}
 
 	private Scope function getScope() {
-		var object = this.actions.Scope
+		var object = this.actions.scope
 		if (object.construct) {
 			this.scope = createScope()
 			object.construct = false
@@ -310,15 +280,14 @@ component {
 		return this.scope;
 	}
 
-	private TemplateFinder function getTemplateFinder() {
-		var object = this.actions.templateFinder
+	private TemplateRenderer function getTemplateRenderer() {
+		var object = this.actions.templateRenderer
 		if (object.construct) {
-			this.extension = object.extension ?: this.extension ?: "cfm"
-			this.templateFinder = createTemplateFinder()
+			this.templateRenderer = createTemplateRenderer()
 			object.construct = false
 		}
 
-		return this.templateFinder;
+		return this.templateRenderer;
 	}
 
 	private ViewFactory function getViewFactory() {
@@ -329,26 +298,6 @@ component {
 		}
 
 		return this.viewFactory;
-	}
-
-	private ViewFinder function getViewFinder() {
-		var object = this.actions.viewFinder
-		if (object.construct) {
-			this.viewFinder = createViewFinder()
-			object.construct = false
-		}
-
-		return this.viewFinder;
-	}
-
-	private ViewRenderer function getViewRenderer() {
-		var object = this.actions.viewRenderer
-		if (object.construct) {
-			this.viewRenderer = createViewRenderer()
-			object.construct = false
-		}
-
-		return this.viewFinder;
 	}
 
 	// FACTORY METHODS ============================================================================
@@ -369,20 +318,12 @@ component {
 		return new Facade(getCommandFactory());
 	}
 
-	private TemplateFinder function createTemplateFinder() {
-		return new TemplateFinder(this.extension);
-	}
-
 	private ViewFactory function createViewFactory() {
-		return new ViewFactory(getViewFinder());
+		return new ViewFactory(getTemplateRenderer());
 	}
 
-	private ViewFinder function createViewFinder() {
-		return new ViewFinder();
-	}
-
-	private ViewRenderer function createViewRenderer() {
-		return new ViewRenderer(getTemplateFinder());
+	private TemplateRenderer function createTemplateRenderer() {
+		return new CFMLRenderer();
 	}
 
 	private Scope function createScope() {

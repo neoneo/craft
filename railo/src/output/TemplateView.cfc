@@ -6,13 +6,13 @@ component extends="View" {
 	}
 
 	/**
-	 * Renders the view by delegating to the `ViewRenderer`.
+	 * Renders the view by delegating to the `TemplateRenderer`.
 	 */
-	public Any function render(required Any model) {
+	public String function render(required Any model) {
 
 		var model = IsStruct(arguments.model) ? arguments.model.append(this.properties) : this.properties
 
-		return this.viewRenderer.render(this.template, model);
+		return this.templateRenderer.render(this.template, model);
 	}
 
 }
