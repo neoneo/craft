@@ -140,8 +140,14 @@ component {
 
 	// CommandFactory =============================================================================
 
-	public void function setContentMapping(required String mapping) {
+	public void function setCommandMapping(required String mapping) {
 		this.actions.commandFactory.calls.append({setPath: [ExpandPath(arguments.mapping)]})
+	}
+
+	// ContentFactory =============================================================================
+
+	public void function addContentMapping(required String mapping) {
+		this.actions.contentFactory.calls.append({addMapping: [arguments.mapping]})
 	}
 
 	// ElementFactory =============================================================================

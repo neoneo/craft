@@ -2,9 +2,12 @@ import craft.output.*;
 
 component extends="mxunit.framework.TestCase" {
 
+	this.mapping = "/crafttests/unit/output/templates"
+
 	public void function setUp() {
 		this.renderer = new CFMLRenderer()
-		this.template = "/crafttests/unit/output/templates/renderer.cfm"
+		this.renderer.addMapping(this.mapping)
+		this.template = "renderer"
 	}
 
 	public void function Render_Should_ReturnOutputString() {

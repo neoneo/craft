@@ -5,13 +5,14 @@ component extends="mxunit.framework.TestCase" {
 		var console = new stubs.ConsoleStub()
 		var mapping = "/crafttests/integration/console"
 
-		console.setContentMapping(mapping & "/content/documents")
+		console.setCommandMapping(mapping & "/content/documents")
+		console.addContentMapping("/craft/content")
+		console.addContentMapping(mapping & "/elements")
 		console.buildContent(mapping & "/content/includes")
 		console.buildContent(mapping & "/content/layouts")
 		console.registerElements("/craft/markup/library")
 		console.registerElements(mapping & "/elements")
-		console.addViewMapping(mapping & "/templates")
-		console.setTemplateExtension("cfm")
+		console.addTemplateMapping(mapping & "/templates")
 		console.addViewMapping(mapping & "/views")
 		console.importRoutes(mapping & "/console.routes")
 
@@ -22,10 +23,12 @@ component extends="mxunit.framework.TestCase" {
 
 	}
 
+	public void function tearDown() {
+		content type="text/html" reset="false";
+	}
+
 	public void function Component() {
 		var output = testRequest("GET", "/component.xml")
-		echo(output)
-		abort;
 
 		assertTrue(IsXML(output))
 

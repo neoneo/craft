@@ -3,12 +3,14 @@ import craft.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
-		content type="text/html" reset="false";
-
 		this.facade = new stubs.RequestFacadeStub(new stubs.CommandFactoryStub())
 		this.endPoint = this.facade.endPoint
 
 		this.facade.importRoutes("/crafttests/integration/test.routes")
+	}
+
+	public void function tearDown() {
+		content type="text/html" reset="false";
 	}
 
 	public void function ArtistList() {

@@ -4,25 +4,20 @@ import craft.request.*;
 
 component extends="mxunit.framework.TestCase" {
 
+	this.mapping = "/crafttests/integration/content"
+
 	public void function setUp() {
 		var context = mock(CreateObject("Context"))
 
 		var templateRenderer = new CFMLRenderer()
-		var templateFinder = new TemplateFinder("cfm")
-		templateFinder.addMapping("/crafttests/integration/content/templates")
+		templateRenderer.addMapping(this.mapping & "/templates")
 
-		var viewFinder = new ViewFinder()
-		var viewRenderer = new ViewRenderer(templateRenderer, templateFinder)
-
-		var viewFactory = new ViewFactory(viewFinder, viewRenderer)
+		var viewFactory = new ViewFactory(templateRenderer)
 		this.viewFactory = viewFactory
+		// We don't add a mapping yet, so that we get template views only.
 
 		this.contentFactory = new ContentFactory(viewFactory)
-		this.contentFactory.setMapping("/crafttests/integration/content/components")
-
-		// We don't add a mapping yet, so that we get template views only.
-		// Put the view finder in the variables scope to be able to change that later.
-		this.viewFinder = viewFinder
+		this.contentFactory.addMapping(this.mapping & "/components")
 
 		this.visitor = new RenderVisitor(context)
 	}
@@ -146,7 +141,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function RenderNestedCompositeViewWithPlaceholders() {
 		// The main functionality has been tested in the tests above. The purpose of this test is to test the view component functionality.
-		this.viewFinder.addMapping("/crafttests/integration/content/views")
+		this.viewFactory.addMapping(this.mapping & "/views")
 
 		var section = new Section()
 		section.addComponent(nestedComposite(true))

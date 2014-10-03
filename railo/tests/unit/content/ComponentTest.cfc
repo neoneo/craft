@@ -6,7 +6,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
 		this.viewFactory = mock(CreateObject("ViewFactory"))
-		this.component = new ComponentStub(this.viewFactory)
+		this.component = new stubs.ComponentStub(this.viewFactory)
 	}
 
 	public void function GetSetParent_Should_Work() {
@@ -32,7 +32,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Properties() {
-		var component = new ComponentStub(this.viewFactory, {
+		var component = new stubs.ComponentStub(this.viewFactory, {
 			property1: "first",
 			property2: "second"
 		})

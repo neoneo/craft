@@ -5,7 +5,7 @@ import craft.markup.library.ComponentElement;
 component extends="ComponentElement" tag="logo" {
 
 	private Component function create() {
-		return this.contentFactory.create(GetComponentMetaData("components.Logo").name)
+		return this.contentFactory.create("controls.components.Logo")
 	}
 
 }
