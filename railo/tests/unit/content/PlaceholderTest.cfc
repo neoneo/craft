@@ -14,7 +14,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = mock(new VisitorStub()).visitPlaceholder(this.placeholder)
+		var visitor = mock(new stubs.VisitorStub()).visitPlaceholder(this.placeholder)
 		this.placeholder.accept(visitor)
 		visitor.verify().visitPlaceholder(this.placeholder)
 	}

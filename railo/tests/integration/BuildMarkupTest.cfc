@@ -8,12 +8,10 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
 
-		var viewFinder = new ViewFinder()
-		var templateFinder = new TemplateFinder("cfm")
-		var viewRenderer = mock(CreateObject("ViewRenderer"))
-
-		var viewFactory = new ViewFactory(viewFinder, viewRenderer)
+		var templateRenderer = new CFMLRenderer()
+		var viewFactory = new ViewFactory(templateRenderer)
 		var contentFactory = new ContentFactory(viewFactory)
+		contentFactory.addMapping("/craft/content/")
 
 		var factory = new ElementFactory(contentFactory)
 		factory.register("/crafttests/integration/markup/elements")

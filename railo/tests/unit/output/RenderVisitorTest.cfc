@@ -13,7 +13,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function VisitLeaf_Should_CallModelAndView() {
 		var model = {key: 1}
-		var view = mock(CreateObject("ViewStub"))
+		var view = mock(CreateObject("stubs.ViewStub"))
 			.render("{any}").returns("done")
 		var leaf = mock(CreateObject("Leaf"))
 			.process("{object}").returns(model) // Don't know why I can't pass in this.context as the first argument..
@@ -33,7 +33,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function VisitComposite_Should_CallProcessViewAndTraverse() {
 		var model = {key: 1}
-		var view = mock(CreateObject("ViewStub"))
+		var view = mock(CreateObject("stubs.ViewStub"))
 			.render("{any}").returns("done")
 		var composite = mock(CreateObject("Composite"))
 			.process("{object}").returns(model)
@@ -71,7 +71,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function VisitCompositeWithoutView_Should_ReturnNoContent() {
 		var model = {key: 1}
 		// Mock a composite without a view, containing a child with a view.
-		var view = mock(CreateObject("ViewStub"))
+		var view = mock(CreateObject("stubs.ViewStub"))
 			.render("{any}").returns("done")
 		var child = mock(CreateObject("Leaf"))
 			.process("{object}").returns(model)
@@ -171,7 +171,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function VisitSectionWithOneComponent_Should_ReturnComponentContent() {
-		var view = mock(CreateObject("ViewStub"))
+		var view = mock(CreateObject("stubs.ViewStub"))
 			.render("{any}").returns("done") // This is what the component ultimately returns.
 		var component = mock(CreateObject("Leaf"))
 			.process("{object}").returns({})
@@ -196,13 +196,13 @@ component extends="mxunit.framework.TestCase" {
 	public void function VisitSectionWithComponents_Should_ReturnConcatenatedContent_When_SimpleValues() {
 		// If the section contains multiple components whose views return simple values, those values should be concatenated.
 
-		var view1 = mock(CreateObject("ViewStub"))
+		var view1 = mock(CreateObject("stubs.ViewStub"))
 			.render("{any}").returns("view1")
 		var component1 = mock(CreateObject("Leaf"))
 			.process("{object}").returns({})
 			.view("{object}").returns(view1)
 
-		var view2 = mock(CreateObject("ViewStub"))
+		var view2 = mock(CreateObject("stubs.ViewStub"))
 			.render("{any}").returns("view2")
 		var component2 = mock(CreateObject("Leaf"))
 			.process("{object}").returns({})
@@ -229,13 +229,13 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function VisitSectionWithComponents_Should_ThrowException_When_NotSimpleValues() {
-		var view1 = mock(CreateObject("ViewStub"))
+		var view1 = mock(CreateObject("stubs.ViewStub"))
 			.render("{any}").returns({key: "view1"}) // Complex value returned by view.
 		var component1 = mock(CreateObject("Leaf"))
 			.process("{object}").returns({})
 			.view("{object}").returns(view1)
 
-		var view2 = mock(CreateObject("ViewStub"))
+		var view2 = mock(CreateObject("stubs.ViewStub"))
 			.render("{any}").returns("view2") // This view renders a string.
 		var component2 = mock(CreateObject("Leaf"))
 			.process("{object}").returns({})

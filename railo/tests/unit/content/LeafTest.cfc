@@ -10,7 +10,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = mock(new VisitorStub()).visitLeaf(this.leaf)
+		var visitor = mock(new stubs.VisitorStub()).visitLeaf(this.leaf)
 		this.leaf.accept(visitor)
 		visitor.verify().visitLeaf(this.leaf)
 	}

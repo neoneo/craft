@@ -26,7 +26,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = mock(new VisitorStub()).visitSection(this.section)
+		var visitor = mock(new stubs.VisitorStub()).visitSection(this.section)
 
 		// Actual test.
 		this.section.accept(visitor)
@@ -36,7 +36,7 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Traverse_Should_CallAcceptOnAllChildren() {
-		var visitor = mock(new VisitorStub())
+		var visitor = mock(new stubs.VisitorStub())
 
 		var component1 = mock(CreateObject("Leaf")).accept(visitor)
 		var component2 = mock(CreateObject("Leaf")).accept(visitor)

@@ -1,6 +1,12 @@
-component implements="TemplateRenderer" {
+component extends="TemplateRenderer" {
+
+	public void function init() {
+		super.init("cfm")
+	}
 
 	public String function render(required String template, required Struct model) {
+
+		var mapping = this.templateFinder.get(arguments.template)
 
 		/*
 			Append the model on the local scope for immediate availability in the included template.
@@ -10,7 +16,7 @@ component implements="TemplateRenderer" {
 		StructAppend(local, arguments.model)
 
 		savecontent variable="local.output" {
-			include template="#arguments.template#";
+			include template="#mapping#";
 		}
 
 		return output;

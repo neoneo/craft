@@ -10,14 +10,14 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
-		var visitor = mock(new VisitorStub()).visitComposite(this.composite)
+		var visitor = mock(new stubs.VisitorStub()).visitComposite(this.composite)
 		this.composite.accept(visitor)
 
 		visitor.verify().visitComposite(this.composite)
 	}
 
 	public void function Traverse_Should_CallAcceptOnAllChildren() {
-		var visitor = mock(new VisitorStub())
+		var visitor = mock(new stubs.VisitorStub())
 
 		var component1 = mock(CreateObject("Leaf")).accept(visitor)
 		var component2 = mock(CreateObject("Leaf")).accept(visitor)

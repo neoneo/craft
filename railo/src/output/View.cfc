@@ -3,12 +3,12 @@
  * any datatype so that serialization for the client can be deferred until the last moment. This makes it possible
  * to construct, for example, complex JSON or XML structures without string manipulation.
  */
-component accessors="true" {
+component {
 
-	property ViewRenderer viewRenderer setter="false";
+	property TemplateRenderer templateRenderer;
 
-	public void function init(required ViewRenderer viewRenderer, Struct properties) {
-		this.viewRenderer = arguments.viewRenderer
+	public void function init(required TemplateRenderer templateRenderer, Struct properties) {
+		this.templateRenderer = arguments.templateRenderer
 
 		this.configure(argumentCollection: arguments.properties)
 	}
