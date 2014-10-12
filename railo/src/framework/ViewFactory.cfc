@@ -23,19 +23,26 @@ component {
 	}
 
 	/**
-	 * Searches for a `View` component of the given name and creates it. If no `View` component has this name,
+	 * Searches for a `View` class of the given name and creates it. If no `View` class has this name,
 	 * creates a `TemplateView` that interprets the name as a template.
-	 *
-	 * The optional struct is passed on to the `View` instance as argument collection to `View.configure()`, or
-	 * (in the case of a `TemplateView`), as additional properties.
 	 */
 	public View function create(required String name, Struct properties = {}) {
 		if (this.viewFinder.exists(arguments.name)) {
 			var className = this.viewFinder.get(arguments.name)
 
-			return new "#className#"(this.templateRenderer, arguments.properties);
+			var instance = CreateObject(className)
+			instance.templateRenderer = this.templateRenderer
+
+			this.objectHelper.initialize(instance, arguments.properties)
+
+			return instance;
 		} else {
-			return new TemplateView(this.templateRenderer, {template: arguments.name, properties: arguments.properties});
+			var instance = CreateObject("TemplateView")
+			instance.templateRenderer = this.templateRenderer
+
+			instance.init(arguments.name, arguments.properties)
+
+			return instance;
 		}
 	}
 

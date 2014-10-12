@@ -1,6 +1,6 @@
 component extends="View" {
 
-	public void function configure(required String template, Struct properties = {}) {
+	public void function init(required String template, Struct properties = {}) {
 		this.template = arguments.template
 		this.properties = arguments.properties
 	}

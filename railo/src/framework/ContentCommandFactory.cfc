@@ -12,12 +12,13 @@ component implements="CommandFactory" accessors="true" {
 
 	property String path;
 
+	this.path = null
+
 	public void function init(required TagRepository tagRepository, required Scope scope) {
 		this.tagRepository = arguments.tagRepository
 		this.scope = arguments.scope
 
 		this.fileBuilder = new FileBuilder(this.tagRepository, this.scope)
-		this.path = null
 	}
 
 	/**

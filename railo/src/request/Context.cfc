@@ -46,7 +46,7 @@ component accessors="true" {
 		}
 
 		// Walk the path to get the path segment that applies to this request.
-		walk(segments, arguments.root)
+		this.walk(segments, arguments.root)
 		if (this.pathSegment === null) {
 			Throw("Path segment not found", "FileNotFoundException");
 		}
@@ -56,7 +56,9 @@ component accessors="true" {
 	}
 
 	public String function createURL(required String path, Struct parameters) {
-		return this.endPoint.createURL(argumentCollection: ArrayToStruct(arguments));
+		// Note: the endPoint method must have exactly the same signature, including names.
+		// It seems a waste to convert the arguments to something else to decouple.
+		return this.endPoint.createURL(argumentCollection: arguments);
 	}
 
 	public void function addDependency(required String dependency) {
@@ -81,7 +83,7 @@ component accessors="true" {
 				if (segmentCount > 0) {
 					// Remove the number of segments that were matched and walk the remaining path, starting at the child.
 					var remainingPath = segmentCount == arguments.path.len() ? [] : arguments.path.slice(segmentCount + 1)
-					walk(remainingPath, child)
+					this.walk(remainingPath, child)
 
 					if (this.pathSegment !== null) {
 						// The complete path is traversed so the current path segment is part of the tree.

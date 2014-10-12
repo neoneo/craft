@@ -66,7 +66,7 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir2"))
 	}
 
-	public void function RegisterWithDirectory_Should_OnlyRegisterWhereIndicated() {
+	public void function Register_Should_FollowDirectoriesDirective() {
 		this.factory.register(this.mapping & "/directory")
 
 		var tags = this.factory.tagNames
@@ -77,8 +77,12 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(sameContents(["yes", "yessub", "subyes"], tagNames), "found tag names '#tagNames.toList()#'")
 	}
 
+	public void function Register_Should_FollowFactoryDirective() {
+
+	}
+
 	private Boolean function sameContents(required Array array1, required Array array2) {
-		return arguments.array1.containsAll(arguments.array2) && arguments.array2.containsAll(arguments.array1)
+		return arguments.array1.containsAll(arguments.array2) && arguments.array2.containsAll(arguments.array1);
 	}
 
 	// The following tests are integration tests, strictly speaking.
@@ -192,7 +196,7 @@ component extends="mxunit.framework.TestCase" {
 		var createNode = function (required String ref) {
 			var node = XMLElemNew(document, "http://neoneo.nl/craft", "node")
 			node.xmlAttributes.ref = arguments.ref
-			return node
+			return node;
 		}
 
 		var rootNode = createNode("root")
@@ -258,6 +262,10 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals(childNode.xmlAttributes.ref, child.ref)
 		assertEquals(childNode.xmlName, child.name)
 
+	}
+
+	public void function Convert_Should_HandleMultipleFactories() {
+		Throw("implement");
 	}
 
 }

@@ -147,4 +147,8 @@ component extends="mxunit.framework.TestCase" {
 		assertSame(this.test2, context.pathSegment)
 	}
 
+	public void function CreateURL_Should_ForwardToEndPointCreateURL() {
+		Throw("implement");
+	}
+
 }

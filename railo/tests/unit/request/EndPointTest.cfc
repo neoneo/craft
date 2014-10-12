@@ -39,4 +39,25 @@ component extends="mxunit.framework.TestCase" {
 		assertEquals("text/html", this.endPoint.contentType)
 	}
 
+	public void function SetRootPath_Should_SplitIndexFromRest() {
+		Throw("implement");
+	}
+
+	public void function CreateURL_Should_AppendPathToRootPath() {
+		Throw("implement");
+	}
+
+	public void function CreateURL_Should_AppendParametersInQueryString() {
+		Throw("implement");
+	}
+
+	public void function CreateURL_Should_HandleRelativePaths() {
+		Throw("implement");
+
+		// Paths starting with ./
+		// Paths containing ./ in the middle
+		// Paths starting with ../
+		// Paths containing ./ in the middle
+	}
+
 }

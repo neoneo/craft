@@ -2,25 +2,43 @@ component accessors="true" {
 
 	property String rootPath;
 
-	property Array extensions setter="false";
 	property String extension setter="false";
+	property Array extensions setter="false"; // String[]
 	property String path setter="false";
 	property String requestMethod setter="false";
 	property Struct requestParameters setter="false";
 
-	public void function init() {
+	this.contentTypes = {
+		html: "text/html",
+		json: "application/json",
+		xml: "application/xml",
+		pdf: "application/pdf",
+		txt: "text/plain"
+	}
+	this.rootFile = "" // The file present in the url to direct traffic to Railo.
+	this.rootDirectory = "" // The directory that is transparently added to and removed from every url.
+	this.rootPath = "" // The concatenation of rootFile and rootDirectory.
+	this.extensions = this.contentTypes.keyArray()
 
-		this.rootPath = ""
+	public void function setRootPath(required String rootPath) {
 
-		this.contentTypes = {
-			html: "text/html",
-			json: "application/json",
-			xml: "application/xml",
-			pdf: "application/pdf",
-			txt: "text/plain"
+		// If a file (usually index.cfm) is used in urls, keep it separate from the rest of the root path.
+		// This way, we can transparently add and remove the root path, since the root file is not present in cgi.path_info.
+		var firstSegment = arguments.rootPath.listFirst("/")
+		if (firstSegment.reFind("\.cfml?") > 0) {
+			this.rootFile = "/" & firstSegment
+			this.rootDirectory = "/" & arguments.rootPath.listRest("/")
+		} else {
+			this.rootFile = ""
+			// Keep the root directory empty unless it actually contains a segment. That is, '/' should revert to ''.
+			if (arguments.rootPath.listLen("/") > 0) {
+				this.rootDirectory = arguments.rootPath
+			} else {
+				this.rootDirectory = ""
+			}
 		}
-		this.extensions = this.contentTypes.keyArray()
 
+		this.rootPath = this.rootFile & this.rootDirectory
 	}
 
 	public String function getExtension() {
@@ -34,7 +52,8 @@ component accessors="true" {
 	}
 
 	public String function getPath() {
-		return cgi.path_info;
+		// Remove the root directory from the beginning.
+		return cgi.path_info.replace(this.rootDirectory, "");
 	}
 
 	public String function getRequestMethod() {
@@ -69,6 +88,7 @@ component accessors="true" {
 					path = absolutePath.listDeleteAt(absolutePath.listLen("/"), "/") & "/" & relativePath.listRest("/")
 				}
 			} while (position > 0);
+			// Any './' still in the path does nothing.
 			path = path.replace("./", "", "all")
 		}
 

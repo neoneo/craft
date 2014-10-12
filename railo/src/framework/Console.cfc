@@ -1,6 +1,7 @@
 import craft.markup.DirectoryBuilder;
 import craft.markup.ElementFactory;
 import craft.markup.Scope;
+import craft.markup.TagRepository;
 
 import craft.output.CFMLRenderer;
 import craft.output.TemplateRenderer;
@@ -20,6 +21,7 @@ component {
 		this.elementFactory = null
 		this.requestFacade = null
 		this.scope = null
+		this.tagRepository = null
 		this.templateRenderer = null
 		this.viewFactory = null
 
@@ -30,12 +32,13 @@ component {
 		*/
 		this.dependencies = {
 			componentFactory: ["viewFactory"],
-			commandFactory: ["elementFactory", "scope"],
+			commandFactory: ["tagRepository", "scope"],
 			elementFactory: ["componentFactory"],
-			requestFacade: ["commandFactory"],
 			scope: [],
-			viewFactory: ["templateRenderer"],
-			templateRenderer: []
+			tagRepository: ["elementFactory"],
+			templateRenderer: [],
+			requestFacade: ["commandFactory"],
+			viewFactory: ["templateRenderer"]
 		}
 
 		initialize()
@@ -61,6 +64,10 @@ component {
 		}
 		this.actions.elementFactory = {
 			construct: this.elementFactory === null,
+			calls: []
+		}
+		this.actions.tagRepository = {
+			construct: this.tagRepository === null,
 			calls: []
 		}
 		this.actions.scope = {
@@ -158,6 +165,9 @@ component {
 	public void function deregisterNamespace(required String namespace) {
 		this.actions.elementFactory.calls.append({deregisterNamespace: [arguments.namespace]})
 	}
+	public void function setElementFactory(required String namespace, required ElementFactory elementFactory) {
+		this.actions.tagRepository.calls.append({setElementFactory: [arguments.namespace, arguments.elementFactory]})
+	}
 
 	// Markup documents
 	/**
@@ -226,7 +236,7 @@ component {
 	}
 
 	private void function build(required String path) {
-		new DirectoryBuilder(getElementFactory(), getScope()).build(arguments.path)
+		new DirectoryBuilder(getTagRepository(), getScope()).build(arguments.path)
 	}
 
 	private ComponentFactory function getComponentFactory() {
@@ -283,6 +293,16 @@ component {
 		return this.scope;
 	}
 
+	private TagRepository function getTagRepository() {
+		var object = this.actions.tagRepository
+		if (object.construct) {
+			this.tagRepository = createTagRepository()
+			object.construct = false
+		}
+
+		return this.tagRepository;
+	}
+
 	private TemplateRenderer function getTemplateRenderer() {
 		var object = this.actions.templateRenderer
 		if (object.construct) {
@@ -318,7 +338,11 @@ component {
 	}
 
 	private RequestFacade function createRequestFacade() {
-		return new Facade(getCommandFactory());
+		return new RequestFacade(getCommandFactory());
+	}
+
+	private TagRepository function createTagRepository() {
+		return new TagRepository(getElementFactory());
 	}
 
 	private ViewFactory function createViewFactory() {

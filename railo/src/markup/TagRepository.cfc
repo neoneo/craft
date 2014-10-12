@@ -47,7 +47,7 @@ component {
 				}
 				this.factories[namespace] = this.factoryCache[className]
 			} else {
-				// The default factory is the element factory.
+				// Use the default element factory.
 				this.factories[namespace] = this.elementFactory
 			}
 
@@ -191,7 +191,7 @@ component {
 		var element = factory.create(data.class, attributes, arguments.node.xmlText)
 
 		for (var child in arguments.node.xmlChildren) {
-			element.add(convert(child))
+			element.add(this.instantiate(child))
 		}
 
 		return element;
