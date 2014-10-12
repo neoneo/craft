@@ -12,15 +12,8 @@ component implements="Content" accessors="true" {
 	property Boolean hasChildren setter="false";
 	property Boolean hasParent setter="false";
 	property Component parent;
-	property ViewFactory viewFactory getter="false" setter="false";
 
-	public void function init(required ViewFactory viewFactory, Struct parameters = {}) {
-		this.parent = null
-		this.viewFactory = arguments.viewFactory
-		this.configure(argumentCollection: arguments.parameters)
-	}
-
-	private void function configure() {}
+	this.parent = null
 
 	public void function accept(required Visitor visitor) {
 		abort showerror="Not implemented";

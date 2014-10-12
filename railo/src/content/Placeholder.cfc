@@ -4,7 +4,7 @@ component extends="Component" accessors="true" {
 
 	property String ref setter="false";
 
-	private void function configure(required String ref) {
+	public void function init(required String ref) {
 		this.ref = arguments.ref
 	}
 

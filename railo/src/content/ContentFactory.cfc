@@ -6,22 +6,42 @@ component {
 
 	public void function init(required ViewFactory viewFactory) {
 		this.viewFactory = arguments.viewFactory
-		this.contentFinder = new ClassFinder()
+		this.componentFinder = new ClassFinder()
 	}
 
 	public Component function create(required String name, Struct properties = {}) {
 
-		var className = this.contentFinder.get(arguments.name)
+		var className = this.componentFinder.get(arguments.name)
+		var component = CreateObject(className)
 
-		return new "#className#"(this.viewFactory, arguments.properties);
+		// Inject the view factory.
+		component.setViewFactory = this.__setViewFactory__
+		component.getViewFactory = this.__getViewFactory__
+
+		component.setViewFactory(this.viewFactory)
+
+		this.objectHelper.initialize(component, arguments.properties)
+
+		return component;
 	}
 
 	public void function addMapping(required String mapping) {
-		this.contentFinder.addMapping(arguments.mapping)
+		this.componentFinder.addMapping(arguments.mapping)
 	}
 
 	public void function removeMapping(required String mapping) {
-		this.contentFinder.removeMapping(arguments.mapping)
+		this.componentFinder.removeMapping(arguments.mapping)
+	}
+
+	// Methods to be injected in new instances.
+
+	private void function __setViewFactory__(required ViewFactory viewFactory) {
+		this.viewFactory = arguments.viewFactory
+		StructDelete(this, "setViewFactory")
+	}
+
+	private ViewFactory function __getViewFactory__() {
+		return this.viewFactory;
 	}
 
 }

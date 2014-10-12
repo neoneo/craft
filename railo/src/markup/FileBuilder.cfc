@@ -1,13 +1,13 @@
 component {
 
-	public void function init(required ElementFactory factory, Scope scope) {
-		this.factory = arguments.factory
+	public void function init(required TagRepository repository, Scope scope) {
+		this.repository = arguments.repository
 		this.scope = arguments.scope ?: new Scope()
 	}
 
 	public Element function build(required String path) {
 
-		var elementBuilder = new ElementBuilder(this.factory, this.scope)
+		var elementBuilder = new ElementBuilder(this.repository, this.scope)
 
 		var document = XMLParse(FileRead(arguments.path))
 		var element = elementBuilder.build(document)

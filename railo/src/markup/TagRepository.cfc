@@ -1,18 +1,16 @@
-import craft.content.ContentFactory;
-
-import craft.markup.Element;
-
 component {
 
 	property Struct tagNames setter="false";
 
-	public void function init(required ContentFactory contentFactory) {
-		this.contentFactory = arguments.contentFactory
+	public void function init(required ElementFactory elementFactory) {
+		this.elementFactory = arguments.elementFactory
 		this.tags = {} // Keeps metadata of tags per namespace.
+		this.factories = {} // Element factories per namespace.
+		this.factoryCache = {} // Used in order to create one instance per factory class.
 	}
 
 	/**
-	 * Registers any `Element`s found in the mapping. A craft.ini file must be present in order for any components to be inspected.
+	 * Registers any `Element`s found in the mapping. A craft.ini file must be present in order for any classes to be inspected.
 	 * If absent, the subdirectories are searched for craft.ini files and `register()` is then called recursively.
 	 * The mapping should be passed in without a trailing slash.
 	 */
@@ -30,7 +28,24 @@ component {
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
-			var namespaceTags = this.tags[namespace] = {}
+
+			if (this.tags.keyExists(namespace)) {
+				Throw("Namespace '#namespace#' already exists", "AlreadyBoundException");
+			}
+			this.tags[namespace] = {}
+
+			// The element factory for this namespace can be specified by class name.
+			if (sections.craft.listFind("factory") > 0) {
+				// The class name is interpreted relative to the current mapping.
+				var className = arguments.mapping.listChangeDelims(".", "/") & "." & GetProfileString(settingsFile, "craft", "factory")
+				if (!this.factoryCache.keyExists(className)) {
+					this.factoryCache[className] = new "#className#"()
+				}
+				this.factories[namespace] = this.factoryCache[className]
+			} else {
+				// The default factory is the element factory.
+				this.factories[namespace] = this.elementFactory
+			}
 
 			var registerPaths = null
 			if (sections.craft.listFind("directories") > 0) {
@@ -49,23 +64,23 @@ component {
 			registerPaths.each(function (registerPath) {
 				var registerPath = arguments.registerPath
 				var subdirectory = registerPath.replace(path, "")
-				// Pick up all components in this directory (recursively) and keep the ones that extend Element.
+				// Pick up all classes in this directory (recursively) and keep the ones that extend Element.
 				DirectoryList(registerPath, true, "path", "*.cfc").each(function (filePath) {
-					// Construct the component name. Replace the directory with the mapping, make that a dot delimited path and remove the cfc extension.
-					var componentName = arguments.filePath.replace(registerPath, mapping & subdirectory).listChangeDelims(".", "/").reReplace("\.cfc$", "")
-					var metadata = GetComponentMetadata(componentName)
+					// Construct the class name. Replace the directory with the mapping, make that a dot delimited path and remove the cfc extension.
+					var className = arguments.filePath.replace(registerPath, mapping & subdirectory).listChangeDelims(".", "/").reReplace("\.cfc$", "")
+					var metadata = GetComponentMetadata(className)
 
-					// Ignore components with the abstract annotation.
+					// Ignore classes with the abstract annotation.
 					var abstract = metadata.abstract ?: false
-					if (!abstract && extendsElement(metadata)) {
-						// If a tag annotation is present, that will be the tag name. Otherwise we take the fully qualified component name.
+					if (!abstract && this.extendsElement(metadata)) {
+						// If a tag annotation is present, that will be the tag name. Otherwise we take the class name.
 						var tagName = metadata.tag ?: metadata.name
 						var data = {
-							name: metadata.name,
-							attributes: collectAttributes(metadata)
+							class: metadata.name,
+							attributes: this.collectAttributes(metadata)
 						}
 						// Store the tag data.
-						namespaceTags[tagName] = data
+						this.tags[tagName] = data
 					}
 				})
 			})
@@ -74,7 +89,7 @@ component {
 			var mapping = arguments.mapping
 			DirectoryList(path, false, "name").each(function (name) {
 				if (DirectoryExists(path & "/" & arguments.name)) {
-					register(mapping & "/" & arguments.name)
+					this.register(mapping & "/" & arguments.name)
 				}
 			})
 		}
@@ -96,14 +111,14 @@ component {
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
 
-			this.tags.delete(namespace)
+			this.deregisterNamespace(namespace)
 
 		} else {
 			// Call again for each subdirectory.
 			var mapping = arguments.mapping
 			DirectoryList(path, false, "name").each(function (name) {
 				if (DirectoryExists(path & "/" & arguments.name)) {
-					deregister(mapping & "/" & arguments.name)
+					this.deregister(mapping & "/" & arguments.name)
 				}
 			})
 		}
@@ -111,6 +126,7 @@ component {
 
 	public void function deregisterNamespace(required String namespace) {
 		this.tags.delete(arguments.namespace)
+		this.factories.delete(arguments.namespace)
 	}
 
 	public Struct function getTagNames() {
@@ -118,6 +134,63 @@ component {
 			// The metadata argument is a struct where the keys are tag names.
 			return arguments.metadata.keyArray();
 		});
+	}
+
+	public void function setFactory(required String namespace, required Factory factory) {
+		this.factories[arguments.namespace] = arguments.factory
+	}
+
+	/**
+	 * Creates a tree of `Element`s that represents the given xml node tree.
+	 */
+	public Element function instantiate(required XML node) {
+
+		var namespace = arguments.node.xmlNsPrefix
+		if (!this.tags.keyExists(namespace)) {
+			Throw("Namespace '#namespace#' not found", "NoSuchElementException");
+		}
+
+		var tags = this.tags[namespace]
+
+		var tagName = arguments.node.xmlName.replace(namespace & ":", "") // Remove the namespace prefix, if it exists.
+		if (!tags.keyExists(tagName)) {
+			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException");
+		}
+
+		// Attribute validation and selection:
+		var data = tags[arguments.tagName]
+		// Create a struct with attribute name/value pairs to pass to the factory.
+		var attributes = {}
+		// Loop over the attributes defined in the class, and pick them up from the node attributes.
+		// This means that any attributes not defined in the class are ignored.
+		var nodeAttributes = arguments.node.xmlAttributes
+		data.attributes.each(function (attribute) {
+			var name = arguments.attribute.name
+			var value = nodeAttributes[name] ?: arguments.attribute.default ?: null
+
+			if (value === null && (arguments.attribute.required ?: false)) {
+				Throw("Attribute '#name#' is required", "IllegalArgumentException");
+			}
+
+			if (value !== null) {
+				// Since we'll only encounter simple values here, we can use IsValid. We assume that the property type is specified.
+				if (!IsValid(arguments.attribute.type, value)) {
+					Throw("Invalid value '#value#' for attribute '#name#'", "IllegalArgumentException", "Expected value of type #arguments.attribute.type#");
+				}
+
+				attributes[name] = value
+			}
+		})
+
+		// Get the factory for this namespace and create the element.
+		var factory = this.factories[namespace]
+		var element = factory.create(data.class, attributes, arguments.node.xmlText)
+
+		for (var child in arguments.node.xmlChildren) {
+			element.add(convert(child))
+		}
+
+		return element;
 	}
 
 	/**
@@ -128,65 +201,10 @@ component {
 		var success = arguments.metadata.name == GetComponentMetadata("Element").name
 
 		if (!success && arguments.metadata.keyExists("extends")) {
-			success = extendsElement(arguments.metadata.extends)
+			success = this.extendsElement(arguments.metadata.extends)
 		}
 
 		return success;
-	}
-
-	/**
-	 * Creates a tree of `Element`s that represents the given xml node tree.
-	 */
-	public Element function convert(required XML node) {
-
-		var tagName = arguments.node.xmlName.replace(arguments.node.xmlNsPrefix & ":", "") // Remove the namespace prefix, if it exists.
-		var element = create(arguments.node.xmlNsURI, tagName, arguments.node.xmlAttributes)
-		for (var child in arguments.node.xmlChildren) {
-			element.add(convert(child))
-		}
-
-		return element;
-	}
-
-	/**
-	 * Creates `Element` instances based on namespace, tag name and optional attributes.
-	 */
-	public Element function create(required String namespace, required String tagName, Struct attributes = {}) {
-
-		if (!this.tags.keyExists(arguments.namespace)) {
-			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException");
-		}
-
-		var tags = this.tags[arguments.namespace]
-		if (!tags.keyExists(arguments.tagName)) {
-			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException");
-		}
-
-		var data = tags[arguments.tagName]
-		// Create a struct with attribute name/value pairs to pass to the element instance.
-		var properties = {}
-		// Loop over the attributes defined in the component, and pick them up from the attributes that were passed in.
-		// This means that any attributes not defined in the component are ignored.
-		var values = arguments.attributes // Make the attribute values available in the closure.
-		data.attributes.each(function (attribute) {
-			var name = arguments.attribute.name
-			var value = values[name] ?: arguments.attribute.default ?: null
-
-			if (value === null && (arguments.attribute.required ?: false)) {
-				Throw("Attribute '#name#' is required", "IllegalArgumentException");
-			}
-
-			if (value !== null) {
-				// Assuming we'll only encounter simple values here, we can use IsValid. We also assume that the property type is specified.
-				if (!IsValid(arguments.attribute.type, value)) {
-					Throw("Invalid value '#value#' for attribute '#name#': #arguments.attribute.type# expected", "IllegalArgumentException");
-				}
-
-				properties[name] = value
-			}
-		})
-
-		return new "#data.name#"(this.contentFactory, properties);
 	}
 
 	private Struct[] function collectProperties(required Struct metadata) {
@@ -212,7 +230,7 @@ component {
 
 	private Struct[] function collectAttributes(required Struct metadata) {
 		// Filter the properties for those that can be attributes.
-		return collectProperties(arguments.metadata).filter(function (property) {
+		return this.collectProperties(arguments.metadata).filter(function (property) {
 			// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
 			return arguments.property.attribute ?: true;
 		});

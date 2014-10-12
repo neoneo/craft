@@ -13,13 +13,7 @@ component extends="ComponentElement" abstract="true" {
 			var composite = create()
 
 			this.children.each(function (child) {
-				try {
-
 				composite.addChild(arguments.child.product)
-				} catch (any e) {
-					dump(arguments.child)
-					abort;
-				}
 			})
 
 			this.product = composite

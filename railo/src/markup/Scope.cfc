@@ -11,7 +11,7 @@ component {
 
 	public Element function get(required String ref) {
 
-		if (!has(arguments.ref)) {
+		if (!this.has(arguments.ref)) {
 			Throw("Element '#arguments.ref#' not found", "NoSuchElementException");
 		}
 

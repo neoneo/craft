@@ -1,13 +1,13 @@
 component {
 
-	public void function init(required ElementFactory factory, required Scope scope) {
-		this.factory = arguments.factory
+	public void function init(required TagRepository repository, required Scope scope) {
+		this.repository = arguments.repository
 		this.scope = arguments.scope
 	}
 
 	public Element function build(required XML document) {
 
-		var element = this.factory.convert(arguments.document.xmlRoot)
+		var element = this.repository.instantiate(arguments.document.xmlRoot)
 
 		/*
 			Create a scope for local elements. We don't want elements from outside this document to be able to refer to inside elements.
@@ -16,7 +16,7 @@ component {
 		var localScope = new Scope(this.scope)
 
 		// construct() returns an array of elements whose construction could not complete in one go.
-		var deferred = construct(element, localScope)
+		var deferred = this.construct(element, localScope)
 
 		// The element may depend on other elements, outside the current scope. Remove it from the deferred elements.
 		deferred.delete(element)
@@ -61,7 +61,7 @@ component {
 			// The element could have been deferred before, in which case the child may have been constructed already.
 			if (!child.ready) {
 				// Construct the child element and append the elements that could not be constructed.
-				deferred.append(construct(child, arguments.scope), true)
+				deferred.append(this.construct(child, arguments.scope), true)
 			}
 		}
 

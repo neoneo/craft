@@ -1,15 +1,14 @@
-import craft.content.Component;
+import craft.content.Placeholder;
 
-component extends="ComponentElement" accessors="true" tag="placeholder" {
+component extends="Element" accessors="true" tag="placeholder" {
 
 	property String ref required="true";
 
-	private Component function create() {
-		return this.contentFactory.create("Placeholder", {ref: this.ref});
+	public void function construct(required Scope scope) {
+		this.product = new Placeholder(this.ref);
 	}
 
 	public Boolean function getChildrenReady() {
-		// Ignore any children.
 		return this.getReady();
 	}
 

@@ -1,5 +1,4 @@
 import craft.content.Content;
-import craft.content.ContentFactory;
 
 /**
  * Represents a markup element.
@@ -12,7 +11,6 @@ component accessors="true" abstract="true" {
 
 	property Array children setter="false" attribute="false"; // Element[]
 	property Boolean childrenReady setter="false" attribute="false";
-	property ContentFactory contentFactory attribute="false";
 	property Boolean hasChildren setter="false" attribute="false";
 	property Boolean hasParent setter="false" attribute="false";
 	property Element parent attribute="false";
@@ -24,13 +22,6 @@ component accessors="true" abstract="true" {
 	this.children = []
 	this.parent = null
 	this.product = null
-
-	public void function init(required ContentFactory contentFactory, Struct attributes = {}) {
-		this.contentFactory = arguments.contentFactory
-		arguments.attributes.each(function (name, value) {
-			this[arguments.name] = arguments.value
-		})
-	}
 
 	public Boolean function getReady() {
 		return this.product !== null;
