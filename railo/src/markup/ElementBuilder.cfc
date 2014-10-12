@@ -1,13 +1,13 @@
 component {
 
-	public void function init(required TagRepository repository, required Scope scope) {
-		this.repository = arguments.repository
+	public void function init(required TagRepository tagRepository, required Scope scope) {
+		this.tagRepository = arguments.tagRepository
 		this.scope = arguments.scope
 	}
 
 	public Element function build(required XML document) {
 
-		var element = this.repository.instantiate(arguments.document.xmlRoot)
+		var element = this.tagRepository.instantiate(arguments.document.xmlRoot)
 
 		/*
 			Create a scope for local elements. We don't want elements from outside this document to be able to refer to inside elements.

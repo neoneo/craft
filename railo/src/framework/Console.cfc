@@ -1,14 +1,11 @@
-import craft.content.ContentFactory;
-
 import craft.markup.DirectoryBuilder;
 import craft.markup.ElementFactory;
 import craft.markup.Scope;
 
 import craft.output.CFMLRenderer;
 import craft.output.TemplateRenderer;
-import craft.output.ViewFactory;
 
-import craft.request.Facade;
+import craft.request.RequestFacade;
 
 /**
  * This component handles all the interactions between the different framework objects and initializes them.
@@ -18,7 +15,7 @@ component {
 
 	public void function init() {
 
-		this.contentFactory = null
+		this.componentFactory = null
 		this.commandFactory = null
 		this.elementFactory = null
 		this.requestFacade = null
@@ -32,9 +29,9 @@ component {
 			In other words, these are the constructor dependencies.
 		*/
 		this.dependencies = {
-			contentFactory: ["viewFactory"],
+			componentFactory: ["viewFactory"],
 			commandFactory: ["elementFactory", "scope"],
-			elementFactory: ["contentFactory"],
+			elementFactory: ["componentFactory"],
 			requestFacade: ["commandFactory"],
 			scope: [],
 			viewFactory: ["templateRenderer"],
@@ -58,8 +55,8 @@ component {
 			construct: this.viewFactory === null,
 			calls: []
 		}
-		this.actions.contentFactory = {
-			construct: this.contentFactory === null,
+		this.actions.componentFactory = {
+			construct: this.componentFactory === null,
 			calls: []
 		}
 		this.actions.elementFactory = {
@@ -144,10 +141,10 @@ component {
 		this.actions.commandFactory.calls.append({setPath: [ExpandPath(arguments.mapping)]})
 	}
 
-	// ContentFactory =============================================================================
+	// ComponentFactory =============================================================================
 
 	public void function addContentMapping(required String mapping) {
-		this.actions.contentFactory.calls.append({addMapping: [arguments.mapping]})
+		this.actions.componentFactory.calls.append({addMapping: [arguments.mapping]})
 	}
 
 	// ElementFactory =============================================================================
@@ -232,14 +229,14 @@ component {
 		new DirectoryBuilder(getElementFactory(), getScope()).build(arguments.path)
 	}
 
-	private ContentFactory function getContentFactory() {
-		var object = this.actions.contentFactory
+	private ComponentFactory function getComponentFactory() {
+		var object = this.actions.componentFactory
 		if (object.construct) {
-			this.contentFactory = createContentFactory()
+			this.componentFactory = createComponentFactory()
 			object.construct = false
 		}
 
-		return this.contentFactory;
+		return this.componentFactory;
 	}
 
 	private CommandFactory function getCommandFactory() {
@@ -266,7 +263,7 @@ component {
 		return this.elementFactory;
 	}
 
-	private Facade function getRequestFacade() {
+	private RequestFacade function getRequestFacade() {
 		var object = this.actions.requestFacade
 		if (object.construct) {
 			this.requestFacade = createRequestFacade()
@@ -308,8 +305,8 @@ component {
 
 	// FACTORY METHODS ============================================================================
 
-	private ContentFactory function createContentFactory() {
-		return new ContentFactory(getViewFactory());
+	private ComponentFactory function createComponentFactory() {
+		return new ComponentFactory(getViewFactory());
 	}
 
 	private CommandFactory function createCommandFactory() {
@@ -317,10 +314,10 @@ component {
 	}
 
 	private ElementFactory function createElementFactory() {
-		return new ElementFactory(getContentFactory());
+		return new DefaultElementFactory(getComponentFactory());
 	}
 
-	private Facade function createRequestFacade() {
+	private RequestFacade function createRequestFacade() {
 		return new Facade(getCommandFactory());
 	}
 

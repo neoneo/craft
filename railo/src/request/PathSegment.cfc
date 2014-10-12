@@ -27,9 +27,9 @@ component accessors="true" {
 	}
 
 	/**
-	 * Sets the command to execute.
+	 * Sets the command to execute for the given HTTP method.
 	 */
-	public void function setCommand(required Command command, required String method) {
+	public void function setCommand(required String method, required Command command) {
 		this.commands[arguments.method] = arguments.command
 	}
 

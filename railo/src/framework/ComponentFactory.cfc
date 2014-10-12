@@ -1,3 +1,5 @@
+import craft.content.Component;
+
 import craft.output.ViewFactory;
 
 import craft.util.ClassFinder;

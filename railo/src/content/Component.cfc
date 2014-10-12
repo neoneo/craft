@@ -1,5 +1,3 @@
-import craft.output.ViewFactory;
-
 import craft.request.Context;
 
 /**

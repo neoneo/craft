@@ -1,12 +1,16 @@
+import craft.util.ObjectHelper;
+
 component {
 
 	property Struct tagNames setter="false";
 
 	public void function init(required ElementFactory elementFactory) {
-		this.elementFactory = arguments.elementFactory
+		this.elementFactory = arguments.elementFactory // The default element factory.
 		this.tags = {} // Keeps metadata of tags per namespace.
 		this.factories = {} // Element factories per namespace.
 		this.factoryCache = {} // Used in order to create one instance per factory class.
+
+		this.objectHelper = new ObjectHelper()
 	}
 
 	/**
@@ -136,8 +140,8 @@ component {
 		});
 	}
 
-	public void function setFactory(required String namespace, required Factory factory) {
-		this.factories[arguments.namespace] = arguments.factory
+	public void function setElementFactory(required String namespace, required ElementFactory elementFactory) {
+		this.factories[arguments.namespace] = arguments.elementFactory
 	}
 
 	/**
@@ -197,40 +201,12 @@ component {
 	 * Returns whether `Element` is in the inheritance chain of the given metadata.
 	 */
 	private Boolean function extendsElement(required Struct metadata) {
-
-		var success = arguments.metadata.name == GetComponentMetadata("Element").name
-
-		if (!success && arguments.metadata.keyExists("extends")) {
-			success = this.extendsElement(arguments.metadata.extends)
-		}
-
-		return success;
-	}
-
-	private Struct[] function collectProperties(required Struct metadata) {
-
-		var properties = []
-		var names = []
-		var data = arguments.metadata
-
-		do {
-			for (var property in data.properties) {
-				// Let a property in a subclass take precedence over one of the same name in a superclass.
-				if (names.find(property.name) == 0) {
-					properties.append(property)
-					names.append(property.name)
-				}
-			}
-
-			data = data.extends ?: null
-		} while (data !== null);
-
-		return properties;
+		return this.objectHelper.extends(arguments.metadata, GetComponentMetadata("Element").name);
 	}
 
 	private Struct[] function collectAttributes(required Struct metadata) {
 		// Filter the properties for those that can be attributes.
-		return this.collectProperties(arguments.metadata).filter(function (property) {
+		return this.objectHelper.collectProperties(arguments.metadata).filter(function (property) {
 			// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
 			return arguments.property.attribute ?: true;
 		});

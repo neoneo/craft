@@ -168,7 +168,7 @@ component {
 		if (!this.commands.keyExists(tokens.identifier)) {
 			this.commands[tokens.identifier] = this.commandFactory.create(tokens.identifier)
 		}
-		pathSegment.setCommand(this.commands[tokens.identifier], tokens.method)
+		pathSegment.setCommand(tokens.method, this.commands[tokens.identifier])
 
 		return pathSegment;
 	}

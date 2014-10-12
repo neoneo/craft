@@ -1,3 +1,6 @@
+import craft.output.TemplateRenderer;
+import craft.output.View;
+
 import craft.util.ClassFinder;
 
 component {

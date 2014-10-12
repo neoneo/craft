@@ -1,8 +1,8 @@
 component {
 
-	public void function init(required ElementFactory factory, Scope scope) {
+	public void function init(required TagRepository tagRepository, Scope scope) {
 		this.scope = arguments.scope ?: new Scope()
-		this.elementBuilder = new ElementBuilder(arguments.factory, this.scope)
+		this.elementBuilder = new ElementBuilder(arguments.tagRepository, this.scope)
 	}
 
 	public Struct function build(required String path) {
