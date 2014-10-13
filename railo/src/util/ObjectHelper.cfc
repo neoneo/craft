@@ -8,22 +8,24 @@ component {
 	}
 
 	/**
-	 * Returns whether the method is defined in the given metadata and can be invoked given the minimum access level.
+	 * Returns whether the method is defined in the given metadata and has an access level at or above the required access level.
 	 */
-	public Boolean function methodExists(required Struct metadata, required String methodName, String access = "private") {
+	public Boolean function methodExists(required Struct metadata, required String methodName, String requiredAccess = "private") {
 
 		var metadata = arguments.metadata
 		var methodName = arguments.methodName
-		var accessLevel = this.accessLevels[arguments.access]
+		var accessLevel = this.accessLevels[arguments.requiredAccess]
 
 		do {
-			var index = metadata.functions.find(function (metadata) {
-				return arguments.metadata.name == methodName;
-			})
+			if (metadata.keyExists("functions")) {
+				var index = metadata.functions.find(function (metadata) {
+					return arguments.metadata.name == methodName;
+				})
 
-			if (index > 0) {
-				// The method is found, so return immediately.
-				return this.accessLevels[metadata.functions[index].access] >= accessLevel;
+				if (index > 0) {
+					// The method is found, so return immediately.
+					return this.accessLevels[metadata.functions[index].access] >= accessLevel;
+				}
 			}
 
 			metadata = metadata.extends ?: null
@@ -69,7 +71,7 @@ component {
 	}
 
 	/**
-	 * Returns the metadata of all properties defined in the given metadata (obtained using `GetMetData` of `GetComponentMetadata`).
+	 * Returns the metadata of all properties defined in the given metadata (obtained using `GetMetData` or `GetComponentMetadata`).
 	 */
 	public Struct[] function collectProperties(required Struct metadata) {
 
