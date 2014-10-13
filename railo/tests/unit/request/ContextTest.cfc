@@ -148,7 +148,12 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function CreateURL_Should_ForwardToEndPointCreateURL() {
-		Throw("implement");
+		// The context calls EndPoint.createURL using an argument collection, so the method signature of both methods should be the same.
+		this.endPoint.setTestPath("/index.html")
+		var context = new Context(this.endPoint, this.root)
+
+		var parameters = {par1: 1, par2: "two"}
+		assertEquals(this.endPoint.createURL("/test", parameters), context.createURL("/test", parameters))
 	}
 
 }

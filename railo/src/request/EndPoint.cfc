@@ -1,6 +1,6 @@
 component accessors="true" {
 
-	property String rootPath;
+	property String indexFile default=""; // The index file used in the url. If set, the value should start with a /.
 
 	property String extension setter="false";
 	property Array extensions setter="false"; // String[]
@@ -15,31 +15,7 @@ component accessors="true" {
 		pdf: "application/pdf",
 		txt: "text/plain"
 	}
-	this.rootFile = "" // The file present in the url to direct traffic to Railo.
-	this.rootDirectory = "" // The directory that is transparently added to and removed from every url.
-	this.rootPath = "" // The concatenation of rootFile and rootDirectory.
 	this.extensions = this.contentTypes.keyArray()
-
-	public void function setRootPath(required String rootPath) {
-
-		// If a file (usually index.cfm) is used in urls, keep it separate from the rest of the root path.
-		// This way, we can transparently add and remove the root path, since the root file is not present in cgi.path_info.
-		var firstSegment = arguments.rootPath.listFirst("/")
-		if (firstSegment.reFind("\.cfml?") > 0) {
-			this.rootFile = "/" & firstSegment
-			this.rootDirectory = "/" & arguments.rootPath.listRest("/")
-		} else {
-			this.rootFile = ""
-			// Keep the root directory empty unless it actually contains a segment. That is, '/' should revert to ''.
-			if (arguments.rootPath.listLen("/") > 0) {
-				this.rootDirectory = arguments.rootPath
-			} else {
-				this.rootDirectory = ""
-			}
-		}
-
-		this.rootPath = this.rootFile & this.rootDirectory
-	}
 
 	public String function getExtension() {
 		var extension = this.getPath().listLast(".")
@@ -52,8 +28,8 @@ component accessors="true" {
 	}
 
 	public String function getPath() {
-		// Remove the root directory from the beginning.
-		return cgi.path_info.replace(this.rootDirectory, "");
+		// Remove the context root from the beginning.
+		return cgi.path_info.removeChars(1, GetContextRoot().len());
 	}
 
 	public String function getRequestMethod() {
@@ -101,7 +77,7 @@ component accessors="true" {
 			}, queryString)
 		}
 
-		return this.rootPath & path & queryString;
+		return GetContextRoot() & this.indexFile & path & queryString;
 	}
 
 }

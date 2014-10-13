@@ -20,8 +20,8 @@ component extends="mxunit.framework.TestCase" {
 
 		assertFalse(this.root.hasCommand())
 
-		this.root.setCommand(command1, "GET")
-		this.root.setCommand(command2, "POST")
+		this.root.setCommand("GET", command1)
+		this.root.setCommand("POST", command2)
 
 		assertTrue(this.root.hasCommand())
 		assertTrue(this.root.hasCommand("GET"))

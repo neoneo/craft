@@ -63,9 +63,9 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(parts.find("a=1") > 0 && parts.find("b=2") > 0, "the created url should contain the parameters in the query string")
 	}
 
-	public void function CreateURLWithRootPath() {
+	public void function CreateURLWithIndexFile() {
 		var endPoint = new EndPointStub()
-		endPoint.setRootPath("/index.cfm")
+		endPoint.setIndexFile("/index.cfm")
 		var result = endPoint.createURL("/request.html")
 		assertEquals("/index.cfm/request.html", result)
 	}

@@ -263,8 +263,8 @@ component extends="mxunit.framework.TestCase" {
 
 		assertEquals(2, child2.children.len())
 
-		grandchild.setCommand(new CommandStub("get"), "GET")
-		grandchild.setCommand(new CommandStub("post"), "POST")
+		grandchild.setCommand("GET", new CommandStub("get"))
+		grandchild.setCommand("POST", new CommandStub("post"))
 
 		// Actual test. No identifier should be required so we leave it off.
 		this.parser.remove("GET /child2/grandchild2")
