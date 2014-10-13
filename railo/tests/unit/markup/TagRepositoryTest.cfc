@@ -77,12 +77,32 @@ component extends="mxunit.framework.TestCase" {
 		assertTrue(sameContents(["yes", "yessub", "subyes"], tagNames), "found tag names '#tagNames.toList()#'")
 	}
 
-	public void function Register_Should_FollowFactoryDirective() {
-
-	}
-
 	private Boolean function sameContents(required Array array1, required Array array2) {
 		return arguments.array1.containsAll(arguments.array2) && arguments.array2.containsAll(arguments.array1);
+	}
+
+	public void function RegisterExistingTag_Should_ThrowAlreadyBoundException() {
+		Throw("implement");
+	}
+
+	public void function Get_Should_ReturnTagMetadata() {
+		Throw("implement");
+	}
+
+	public void function GetNonExistingTag_Should_ThrowNoSuchElementException() {
+		Throw("implement");
+	}
+
+	public void function ElementFactory_Should_ReturnFactoryForNamespace() {
+		Throw("implement");
+	}
+
+	public void function SetElementFactory_Should_SetFactoryForNamespace() {
+		Throw("implement");
+	}
+
+	public void function Register_Should_FollowFactoryDirective() {
+		Throw("implement");
 	}
 
 	// The following tests are integration tests, strictly speaking.

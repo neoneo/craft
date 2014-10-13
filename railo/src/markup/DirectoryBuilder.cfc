@@ -5,6 +5,10 @@ component {
 		this.elementBuilder = new ElementBuilder(arguments.tagRepository, this.scope)
 	}
 
+	/**
+	 * Builds all xml files in the given directory and returns a struct with the resulting `Element`s, where keys are file names.
+	 * The resulting `Element`s are stored in the `Scope`, and are available as a dependency for subsequent calls.
+	 */
 	public Struct function build(required String path) {
 
 		var elements = {}

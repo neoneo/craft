@@ -1,16 +1,18 @@
 import craft.util.ObjectHelper;
 
-component {
+component accessors="true" {
 
 	property Struct tagNames setter="false";
 
-	public void function init(required ElementFactory elementFactory) {
-		this.elementFactory = arguments.elementFactory // The default element factory.
-		this.tags = {} // Keeps metadata of tags per namespace.
-		this.factories = {} // Element factories per namespace.
-		this.factoryCache = {} // Used in order to create one instance per factory class.
+	this.elementClassName = GetComponentMetadata("Element").name
+	this.factories = {} // Element factories per namespace.
+	this.factoryCache = {} // Used in order to create one instance per factory class.
+	this.tags = {} // Metadata of tags per namespace.
 
-		this.objectHelper = new ObjectHelper()
+	this.objectHelper = new ObjectHelper()
+
+	public void function init(required ElementFactory elementFactory) {
+		this.defaultElementFactory = arguments.elementFactory
 	}
 
 	/**
@@ -48,7 +50,7 @@ component {
 				this.factories[namespace] = this.factoryCache[className]
 			} else {
 				// Use the default element factory.
-				this.factories[namespace] = this.elementFactory
+				this.factories[namespace] = this.defaultElementFactory
 			}
 
 			var registerPaths = null
@@ -76,15 +78,21 @@ component {
 
 					// Ignore classes with the abstract annotation.
 					var abstract = metadata.abstract ?: false
-					if (!abstract && this.extendsElement(metadata)) {
+					if (!abstract && this.objectHelper.extends(metadata, this.elementClassName)) {
 						// If a tag annotation is present, that will be the tag name. Otherwise we take the class name.
 						var tagName = metadata.tag ?: metadata.name
 						var data = {
 							class: metadata.name,
-							attributes: this.collectAttributes(metadata)
+							attributes: this.objectHelper.collectProperties(metadata).filter(function (property) {
+								// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
+								return arguments.property.attribute ?: true;
+							})
+						}
+						if (this.tags[namespace].keyExists(tagName)) {
+							Throw("Tag '#tagName#' already exists in namespace '#namespace#'", "AlreadyBoundException");
 						}
 						// Store the tag data.
-						this.tags[tagName] = data
+						this.tags[namespace][tagName] = data
 					}
 				})
 			})
@@ -100,6 +108,9 @@ component {
 
 	}
 
+	/**
+	 * Deregisters the `Element`s found in the given mapping (as specified bij craft.ini).
+	 */
 	public void function deregister(required String mapping) {
 
 		var path = ExpandPath(arguments.mapping)
@@ -133,6 +144,9 @@ component {
 		this.factories.delete(arguments.namespace)
 	}
 
+	/**
+	 * Returns the available tag names per namespace.
+	 */
 	public Struct function getTagNames() {
 		return this.tags.map(function (namespace, metadata) {
 			// The metadata argument is a struct where the keys are tag names.
@@ -140,76 +154,37 @@ component {
 		});
 	}
 
-	public void function setElementFactory(required String namespace, required ElementFactory elementFactory) {
-		this.factories[arguments.namespace] = arguments.elementFactory
-	}
-
 	/**
-	 * Creates a tree of `Element`s that represents the given xml node tree.
+	 * Returns metadata for the given tag in the given namespace.
 	 */
-	public Element function instantiate(required XML node) {
+	public Struct function get(required String namespace, required String tagName) {
 
-		var namespace = arguments.node.xmlNsPrefix
-		if (!this.tags.keyExists(namespace)) {
-			Throw("Namespace '#namespace#' not found", "NoSuchElementException");
+		if (!this.tags.keyExists(arguments.namespace)) {
+			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException");
 		}
 
-		var tags = this.tags[namespace]
+		var tags = this.tags[arguments.namespace]
 
-		var tagName = arguments.node.xmlName.replace(namespace & ":", "") // Remove the namespace prefix, if it exists.
-		if (!tags.keyExists(tagName)) {
+		if (!tags.keyExists(arguments.tagName)) {
 			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException");
 		}
 
-		// Attribute validation and selection:
-		var data = tags[arguments.tagName]
-		// Create a struct with attribute name/value pairs to pass to the factory.
-		var attributes = {}
-		// Loop over the attributes defined in the class, and pick them up from the node attributes.
-		// This means that any attributes not defined in the class are ignored.
-		var nodeAttributes = arguments.node.xmlAttributes
-		data.attributes.each(function (attribute) {
-			var name = arguments.attribute.name
-			var value = nodeAttributes[name] ?: arguments.attribute.default ?: null
-
-			if (value === null && (arguments.attribute.required ?: false)) {
-				Throw("Attribute '#name#' is required", "IllegalArgumentException");
-			}
-
-			if (value !== null) {
-				// Since we'll only encounter simple values here, we can use IsValid. We assume that the property type is specified.
-				if (!IsValid(arguments.attribute.type, value)) {
-					Throw("Invalid value '#value#' for attribute '#name#'", "IllegalArgumentException", "Expected value of type #arguments.attribute.type#");
-				}
-
-				attributes[name] = value
-			}
-		})
-
-		// Get the factory for this namespace and create the element.
-		var factory = this.factories[namespace]
-		var element = factory.create(data.class, attributes, arguments.node.xmlText)
-
-		for (var child in arguments.node.xmlChildren) {
-			element.add(this.instantiate(child))
-		}
-
-		return element;
+		return tags[arguments.tagName];
 	}
 
 	/**
-	 * Returns whether `Element` is in the inheritance chain of the given metadata.
+	 * Returns the `ElementFactory` to be used for creating the `Element`s in the given namespace.
 	 */
-	private Boolean function extendsElement(required Struct metadata) {
-		return this.objectHelper.extends(arguments.metadata, GetComponentMetadata("Element").name);
+	public ElementFactory function elementFactory(required String namespace) {
+		if (!this.factories.keyExists(arguments.namespace)) {
+			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException");
+		}
+
+		return this.factories[arguments.namespace];
 	}
 
-	private Struct[] function collectAttributes(required Struct metadata) {
-		// Filter the properties for those that can be attributes.
-		return this.objectHelper.collectProperties(arguments.metadata).filter(function (property) {
-			// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
-			return arguments.property.attribute ?: true;
-		});
+	public void function setElementFactory(required String namespace, required ElementFactory elementFactory) {
+		this.factories[arguments.namespace] = arguments.elementFactory
 	}
 
 }

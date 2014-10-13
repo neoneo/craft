@@ -1,20 +1,22 @@
 component {
 
 	public void function init(required TagRepository tagRepository, Scope scope) {
-		this.tagRepository = arguments.tagRepository
 		this.scope = arguments.scope ?: new Scope()
+		this.elementBuilder = new ElementBuilder(arguments.tagRepository, this.scope)
 	}
 
+	/**
+	 * Builds the xml file at the given path. The resulting `Element` is stored in the `Scope`, and is available
+	 * as a dependency for subsequent calls.
+	 */
 	public Element function build(required String path) {
 
-		var elementBuilder = new ElementBuilder(this.tagRepository, this.scope)
-
 		var document = XMLParse(FileRead(arguments.path))
-		var element = elementBuilder.build(document)
+		var element = this.elementBuilder.build(document)
 
-		// If the element depends on another element, we cannot resolve that.
 		if (!element.ready) {
-			Throw("Could not construct element", "InstantiationException", "If the element depends on other elements, use DirectoryBuilder.");
+			// The element builder only returns if all child elements are ready, so it can only be this element that's not ready.
+			Throw("Could not construct element", "InstantiationException", "The element has an undefined dependency.");
 		}
 
 		this.scope.put(element)

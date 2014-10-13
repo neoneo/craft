@@ -7,7 +7,7 @@ component {
 
 	public Element function build(required XML document) {
 
-		var element = this.tagRepository.instantiate(arguments.document.xmlRoot)
+		var element = this.instantiate(arguments.document.xmlRoot)
 
 		/*
 			Create a scope for local elements. We don't want elements from outside this document to be able to refer to inside elements.
@@ -47,6 +47,52 @@ component {
 		}
 
 		// Return the element whether it's ready or not. It's the responsibility of other objects to handle this.
+		return element;
+	}
+
+	/**
+	 * Creates a tree of `Element`s that represents the given xml node tree.
+	 */
+	private Element function instantiate(required XML node) {
+
+		var namespace = arguments.node.xmlNsPrefix
+		var tagName = arguments.node.xmlName.replace(namespace & ":", "") // Remove the namespace prefix, if it exists.
+
+		var tag = this.tagRepository.get(namespace, tagName)
+
+		// Create a struct with attribute name/value pairs to pass to the factory.
+		var attributes = {}
+
+		// Attribute validation and selection:
+		// Loop over the attributes defined in the tag, and pick them up from the node attributes.
+		// This means that any attributes not defined in the tag are ignored.
+		var nodeAttributes = arguments.node.xmlAttributes
+		tag.attributes.each(function (attribute) {
+			var name = arguments.attribute.name
+			var value = nodeAttributes[name] ?: arguments.attribute.default ?: null
+
+			if (value === null && (arguments.attribute.required ?: false)) {
+				Throw("Attribute '#name#' is required", "IllegalArgumentException");
+			}
+
+			if (value !== null) {
+				// Since we'll only encounter simple values here, we can use IsValid. We assume that the property type is specified.
+				if (!IsValid(arguments.attribute.type, value)) {
+					Throw("Invalid value '#value#' for attribute '#name#'", "IllegalArgumentException", "Expected value of type #arguments.attribute.type#");
+				}
+
+				attributes[name] = value
+			}
+		})
+
+		// Get the factory for this namespace and create the element.
+		var factory = this.tagRepository.elementFactory(namespace)
+		var element = factory.create(tag.class, attributes, arguments.node.xmlText)
+
+		for (var child in arguments.node.xmlChildren) {
+			element.add(this.instantiate(child))
+		}
+
 		return element;
 	}
 
