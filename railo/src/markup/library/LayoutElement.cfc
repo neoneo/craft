@@ -11,13 +11,13 @@ component extends="Element" accessors="true" tag="layout" {
 	public void function construct(required Scope scope) {
 
 		if (this.getChildrenReady()) {
-			var section = new Section()
+			var section = this.getContentFactory().createSection()
 
 			this.children.each(function (child) {
 				section.addComponent(arguments.child.product)
 			})
 
-			this.product = new Layout(section)
+			this.product = this.getContentFactory().createLayout(section)
 		}
 
 	}

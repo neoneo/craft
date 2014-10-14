@@ -10,7 +10,7 @@ component extends="Element" accessors="true" tag="section" {
 	public void function construct(required Scope scope) {
 
 		if (this.getChildrenReady()) {
-			var section = new Section()
+			var section = this.getContentFactory().createSection()
 
 			// Now add the child elements to the section.
 			this.children.each(function (child) {
