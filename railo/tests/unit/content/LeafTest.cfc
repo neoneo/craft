@@ -1,12 +1,9 @@
 import craft.content.*;
 
-import craft.output.*;
-
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		this.viewFactory = mock(CreateObject("ViewFactory"))
-		this.leaf = new Leaf(this.viewFactory)
+		this.leaf = new Leaf()
 	}
 
 	public void function Accept_Should_InvokeVisitor() {
