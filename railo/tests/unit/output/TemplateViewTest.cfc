@@ -13,7 +13,8 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function Render_Should_CallRenderer() {
 
-		var view = new TemplateView(this.templateRenderer, {template: this.template})
+		var view = new TemplateView(this.template)
+		view.templateRenderer = this.templateRenderer
 
 		var output = view.render(this.model)
 		assertEquals(this.template, output)
@@ -27,7 +28,8 @@ component extends="mxunit.framework.TestCase" {
 			property2: "two",
 			property3: "three"
 		}
-		var view = new TemplateView(this.templateRenderer, {template: this.template, properties: properties})
+		var view = new TemplateView(this.template, properties)
+		view.templateRenderer = this.templateRenderer
 
 		// The model being rendered is the model and the properties combined.
 		var renderedModel = Duplicate(this.model, false).append(properties)
