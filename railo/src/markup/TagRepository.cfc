@@ -184,6 +184,10 @@ component accessors="true" {
 	}
 
 	public void function setElementFactory(required String namespace, required ElementFactory elementFactory) {
+		if (!this.tags.keyExists(arguments.namespace)) {
+			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException");
+		}
+
 		this.factories[arguments.namespace] = arguments.elementFactory
 	}
 

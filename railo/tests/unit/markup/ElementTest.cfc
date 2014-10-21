@@ -4,22 +4,18 @@ import craft.markup.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	public void function setUp() {
-		this.contentFactory = mock(CreateObject("ContentFactory"))
-		this.element = new Element(this.contentFactory)
-	}
-
 	public void function Ready_Should_ReturnFalse_IfNotConstructed() {
-		assertFalse(this.element.ready, "if no construction has taken place, ready should return false")
+		var element = new Element()
+		assertFalse(element.ready, "if no construction has taken place, ready should return false")
 	}
 
 	public void function Attributes_Should_BeSet_When_Constructed() {
-		var element = new stubs.ElementStub(this.contentFactory, {
+		var element = new stubs.ElementStub(
 			ref: "ref",
 			someBoolean: true,
 			someDate: CreateDate(2000, 1, 1),
 			someNumber: 42
-		})
+		)
 
 		assertEquals("ref", element.ref)
 		assertEquals(true, element.someBoolean)
@@ -28,75 +24,81 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function Ready_Should_ReturnTrue_IfProductSet() {
+		var element = new Element()
 		var product = mock(CreateObject("Component"))
-		this.element.product = product
+		makePublic(element, "setProduct")
+		element.setProduct(product)
 
-		assertTrue(this.element.ready, "if there is a product, ready should return true")
+		assertTrue(element.ready, "if there is a product, ready should return true")
 	}
 
 	public void function ParentRelationship() {
-		var parent = new Element(this.contentFactory)
-		this.element.parent = parent
-		assertTrue(this.element.hasParent)
-		assertSame(parent, this.element.parent)
+		var element = new Element()
+		var parent = new Element()
+		element.parent = parent
+		assertTrue(element.hasParent)
+		assertSame(parent, element.parent)
 	}
 
 	public void function ChildRelationship() {
-		assertFalse(this.element.hasChildren)
+		var element = new Element()
+		assertFalse(element.hasChildren)
 
-		var child1 = new Element(this.contentFactory)
-		var child2 = new Element(this.contentFactory)
+		var child1 = new Element()
+		var child2 = new Element()
 
-		this.element.add(child1)
-		this.element.add(child2)
+		element.add(child1)
+		element.add(child2)
 
-		assertTrue(this.element.hasChildren)
+		assertTrue(element.hasChildren)
 
-		var children = this.element.children
+		var children = element.children
 		assertEquals(2, children.len())
 		assertSame(child1, children[1])
 		assertSame(child2, children[2])
 
-		assertSame(this.element, child1.parent)
-		assertSame(this.element, child2.parent)
+		assertSame(element, child1.parent)
+		assertSame(element, child2.parent)
 	}
 
 	public void function ChildrenReady_Should_ReturnCorrectBoolean() {
-		assertTrue(this.element.getChildrenReady(), "if there are no children, childrenReady should return true")
+		var element = new Element()
+		assertTrue(element.childrenReady, "if there are no children, childrenReady should return true")
 
-		var child1 = new Element(this.contentFactory)
-		var child2 = new Element(this.contentFactory)
+		var child1 = new Element()
+		var child2 = new Element()
 
-		this.element.add(child1)
-		this.element.add(child2)
+		element.add(child1)
+		element.add(child2)
 
-		var children = this.element.children
+		var children = element.children
 		assertEquals(2, children.len())
 		assertSame(child1, children[1])
 		assertSame(child2, children[2])
 
-		assertFalse(this.element.childrenReady, "if both children are not ready, childrenReady should return false")
+		assertFalse(element.childrenReady, "if both children are not ready, childrenReady should return false")
 
 		var product = mock(CreateObject("Component"))
 		child1.product = product
 		assertTrue(child1.getReady())
-		assertFalse(this.element.getChildrenReady(), "if one of the children is not ready, childrenReady should return false")
+		assertFalse(element.getChildrenReady(), "if one of the children is not ready, childrenReady should return false")
 		child2.product = product
 		assertTrue(child2.getReady())
-		assertTrue(this.element.getChildrenReady(), "if all children are ready, childrenReady should return true")
+		assertTrue(element.getChildrenReady(), "if all children are ready, childrenReady should return true")
 	}
 
 	public void function SiblingRelationship() {
-		assertEquals(0, this.element.siblingIndex, "if an element has no parent, siblingIndex should return 0")
-		assertTrue(this.element.siblings.isEmpty(), "if an element has no parent, siblings should return an empty array")
+		var element = new Element()
+		assertEquals(0, element.siblingIndex, "if an element has no parent, siblingIndex should return 0")
+		assertTrue(element.siblings.isEmpty(), "if an element has no parent, siblings should return an empty array")
 
 		// Create children with a ref, so that .equals can distinguish them.
-		var child1 = new Element(this.contentFactory, {ref: "1"})
-		var child2 = new Element(this.contentFactory, {ref: "2"})
-		var child3 = new Element(this.contentFactory, {ref: "3"})
-		this.element.add(child1)
-		this.element.add(child2)
-		this.element.add(child3)
+		var child1 = new Element(ref: "1")
+		var child2 = new Element(ref: "2")
+		var child3 = new Element(ref: "3")
+		element.add(child1)
+		element.add(child2)
+		element.add(child3)
 
 		assertEquals(1, child1.siblingIndex)
 		assertSameItems([child2, child3], child1.siblings)

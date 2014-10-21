@@ -55,7 +55,7 @@ component {
 	 */
 	private Element function instantiate(required XML node) {
 
-		var namespace = arguments.node.xmlNsPrefix
+		var namespace = arguments.node.xmlNsURI
 		var tagName = arguments.node.xmlName.replace(namespace & ":", "") // Remove the namespace prefix, if it exists.
 
 		var tag = this.tagRepository.get(namespace, tagName)
