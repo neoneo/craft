@@ -1,13 +1,16 @@
 import craft.output.TemplateRenderer;
+import craft.output.TemplateView;
 import craft.output.View;
 
 import craft.util.ClassFinder;
+import craft.util.ObjectHelper;
 
 component {
 
 	public void function init(required TemplateRenderer templateRenderer) {
 		this.templateRenderer = arguments.templateRenderer
 		this.viewFinder = new ClassFinder()
+		this.objectHelper = new ObjectHelper()
 	}
 
 	public void function addMapping(required String mapping) {

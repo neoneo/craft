@@ -9,12 +9,14 @@ import craft.content.Section;
 import craft.output.ViewFactory;
 
 import craft.util.ClassFinder;
+import craft.util.ObjectHelper;
 
 component {
 
 	public void function init(required ViewFactory viewFactory) {
 		this.viewFactory = arguments.viewFactory
 		this.componentFinder = new ClassFinder()
+		this.objectHelper = new ObjectHelper()
 	}
 
 	public Content function create(required String name, Struct properties = {}) {
