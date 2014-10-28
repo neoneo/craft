@@ -28,7 +28,6 @@ component extends="Collection" {
 	}
 
 	private void function append(required Any item) {
-		remove(arguments.item)
 		this.items.append(arguments.item)
 	}
 

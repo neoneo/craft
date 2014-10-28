@@ -1,119 +1,120 @@
 import craft.util.*;
 
-component extends="mxunit.framework.TestCase" {
+component extends="testbox.system.BaseSpec" {
 
 	private Collection function createCollection() {
 		Throw("Not implemented")
 	}
 
-	public void function setUp() {
-		this.collection = createCollection()
-		this.item1 = {id: 1}
-		this.item2 = {id: 2}
-		this.item3 = {id: 3}
-		this.collection.add(this.item1)
-		this.collection.add(this.item2)
-		this.collection.add(this.item3)
-	}
+	function run() {
 
-	public void function AfterCreation_Should_BeEmpty() {
-		assertTrue(createCollection().isEmpty(), "collection should be empty after creation")
-	}
+		describe("collection", function () {
 
-	public void function Add_Should_ReturnCorrectBooleanValue() {
-		var item = {id: "A"}
-		assertTrue(this.collection.add(item), "collection.add should return true if the item is not in the list")
-		assertFalse(this.collection.isEmpty(), "collection should not be empty")
-		assertFalse(this.collection.add(item), "collection.add should return false if the item is in the list")
-	}
+			beforeEach(function () {
+				collection = createCollection()
+			})
 
-	public void function Add_Should_ReturnFalse_IfInsertedBeforeNotExists() {
-		assertFalse(this.collection.add({id: "A"}, {id: "B"}), "collection.add should return false if the item should be moved before an item that is not in the list")
-	}
+			describe("without items", function () {
 
-	public void function Contains_Should_ReturnCorrectBooleanValue() {
-		assertTrue(this.collection.contains(this.item1))
-		assertTrue(this.collection.contains(this.item2))
-		assertTrue(this.collection.contains(this.item3))
-		assertFalse(this.collection.contains({id: "A"}), "collection.contains should return false for new item")
-	}
+				it(".isEmpty should return true", function () {
+					expect(createCollection().isEmpty()).toBeTrue()
+				})
 
-	public void function Size_Should_ReturnNumberOfItems() {
-		assertEquals(3, this.collection.size())
-	}
+				it(".add should return true if the item is not in the collection", function () {
+					var item = {id: 1}
+					expect(collection.add(item)).toBeTrue("item should have been added successfully")
+					expect(collection.isEmpty()).toBeFalse("collection should not be empty")
+					expect(collection.add(item)).toBeFalse("adding the item twice should return false")
+				})
 
-	public void function Move_Should_ReturnTrue_IfMovedBackward() {
-		assertTrue(this.collection.move(this.item2, this.item1))
-	}
+			})
 
-	public void function Move_Should_ReturnTrue_IfMovedForward() {
-		assertTrue(this.collection.move(this.item3, this.item2))
-	}
+			describe("with items", function () {
 
-	public void function Move_Should_ReturnTrue_IfMoveToTheEnd() {
-		assertTrue(this.collection.move(this.item1))
-	}
+				beforeEach(function () {
+					item1 = {id: 1}
+					item2 = {id: 2}
+					item3 = {id: 3}
+					collection.add(item1)
+					collection.add(item2)
+					collection.add(item3)
+				})
 
-	public void function Move_Should_ReturnFalse_IfMovedBeforeNotExists() {
-		assertFalse(this.collection.move(this.item1, {id: "A"}))
-	}
+				it(".toArray should return an array of items", function () {
+					expect(collection.toArray()).toBe([item1, item2, item3])
+				})
 
-	public void function Move_Should_ReturnFalse_IfMovedBeforeItself() {
-		assertFalse(this.collection.move(this.item1, this.item1))
-	}
+				it(".size should return the number of items", function () {
+					expect(collection.size()).toBe(3)
+				})
 
-	public void function Move_Should_ReturnFalse_IfNotExists() {
-		assertFalse(this.collection.move({id: "A"}, this.item1), "collection.move should return false if the item to be moved is not in the list")
-	}
+				it(".add should return false if the referenced item is not in the collection", function () {
+					expect(collection.add({id: "A"}, {id: "B"})).toBeFalse()
+				})
 
-	public void function Remove_Should_ReturnTrue_IfExists() {
-		assertTrue(this.collection.remove(this.item1))
-		assertFalse(this.collection.contains(this.item1), "collection.contains should return false if the item is removed")
-		assertFalse(this.collection.remove(this.item1), "collection.remove should return false if the item is not in the list")
-		assertEquals(2, this.collection.size())
-	}
+				it(".contains should return the correct boolean value", function () {
+					expect(collection.contains(item1)).toBeTrue("item1 should be in the collection")
+					expect(collection.contains(item2)).toBeTrue("item2 should be in the collection")
+					expect(collection.contains(item3)).toBeTrue("item3 should be in the collection")
+					expect(collection.contains({id: "A"}), "item should not be in the collection")
+				})
 
-	public void function Remove_Should_ReturnFalse_IfNotExists() {
-		assertFalse(this.collection.remove({id: "A"}), "collection.remove should return false if the item is not in the list")
-	}
+				it(".move should place the item at the correct index and return true", function () {
+					// Move item2 before item1
+					expect(collection.move(item2, item1)).toBeTrue()
+					expect(collection.toArray()).toBe([item2, item1, item3])
 
-	public void function ToArray_Should_ReturnCorrectOrderAfterAdd() {
-		var array = this.collection.toArray()
-		assertEquals(3, array.len(), "array should have 3 items")
-		assertSame(array[1], this.item1, "item1 should be at index 1")
-		assertSame(array[2], this.item2, "item2 should be at index 2")
-		assertSame(array[3], this.item3, "item3 should be at index 3")
-	}
+					// Move item3 before item2
+					expect(collection.move(item3, item2)).toBeTrue()
+					expect(collection.toArray()).toBe([item3, item2, item1])
+				})
 
-	public void function ToArray_Should_ReturnCorrectOrderAfterMove() {
-		this.collection.move(this.item2, this.item1)
-		this.collection.move(this.item3, this.item2)
-		var array = this.collection.toArray()
-		assertEquals(3, array.len(), "array should have 3 items")
-		assertSame(array[1], this.item3, "item3 should be at index 1")
-		assertSame(array[2], this.item2, "item2 should be at index 2")
-		assertSame(array[3], this.item1, "item1 should be at index 3")
-	}
+				it(".move should place item at the end if no reference item is provided and return true", function () {
+					expect(collection.move(item1)).toBeTrue()
+					expect(collection.toArray()).toBe([item2, item3, item1])
+				})
 
-	public void function ToArray_Should_ReturnCorrectOrderAfterRemove() {
-		this.collection.remove(this.item2)
-		var array = this.collection.toArray()
-		assertEquals(2, array.len(), "array should have 2 items")
-		assertSame(array[1], this.item1, "item1 should be at index 1")
-		assertSame(array[2], this.item3, "item3 should be at index 2")
-	}
+				it(".move should return false if moved the reference item is not in the collection", function () {
+					expect(collection.move(item1, {id: "A"})).toBeFalse()
+				})
 
-	public void function Select_Should_ReturnItemThatMatches() {
+				it(".move should return false if the item is moved before itself", function () {
+					expect(collection.move(item1, item1)).toBeFalse()
+				})
 
-		var selected = this.collection.select(function (item) {
-			return arguments.item === this.item1
+				it(".move should return false if the item is not in the collection", function () {
+					expect(collection.move({id: "A"})).toBeFalse()
+				})
+
+				it(".remove should remove the item and return true", function () {
+					expect(collection.remove(item1)).toBeTrue()
+					expect(collection.contains(item1)).toBeFalse("collection.contains should return false if the item is removed")
+					expect(collection.toArray()).toBe([item2, item3])
+					expect(collection.size()).toBe(2)
+				})
+
+				it(".remove should return false if the item is not in the collection", function () {
+					expect(collection.remove({id: "A"})).toBeFalse()
+				})
+
+				it(".select should return matching item", function () {
+					var selected = collection.select(function (item) {
+						return arguments.item.id == 1;
+					})
+					expect(selected).toBe(item1)
+				})
+
+				it(".select should return null if no item matches", function () {
+					var selected = this.collection.select(function (item) {
+						return arguments.item.id == "A";
+					})
+					expect(selected).toBeNull()
+				})
+
+			})
+
 		})
-		assertSame(selected, this.item1, "collection.select should return item1")
-		var noChild = {id: "A"}
-		var selected = this.collection.select(function (item) {
-			return arguments.item === noChild
-		})
-		assertTrue(selected === null, "collection.select should return null if the predicate is not met")
+
 	}
 
 }

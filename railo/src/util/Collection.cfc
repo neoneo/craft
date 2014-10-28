@@ -26,7 +26,7 @@ component {
 		// The item must be in the collection already.
 		if (currentIndex > 0) {
 			if (arguments.beforeItem === null) {
-				if (currentIndex < size()) {
+				if (currentIndex < this.size()) {
 					this.append(arguments.item)
 					moved = true
 				}

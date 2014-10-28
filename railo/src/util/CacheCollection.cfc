@@ -43,7 +43,6 @@ component extends="Collection" {
 	private void function append(required Any item) {
 
 		var items = this.get()
-		items.delete(arguments.item)
 		items.append(arguments.item)
 
 		this.put(items)
