@@ -1,3 +1,4 @@
+import craft.util.Collection;
 import craft.util.ScopeCollection;
 
 /**
@@ -9,7 +10,7 @@ component extends="Component" accessors="true" {
 
 	property Array children setter="false"; // Component[]
 
-	this.childCollection = new ScopeCollection()
+	this.childCollection = this.createCollection()
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitComposite(this)
@@ -59,6 +60,10 @@ component extends="Component" accessors="true" {
 		for (var child in this.getChildren()) {
 			child.accept(arguments.visitor)
 		}
+	}
+
+	private Collection function createCollection() {
+		return new ScopeCollection();
 	}
 
 }

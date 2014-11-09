@@ -1,3 +1,4 @@
+import craft.util.Collection;
 import craft.util.ScopeCollection;
 
 /**
@@ -14,7 +15,7 @@ component implements="Content" accessors="true" {
 		letting section extend composite.
 	*/
 
-	this.componentCollection = new ScopeCollection()
+	this.componentCollection = this.createCollection()
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitSection(this)
@@ -58,6 +59,10 @@ component implements="Content" accessors="true" {
 		for (var component in this.getComponents()) {
 			component.accept(arguments.visitor)
 		}
+	}
+
+	private Collection function createCollection() {
+		return new ScopeCollection();
 	}
 
 }
