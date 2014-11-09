@@ -1,68 +1,79 @@
 import craft.util.*;
 
-component extends="mxunit.framework.TestCase" {
+component extends="testbox.system.BaseSpec" {
 
-	this.mapping = "/tests/unit/util/files"
-
-	public void function setUp(){
-		this.fileFinder = new FileFinder("txt")
+	function beforeAll() {
+		mapping = "/tests/unit/util/files"
 	}
 
-	public void function Get_Should_ReturnFileName_When_FileExists() {
-		this.fileFinder.addMapping(this.mapping & "/dir1")
-		var file = this.fileFinder.get("file1") // OK
-		assertTrue(file.endsWith("/dir1/file1.txt"), "file1.txt should be found in dir1")
-	}
+	function run() {
 
-	public void function Get_Should_ThrowFileNotFound_When_NoMappingAvailable() {
-		// We don't add a mapping, but still try to find some file.
-		try {
-			var file = this.fileFinder.get("file") // error: file does not exist
-			fail("exception should have been thrown")
-		} catch (FileNotFoundException e) {}
-	}
+		describe("FileFinder.get", function () {
 
-	public void function Get_Should_ThrowFileNotFound_When_FileDoesNotExist() {
-		this.fileFinder.addMapping(this.mapping & "/dir1")
-		try {
-			var file = this.fileFinder.get("file3") // error: file does not exist
-			fail("file3.txt should not be found in dir1")
-		} catch (FileNotFoundException e) {}
-	}
+			beforeEach(function () {
+				fileFinder = new FileFinder("txt")
+			})
 
-	public void function Get_Should_SearchMappingsInOrder() {
-		this.fileFinder.addMapping(this.mapping & "/dir1")
-		this.fileFinder.addMapping(this.mapping & "/dir2")
-		this.fileFinder.addMapping(this.mapping & "/dir3")
+			it("should throw FileNotFoundException when no mapping is available", function () {
+				expect(function () {
+					fileFinder.get("file")
+				}).toThrow("FileNotFoundException")
+			})
 
-		var file = this.fileFinder.get("file1") // OK: from dir1
-		assertTrue(file.endsWith("/dir1/file1.txt"), "file1.txt should be found in dir1")
+			it("should return the file name when the file exists in one of the mappings", function () {
+				fileFinder.addMapping(mapping & "/dir1")
+				var file = fileFinder.get("file1") // OK
+				expect(file).toInclude("/dir1/file1.txt", "file1.txt should be found in dir1")
+			})
 
-		var file = this.fileFinder.get("file2") // OK: from dir1 (also exists in dir2)
-		assertTrue(file.endsWith("/dir1/file2.txt"), "file2.txt should be found in dir1")
+			it("should throw FileNotFoundException when the file does not exist in one of the mappings", function () {
+				expect(function () {
+					fileFinder.addMapping(mapping & "/dir1")
+					fileFinder.get("file3")
+				}).toThrow("FileNotFoundException")
+			})
 
-		var file = this.fileFinder.get("file3") // OK: from dir2 (also exists in dir3)
-		assertTrue(file.endsWith("/dir2/file3.txt"), "file3.txt should be found in dir2")
+			it("should search mappings in order", function () {
+				fileFinder.addMapping(mapping & "/dir1")
+				fileFinder.addMapping(mapping & "/dir2")
+				fileFinder.addMapping(mapping & "/dir3")
 
-		var file = this.fileFinder.get("file4") // OK: from dir3
-		assertTrue(file.endsWith("/dir3/file4.txt"), "file4.txt should be found in dir3")
-	}
+				var file = fileFinder.get("file1") // OK: from dir1
+				expect(file).toInclude("/dir1/file1.txt", "file1.txt should be found in dir1")
 
-	public void function RemoveMapping_ShouldNot_SearchRemovedMapping() {
-		this.fileFinder.addMapping(this.mapping & "/dir1")
-		this.fileFinder.addMapping(this.mapping & "/dir2")
-		this.fileFinder.get("file1") // from dir1
-		this.fileFinder.get("file2") // from dir1
+				var file = fileFinder.get("file2") // OK: from dir1 (also exists in dir2)
+				expect(file).toInclude("/dir1/file2.txt", "file2.txt should be found in dir1")
 
-		this.fileFinder.removeMapping(this.mapping & "/dir1")
+				var file = fileFinder.get("file3") // OK: from dir2 (also exists in dir3)
+				expect(file).toInclude("/dir2/file3.txt", "file3.txt should be found in dir2")
 
-		var file = this.fileFinder.get("file2") // now from dir2
-		assertTrue(file.endsWith("/dir2/file2.txt"), "file2.txt should be found in dir2")
+				var file = fileFinder.get("file4") // OK: from dir3
+				expect(file).toInclude("/dir3/file4.txt", "file4.txt should be found in dir3")
+			})
 
-		try {
-			var file = this.fileFinder.get("file1") // error: file does not exist in dir2
-			fail("file1.txt should not be found")
-		} catch (FileNotFoundException e) {}
+			it("should not search removed mappings", function () {
+				fileFinder.addMapping(mapping & "/dir1")
+				fileFinder.addMapping(mapping & "/dir2")
+				fileFinder.get("file1") // from dir1
+				fileFinder.get("file2") // from dir1
+
+				fileFinder.removeMapping(mapping & "/dir1")
+
+				var file = fileFinder.get("file2") // now from dir2
+				expect(file).toInclude("/dir2/file2.txt", "file2.txt should be found in dir2")
+
+				expect(function () {
+					fileFinder.get("file1")
+				}).toThrow("FileNotFoundException")
+
+				fileFinder.clear()
+				expect(function () {
+					fileFinder.get("file2")
+				}).toThrow("FileNotFoundException")
+			})
+
+		})
+
 	}
 
 }

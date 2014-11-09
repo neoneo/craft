@@ -168,7 +168,7 @@ component extends="testbox.system.BaseSpec" {
 					objectHelper.initialize(base, {property1: "property1", property2: "property2"})
 
 					expect(base.property1).toBe("property1")
-					expect(base.property2).toBeNull() // There is no setter for property2.
+					expect(base.property2).toBeNull()
 				})
 
 				it("should set property values if there is a public constructor", function () {
