@@ -1,6 +1,6 @@
 import craft.markup.*;
 
-import crafttests.unit.markup.stubs.create.*;
+import tests.unit.markup.stubs.create.*;
 
 component implements="ElementFactory" {
 

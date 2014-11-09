@@ -4,7 +4,7 @@ import craft.util.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	this.mapping = "/crafttests/unit/framework/stubs"
+	this.mapping = "/tests/unit/framework/stubs"
 	this.dotMapping = this.mapping.listChangeDelims(".", "/")
 
 	public void function setUp() {

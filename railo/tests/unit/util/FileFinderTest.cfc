@@ -2,7 +2,7 @@ import craft.util.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	this.mapping = "/crafttests/unit/util/files"
+	this.mapping = "/tests/unit/util/files"
 
 	public void function setUp(){
 		this.fileFinder = new FileFinder("txt")

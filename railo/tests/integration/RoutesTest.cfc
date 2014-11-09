@@ -10,7 +10,7 @@ component extends="mxunit.framework.TestCase" {
 		this.rootPathSegment = pathSegmentFactory.create("/")
 		this.parser = new RoutesParser(this.rootPathSegment, pathSegmentFactory, new stubs.CommandFactoryStub())
 
-		this.parser.import(ExpandPath("/crafttests/integration/test.routes"))
+		this.parser.import(ExpandPath("/tests/integration/test.routes"))
 	}
 
 	public void function Root() {

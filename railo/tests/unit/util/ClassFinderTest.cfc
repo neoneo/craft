@@ -2,8 +2,8 @@ import craft.util.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	this.mapping = "/crafttests/unit/util/classes"
-	this.dotMapping = "crafttests.unit.util.classes"
+	this.mapping = "/tests/unit/util/classes"
+	this.dotMapping = "tests.unit.util.classes"
 
 	public void function setUp(){
 		this.classFinder = new ClassFinder()

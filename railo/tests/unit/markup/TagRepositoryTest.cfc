@@ -5,7 +5,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function setUp() {
 		this.elementFactory = mock(CreateObject("stubs.ElementFactoryMock"))
 		this.repository = new TagRepository(this.elementFactory)
-		this.mapping = "/crafttests/unit/markup/stubs"
+		this.mapping = "/tests/unit/markup/stubs"
 		this.dotMapping = this.mapping.listChangeDelims(".", "/")
 	}
 

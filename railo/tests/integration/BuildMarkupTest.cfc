@@ -14,12 +14,12 @@ component extends="mxunit.framework.TestCase" {
 		contentFactory.addMapping("/craft/content/")
 
 		var factory = new ElementFactory(contentFactory)
-		factory.register("/crafttests/integration/markup/elements")
+		factory.register("/tests/integration/markup/elements")
 		factory.register("/craft/markup/library")
 
 		this.factory = factory
 
-		this.path = ExpandPath("/crafttests/integration/markup")
+		this.path = ExpandPath("/tests/integration/markup")
 
 		// The markup tags should result in specific component types.
 		this.types = {

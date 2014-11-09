@@ -6,7 +6,7 @@ component extends="mxunit.framework.TestCase" {
 		this.facade = new stubs.RequestFacadeStub(new stubs.CommandFactoryStub())
 		this.endPoint = this.facade.endPoint
 
-		this.facade.importRoutes("/crafttests/integration/test.routes")
+		this.facade.importRoutes("/tests/integration/test.routes")
 	}
 
 	public void function tearDown() {

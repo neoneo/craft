@@ -4,7 +4,7 @@ import craft.request.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	this.mapping = "/crafttests/integration/content"
+	this.mapping = "/tests/integration/content"
 
 	public void function setUp() {
 		var context = mock(CreateObject("Context"))

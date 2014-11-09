@@ -3,7 +3,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function beforeTests() {
 
 		var console = new stubs.ConsoleStub()
-		var mapping = "/crafttests/integration/console"
+		var mapping = "/tests/integration/console"
 
 		console.setCommandMapping(mapping & "/content/documents")
 		console.addContentMapping("/craft/content")

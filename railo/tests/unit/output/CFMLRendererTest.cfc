@@ -2,7 +2,7 @@ import craft.output.*;
 
 component extends="mxunit.framework.TestCase" {
 
-	this.mapping = "/crafttests/unit/output/templates"
+	this.mapping = "/tests/unit/output/templates"
 
 	public void function setUp() {
 		this.renderer = new CFMLRenderer()
