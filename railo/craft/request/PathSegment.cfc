@@ -1,3 +1,4 @@
+import craft.util.Collection;
 import craft.util.ScopeCollection;
 
 /**
@@ -19,7 +20,7 @@ component accessors="true" {
 		this.pattern = arguments.pattern
 		this.parameterName = arguments.parameterName
 
-		this.childCollection = new ScopeCollection()
+		this.childCollection = createCollection()
 		this.parent = null
 
 		this.commands = {} // Map of http methods to commands.
@@ -97,6 +98,10 @@ component accessors="true" {
 			}
 		})
 
+	}
+
+	private Collection function createCollection() {
+		return new ScopeCollection();
 	}
 
 }
