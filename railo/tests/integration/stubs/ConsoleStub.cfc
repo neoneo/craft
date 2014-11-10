@@ -6,8 +6,8 @@ component extends="Console" {
 		return new RequestFacadeStub(getCommandFactory());
 	}
 
-	public EndPoint function getEndPoint() {
-		return this.requestFacade.getEndPoint()
+	public Endpoint function getEndpoint() {
+		return this.requestFacade.getEndpoint()
 	}
 
 }

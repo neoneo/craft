@@ -18,17 +18,17 @@ component accessors="true" {
 	property PathSegment pathSegment setter="false";
 	property String requestMethod setter="false";
 
-	public void function init(required EndPoint endPoint, required PathSegment root) {
+	public void function init(required Endpoint endpoint, required PathSegment root) {
 
-		this.endPoint = arguments.endPoint
+		this.endpoint = arguments.endpoint
 		this.root = arguments.root
 
-		this.extension = arguments.endPoint.extension
-		this.requestMethod = arguments.endPoint.requestMethod
-		this.parameters = arguments.endPoint.requestParameters
+		this.extension = arguments.endpoint.extension
+		this.requestMethod = arguments.endpoint.requestMethod
+		this.parameters = arguments.endpoint.requestParameters
 
-		this.contentType = arguments.endPoint.contentType
-		this.path = arguments.endPoint.path
+		this.contentType = arguments.endpoint.contentType
+		this.path = arguments.endpoint.path
 
 		// Parse the path. If path segments define parameters, they are appended on the parameters struct.
 		this.pathSegment = null
@@ -39,7 +39,7 @@ component accessors="true" {
 			var extension = lastSegment.listLast(".")
 
 			// The extension cannot be the whole last segment.
-			if (extension != lastSegment && arguments.endPoint.extensions.find(extension) > 0) {
+			if (extension != lastSegment && arguments.endpoint.extensions.find(extension) > 0) {
 				// Remove the extension from the last segment.
 				segments[segments.len()] = lastSegment.reReplace("\.[a-z0-9]{3,4}$", "")
 			}
@@ -56,9 +56,9 @@ component accessors="true" {
 	}
 
 	public String function createURL(required String path, Struct parameters) {
-		// Note: the endPoint method must have exactly the same signature, including names.
+		// Note: the endpoint method must have exactly the same signature, including names.
 		// It seems a waste to convert the arguments to something else to decouple.
-		return this.endPoint.createURL(argumentCollection: arguments);
+		return this.endpoint.createURL(argumentCollection: arguments);
 	}
 
 	public void function addDependency(required String dependency) {

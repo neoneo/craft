@@ -2,12 +2,12 @@ import craft.request.*;
 
 component extends="Facade" {
 
-	private EndPoint function createEndPoint() {
-		 return new EndPointStub();
+	private Endpoint function createEndpoint() {
+		 return new EndpointStub();
 	}
 
-	public EndPoint function getEndPoint() {
-		return this.endPoint;
+	public Endpoint function getEndpoint() {
+		return this.endpoint;
 	}
 
 }

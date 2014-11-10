@@ -4,7 +4,7 @@ component accessors="true" {
 
 	public void function init(required CommandFactory commandFactory) {
 
-		this.endPoint = createEndPoint()
+		this.endpoint = createEndpoint()
 		var pathSegmentFactory = createPathSegmentFactory()
 		this.root = createRoot(pathSegmentFactory)
 		this.routesParser = createRoutesParser(this.root, pathSegmentFactory, arguments.commandFactory)
@@ -12,7 +12,7 @@ component accessors="true" {
 	}
 
 	public void function setRootPath(required String rootPath) {
-		this.endPoint.rootPath = arguments.rootPath
+		this.endpoint.rootPath = arguments.rootPath
 	}
 
 	public void function importRoutes(required String mapping) {
@@ -26,7 +26,7 @@ component accessors="true" {
 	public void function handleRequest() {
 
 		try {
-			var context = new Context(this.endPoint, this.root)
+			var context = new Context(this.endpoint, this.root)
 		} catch (FileNotFoundException e) {
 			header statuscode="404";
 			WriteOutput("404 not found")
@@ -86,8 +86,8 @@ component accessors="true" {
 
 	}
 
-	private EndPoint function createEndPoint() {
-		return new EndPoint();
+	private Endpoint function createEndpoint() {
+		return new Endpoint();
 	}
 
 	private PathSegmentFactory function createPathSegmentFactory() {

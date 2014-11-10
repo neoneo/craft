@@ -179,7 +179,7 @@ component {
 		this.actions.console.calls.append({build: [ExpandPath(arguments.mapping)]})
 	}
 
-	// EndPoint ===================================================================================
+	// Endpoint ===================================================================================
 
 	public void function setRootPath(required String rootPath) {
 		this.actions.requestFacade.calls.append({setRootPath: [arguments.rootPath]})

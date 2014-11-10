@@ -5,7 +5,7 @@ component extends="mxunit.framework.TestCase" {
 	public void function beforeTests() {
 		content type="text/html" reset="false";
 
-		this.endPoint = new stubs.EndPointStub()
+		this.endpoint = new stubs.EndpointStub()
 		var pathSegmentFactory = new PathSegmentFactory()
 		this.rootPathSegment = pathSegmentFactory.create("/")
 		this.parser = new RoutesParser(this.rootPathSegment, pathSegmentFactory, new stubs.CommandFactoryStub())
@@ -95,15 +95,15 @@ component extends="mxunit.framework.TestCase" {
 
 	private Struct function testRequest(required String method, required String path, Struct parameters) {
 
-		this.endPoint.setTestRequestMethod(arguments.method)
-		this.endPoint.setTestPath(arguments.path)
+		this.endpoint.setTestRequestMethod(arguments.method)
+		this.endpoint.setTestPath(arguments.path)
 
 		var parameters = arguments.parameters ?: null
 		if (parameters !== null) {
-			this.endPoint.setTestParameters(parameters)
+			this.endpoint.setTestParameters(parameters)
 		}
 
-		var context = new Context(this.endPoint, this.rootPathSegment)
+		var context = new Context(this.endpoint, this.rootPathSegment)
 		var pathSegment = context.pathSegment
 		var command = pathSegment.command(arguments.method)
 

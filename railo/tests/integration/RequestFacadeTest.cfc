@@ -4,7 +4,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function beforeTests() {
 		this.facade = new stubs.RequestFacadeStub(new stubs.CommandFactoryStub())
-		this.endPoint = this.facade.endPoint
+		this.endpoint = this.facade.endpoint
 
 		this.facade.importRoutes("/tests/integration/test.routes")
 	}
@@ -26,12 +26,12 @@ component extends="mxunit.framework.TestCase" {
 
 	private Struct function testRequest(required String method, required String path, Struct parameters) {
 
-		this.endPoint.setTestRequestMethod(arguments.method)
-		this.endPoint.setTestPath(arguments.path)
+		this.endpoint.setTestRequestMethod(arguments.method)
+		this.endpoint.setTestPath(arguments.path)
 
 		var parameters = arguments.parameters ?: null
 		if (parameters !== null) {
-			this.endPoint.setTestParameters(parameters)
+			this.endpoint.setTestParameters(parameters)
 		}
 
 		savecontent variable="local.output" {
