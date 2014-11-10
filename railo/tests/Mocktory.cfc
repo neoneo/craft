@@ -175,22 +175,28 @@ component {
 		for (var key in mockDescriptor) {
 			if (key != "$object" && key != "$class") {
 				// All keys have an array of result descriptors.
-				local.mockObject = arguments.mockObject;
-				mockDescriptor[key].each(function (descriptor) {
-					var functionName = this.isFunction(mockObject, key) ? key : "get" & key;
-					var count = this.callCount(callLog, functionName, arguments.descriptor.$args ?: []);
+				for (var descriptor in mockDescriptor[key]) {
+					var functionName = this.isFunction(arguments.mockObject, key) ? key : "get" & key;
 					// Test for existence of one of the comparison types. The values are arrays of comparison values and messages.
-					if (arguments.descriptor.keyExists("$times")) {
-						assert.isEqual(arguments.descriptor.$times[1], count, arguments.descriptor.$times[2]);
-					} else if (arguments.descriptor.keyExists("$atLeast")) {
-						// The isGTE, isLTE and between assertions have the actual value is their first argument.
-						assert.isGTE(count, arguments.descriptor.$atLeast[1], arguments.descriptor.$atLeast[2]);
-					} else if (arguments.descriptor.keyExists("$atMost")) {
-						assert.isLTE(count, arguments.descriptor.$atMost[1], arguments.descriptor.$atMost[2]);
-					} else if (arguments.descriptor.keyExists("$between")) {
-						assert.between(count, arguments.descriptor.$between[1], arguments.descriptor.$between[2], arguments.descriptor.$between[3]);
+					for (var comparison in ["$times", "$atLeast", "$atMost", "$between"]) {
+						if (descriptor.keyExists(comparison)) {
+							var count = this.callCount(callLog, functionName, descriptor.$args ?: []);
+
+							if (comparison == "$times") {
+								assert.isEqual(descriptor.$times[1], count, descriptor.$times[2]);
+							} else if (comparison == "$atLeast") {
+								// The isGTE, isLTE and between assertions have the actual value is their first argument.
+								assert.isGTE(count, descriptor.$atLeast[1], descriptor.$atLeast[2]);
+							} else if (comparison == "$atMost") {
+								assert.isLTE(count, descriptor.$atMost[1], descriptor.$atMost[2]);
+							} else if (comparison == "$between") {
+								assert.between(count, descriptor.$between[1], descriptor.$between[2], descriptor.$between[3]);
+							}
+
+							break;
+						}
 					}
-				});
+				};
 			}
 		}
 
