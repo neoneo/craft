@@ -3,7 +3,7 @@ import craft.request.*;
 component extends="mxunit.framework.TestCase" {
 
 	public void function setUp() {
-		this.endPoint = new EndPointStub()
+		this.endpoint = new EndpointStub()
 		this.root = mock(CreateObject("PathSegment"))
 		this.contextRoot = GetContextRoot()
 	}
@@ -17,7 +17,7 @@ component extends="mxunit.framework.TestCase" {
 		form.a = 1
 		form.b = "string 1"
 
-		var parameters = this.endPoint.requestParameters
+		var parameters = this.endpoint.requestParameters
 		var merged = {a: 1, b: "string 1", x: 2, y: "string 2"}
 
 		// The form contains fields introduced by Railo.
@@ -30,75 +30,75 @@ component extends="mxunit.framework.TestCase" {
 	}
 
 	public void function ExtensionContentType_Should_ReturnValueOrDefault() {
-		this.endPoint.setTestPath("/path/to/request.json")
-		assertEquals("json", this.endPoint.extension)
-		assertEquals("application/json", this.endPoint.contentType)
+		this.endpoint.setTestPath("/path/to/request.json")
+		assertEquals("json", this.endpoint.extension)
+		assertEquals("application/json", this.endpoint.contentType)
 
-		this.endPoint.setTestPath("/path/to/request.notexist")
-		assertEquals("html", this.endPoint.extension)
-		assertEquals("text/html", this.endPoint.contentType)
+		this.endpoint.setTestPath("/path/to/request.notexist")
+		assertEquals("html", this.endpoint.extension)
+		assertEquals("text/html", this.endpoint.contentType)
 	}
 
 	public void function CreateURLAbsolutePath() {
-		this.endPoint.setTestPath("/test")
-		var result = this.endPoint.createURL("/request.html")
+		this.endpoint.setTestPath("/test")
+		var result = this.endpoint.createURL("/request.html")
 		assertEquals(this.contextRoot & "/request.html", result)
 	}
 
 	public void function CreateURLRelativePathDotSlash() {
-		this.endPoint.setTestPath("/test")
-		var result = this.endPoint.createURL("./request.html")
+		this.endpoint.setTestPath("/test")
+		var result = this.endpoint.createURL("./request.html")
 		assertEquals(this.contextRoot & "/test/request.html", result)
 	}
 
 	public void function CreateURLRelativePathDotDotSlash() {
-		this.endPoint.setTestPath("/test")
-		var result = this.endPoint.createURL("../request.html")
+		this.endpoint.setTestPath("/test")
+		var result = this.endpoint.createURL("../request.html")
 		assertEquals(this.contextRoot & "/request.html", result)
 	}
 
 	public void function CreateURLRelativePathDotDotSlashTwice() {
-		this.endPoint.setTestPath("/test/test")
-		var result = this.endPoint.createURL("../../request.html")
+		this.endpoint.setTestPath("/test/test")
+		var result = this.endpoint.createURL("../../request.html")
 		assertEquals(this.contextRoot & "/request.html", result)
 	}
 
 	public void function CreateURLDotSlashHalfway() {
-		this.endPoint.setTestPath("/test/test")
-		var result = this.endPoint.createURL("/request/one/./two.html")
+		this.endpoint.setTestPath("/test/test")
+		var result = this.endpoint.createURL("/request/one/./two.html")
 		assertEquals(this.contextRoot & "/request/one/two.html", result)
 	}
 
 	public void function CreateURLDotDotSlashHalfway() {
-		this.endPoint.setTestPath("/test/test")
-		var result = this.endPoint.createURL("/request/one/../two.html")
+		this.endpoint.setTestPath("/test/test")
+		var result = this.endpoint.createURL("/request/one/../two.html")
 		assertEquals(this.contextRoot & "/request/two.html", result)
 	}
 
 	public void function CreateURLComplexRelativePath() {
-		this.endPoint.setTestPath("/test/test")
-		var result = this.endPoint.createURL("../../request/./one/two/../three.html")
+		this.endpoint.setTestPath("/test/test")
+		var result = this.endpoint.createURL("../../request/./one/two/../three.html")
 		assertEquals(this.contextRoot & "/request/one/three.html", result)
 	}
 
 	public void function CreateURLComplexRelativePathHalfway() {
-		this.endPoint.setTestPath("/test/test")
-		var result = this.endPoint.createURL("/request/./one/two/../three.html")
+		this.endpoint.setTestPath("/test/test")
+		var result = this.endpoint.createURL("/request/./one/two/../three.html")
 		assertEquals(this.contextRoot & "/request/one/three.html", result)
 	}
 
 	public void function CreateURLWithParameters() {
-		this.endPoint.setTestPath("/test")
-		var result = this.endPoint.createURL("/request.html", {"a": 1, "b": 2});
+		this.endpoint.setTestPath("/test")
+		var result = this.endpoint.createURL("/request.html", {"a": 1, "b": 2});
 		// We don't know the order of the parameters. Split the result into an array.
 		var parts = result.listToArray("?&")
 		assertTrue(parts.find("a=1") > 0 && parts.find("b=2") > 0, "the created url should contain the parameters in the query string")
 	}
 
 	public void function CreateURLWithIndexFile() {
-		var endPoint = new EndPointStub()
-		endPoint.setIndexFile("/index.cfm")
-		var result = endPoint.createURL("/request.html")
+		var endpoint = new EndpointStub()
+		endpoint.setIndexFile("/index.cfm")
+		var result = endpoint.createURL("/request.html")
 		assertEquals(this.contextRoot & "/index.cfm/request.html", result)
 	}
 
