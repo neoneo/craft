@@ -28,7 +28,8 @@ component {
 		}
 
 		var object = mockDescriptor.keyExists("$object") ?
-			this.mockFactory.prepareMock(mockDescriptor.$object) :
+			// If the object is already a mock, don't mock again.
+			StructKeyExists(mockDescriptor.$object, "mockBox") ? mockDescriptor.$object : this.mockFactory.prepareMock(mockDescriptor.$object) :
 			this.mockFactory.createMock(mockDescriptor.$class);
 
 		for (var key in mockDescriptor) {
@@ -143,8 +144,8 @@ component {
 	}
 
 	private Boolean function isFunction(required Any object, required String name) {
-		// TODO: Using StructKeyExists will invoke the function if invokeImplicitAccessors = true. Implement workaround.
-		return StructKeyExists(object, arguments.name) && IsCustomFunction(object[arguments.name]);
+		// Using StructKeyExists will invoke the function if invokeImplicitAccessor = true. That would increase the call count.
+		return StructKeyArray(arguments.object).findNoCase(arguments.name) > 0 && IsCustomFunction(object[arguments.name]);
 	}
 
 	private void function mockFunction(required Any object, required String name, required Struct descriptor) {

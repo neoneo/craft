@@ -47,62 +47,89 @@ component extends="testbox.system.BaseSpec" {
 		describe("Context", function () {
 
 			beforeEach(function () {
-				endPoint = mocktory.mock({
-					$object: CreateObject("EndPoint")
+				endpoint = mocktory.mock({
+					$object: CreateObject("Endpoint")
 				})
+
+				context = CreateObject("Context") // Don't use new, since there is much logic in the constructor that we want to test.
 			})
 
-			describe(".parsePath", function () {
+			describe(".init", function () {
 
-				it("should return the matching path segment when the path has no extension", function () {
-					endPoint.$("getPath", "/index")
-					var context = new Context(endPoint, root)
+				beforeEach(function () {
+					mocktory.mock({
+						$object: endpoint,
+						// The context always asks the endpoint for the extension.
+						extension: {
+							$returns: "html",
+							$times: 1
+						},
+						contentType: {
+							$returns: "text/html",
+							$times: 1
+						},
+						requestMethod: {
+							$returns: "get",
+							$times: 1
+						}
+					})
+				})
+
+				it("should get the extension, the content type and the request method from the endpoint", function () {
+					endpoint.$("getPath", "/")
+					context.init(endpoint, root)
+					mocktory.verify(endpoint)
+				})
+
+				it("should set the matching path segment when the path has no extension", function () {
+					endpoint.$("getPath", "/index")
+					context.init(endpoint, root)
 					$assert.isSameInstance(index, context.pathSegment)
 				})
 
-				it("should return the matching path segment when the path has an extension", function () {
-					endPoint.$("getPath", "/index.html")
-					var context = new Context(endPoint, root)
+				it("should set the matching path segment when the path has an extension", function () {
+					endpoint.$("getPath", "/index.html")
+					context.init(endpoint, root)
 					$assert.isSameInstance(index, context.pathSegment)
 				})
 
-				it("should return the matching path segment when the path has another extension", function () {
-					endPoint.$("getPath", "/index.json")
-					var context = new Context(endPoint, root)
+				it("should set the matching path segment when the path has another extension", function () {
+					endpoint.$("getPath", "/index.json")
+					context.init(endpoint, root)
 					$assert.isSameInstance(index, context.pathSegment)
 				})
 
-				it("should return the matching path segment when the path has no extension and ends with a slash", function () {
-					endPoint.$("getPath", "/index/")
-					var context = new Context(endPoint, root)
+				it("should set the matching path segment when the path has no extension and ends with a slash", function () {
+					endpoint.$("getPath", "/index/")
+					context.init(endpoint, root)
 					$assert.isSameInstance(index, context.pathSegment)
 				})
 
-				it("should return the matching path segment when the path has an extension and ends with a slash", function () {
-					endPoint.$("getPath", "/index.html/")
-					var context = new Context(endPoint, root)
+				it("should set the matching path segment when the path has an extension and ends with a slash", function () {
+					endpoint.$("getPath", "/index.html/")
+					context.init(endpoint, root)
 					$assert.isSameInstance(index, context.pathSegment)
 				})
 
-				it("should return the root path segment if the path is one single slash", function () {
-					endPoint.$("getPath", "/")
-					var context = new Context(endPoint, root)
+				it("should set the root path segment if the path is one single slash", function () {
+					endpoint.$("getPath", "/")
+					context.init(endpoint, root)
 					$assert.isSameInstance(root, context.pathSegment)
 				})
 
-				it("should return the matching path segment and set the request parameter to the matched segment", function () {
-					endPoint.$("getPath", "/test1")
-					var context = new Context(endPoint, root)
-					$assert.isSameInstance(test1, context.pathSegment, "parsing /test1 should return the test1 path segment")
+				it("should set the matching path segment and set the request parameter to the matched segment", function () {
+					endpoint.$("getPath", "/test1")
+					context.init(endpoint, root)
+					$assert.isSameInstance(test1, context.pathSegment)
 					var parameters = context.parameters
 					expect(parameters).toHaveKey("first")
 					expect(parameters.first).toBe("test1")
 				})
 
-				it("should return the matching child path segment and set request parameters for the matching segments", function () {
-					endPoint.$("getPath", "/test1/test2")
-					var context = new Context(endPoint, root)
-					$assert.isSameInstance(test2, context.pathSegment, "parsing /test1/test2 should return the test2 path segment")
+				it("should set the matching child path segment and set request parameters for the matching segments", function () {
+					endpoint.$("getPath", "/test1/test2")
+					context.init(endpoint, root)
+					$assert.isSameInstance(test2, context.pathSegment)
 					var parameters = context.parameters
 					expect(parameters).toHaveKey("first")
 					expect(parameters.first).toBe("test1")
@@ -110,10 +137,10 @@ component extends="testbox.system.BaseSpec" {
 					expect(parameters.second).toBe("test2")
 				})
 
-				it("should return the matching grandchild path segment and set request parameters for the matching segments", function () {
-					endPoint.$("getPath", "/test1/test2/test3")
-					var context = new Context(endPoint, root)
-					$assert.isSameInstance(test3, context.pathSegment, "parsing /test1/test2/test3 should return the test3 path segment")
+				it("should set the matching grandchild path segment and set request parameters for the matching segments", function () {
+					endpoint.$("getPath", "/test1/test2/test3")
+					context.init(endpoint, root)
+					$assert.isSameInstance(test3, context.pathSegment)
 					var parameters = context.parameters
 					expect(parameters).toHaveKey("first")
 					expect(parameters.first).toBe("test1")
@@ -125,59 +152,58 @@ component extends="testbox.system.BaseSpec" {
 
 				it("should continue matching when the path was matched partially", function () {
 					// the test4 segment is not mapped, so the search should revert to the entire path matcher
-					endPoint.$("getPath", "/test1/test2/test3/test4")
-					var context = new Context(endPoint, root)
-					$assert.isSameInstance(entire, context.pathSegment, "parsing /test1/test2/test3/test4 should return the entire path segment")
+					endpoint.$("getPath", "/test1/test2/test3/test4")
+					context.init(endpoint, root)
+					$assert.isSameInstance(entire, context.pathSegment)
 					var parameters = context.parameters
 					expect(parameters).toHaveKey("entire")
 					expect(parameters.entire).toBe("test1/test2/test3/test4")
 				})
 
-				it("should return the same path segment regardeless of the number of slashes", function () {
-					endPoint.$("getPath", "index")
-					var context = new Context(endPoint, root)
+				it("should set the same path segment regardless of the number of slashes", function () {
+					endpoint.$("getPath", "index")
+					context.init(endpoint, root)
 					$assert.isSameInstance(index, context.pathSegment)
 
-					endPoint.$("getPath", "//index")
-					var context = new Context(endPoint, root)
+					endpoint.$("getPath", "//index")
+					context.init(endpoint, root)
 					$assert.isSameInstance(index, context.pathSegment)
 
-					endPoint.$("getPath", "///index")
-					var context = new Context(endPoint, root)
+					endpoint.$("getPath", "///index")
+					context.init(endpoint, root)
 					$assert.isSameInstance(index, context.pathSegment)
 
-					endPoint.$("getPath", "test1//test2")
-					var context = new Context(endPoint, root)
+					endpoint.$("getPath", "test1//test2")
+					context.init(endpoint, root)
 					$assert.isSameInstance(test2, context.pathSegment)
 
-					endPoint.$("getPath", "//test1//test2//")
-					var context = new Context(endPoint, root)
+					endpoint.$("getPath", "//test1//test2//")
+					context.init(endpoint, root)
 					$assert.isSameInstance(test2, context.pathSegment)
 				})
 
 			})
 
-		})
+			describe(".createURL", function () {
+				it("should forward the call to endpoint.createURL", function () {
+					mocktory.mock({
+						$object: endpoint,
+						createURL: {
+							$args: ["/test"],
+							$returns: "/testing",
+							$times: 1
+						}
+					})
 
-		describe(".createURL", function () {
-			it("should forward the call to EndPoint.createURL", function () {
-				// The context calls EndPoint.createURL using an argument collection, so the method signature of both methods should be the same.
-				mocktory.mock({
-					$object: endPoint,
-					getPath: "/index.html",
-					createURL: {
-						$args: ["/test"],
-						$returns: "",
-						$times: 1
-					}
+					context.endpoint = endpoint
+					expect(context.createURL("/test")).toBe("/testing")
+
+					mocktory.verify(endpoint)
 				})
-				var context = new Context(endPoint, root)
-
-				context.createURL("/test")
-
-				mocktory.verify(endPoint)
 			})
+
 		})
+
 
 	}
 
