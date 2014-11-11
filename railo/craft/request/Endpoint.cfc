@@ -2,6 +2,7 @@ component accessors="true" {
 
 	property String indexFile default=""; // The index file used in the url. If set, the value should start with a /.
 
+	property String contextRoot setter="false";
 	property String extension setter="false";
 	property Array extensions setter="false"; // String[]
 	property String path setter="false";
@@ -15,6 +16,7 @@ component accessors="true" {
 		pdf: "application/pdf",
 		txt: "text/plain"
 	}
+	this.contextRoot = GetContextRoot()
 	this.extensions = this.contentTypes.keyArray()
 
 	public String function getExtension() {
@@ -29,7 +31,7 @@ component accessors="true" {
 
 	public String function getPath() {
 		// Remove the context root from the beginning.
-		return cgi.path_info.removeChars(1, GetContextRoot().len());
+		return cgi.path_info.removeChars(1, this.contextRoot.len());
 	}
 
 	public String function getRequestMethod() {
@@ -77,7 +79,7 @@ component accessors="true" {
 			}, queryString)
 		}
 
-		return GetContextRoot() & this.indexFile & path & queryString;
+		return this.contextRoot & this.indexFile & path & queryString;
 	}
 
 }

@@ -1,105 +1,189 @@
 import craft.request.*;
 
-component extends="mxunit.framework.TestCase" {
+component extends="testbox.system.BaseSpec" {
 
-	public void function setUp() {
-		this.endpoint = new EndpointStub()
-		this.root = mock(CreateObject("PathSegment"))
-		this.contextRoot = GetContextRoot()
-	}
+	function run() {
 
-	public void function RequestParameters_Should_ReturnMergedUrlAndFormScopes() {
-		// When merge url and form is enabled in the administrator, this test is not useful.
-		// We have to set the url variables first, so that the test doesn't fail in that case.
-		url.a = 2
-		url.x = 2
-		url.y = "string 2"
-		form.a = 1
-		form.b = "string 1"
+		describe("Endpoint", function () {
 
-		var parameters = this.endpoint.requestParameters
-		var merged = {a: 1, b: "string 1", x: 2, y: "string 2"}
+			beforeEach(function () {
+				endpoint = prepareMock(new Endpoint())
+				endpoint.$("getContextRoot", "")
+				endpoint.$property("contextRoot", "this", "")
+			})
 
-		// The form contains fields introduced by Railo.
-		var result = true
-		for (var key in merged) {
-			result = parameters.keyExists(key) && parameters[key] === merged[key]
-		}
+			describe(".requestParameters", function () {
+				it("should return merged url and form scopes with form taking precedence", function () {
+					// When merge url and form is enabled in the administrator, this test is not useful.
+					// We have to set the url variables first, so that the test doesn't fail in that case.
+					url.a = 2
+					url.x = 2
+					url.y = "string 2"
+					form.a = 1
+					form.b = "string 1"
 
-		assertTrue(result, "requestParameters should merge form and url scopes, with form parameters taking precedence")
-	}
+					var parameters = endpoint.requestParameters
+					var merged = {a: 1, b: "string 1", x: 2, y: "string 2"}
 
-	public void function ExtensionContentType_Should_ReturnValueOrDefault() {
-		this.endpoint.setTestPath("/path/to/request.json")
-		assertEquals("json", this.endpoint.extension)
-		assertEquals("application/json", this.endpoint.contentType)
+					// The form contains fields introduced by Railo.
+					for (var key in merged) {
+						expect(parameters).toHaveKey(key)
+						expect(parameters[key]).toBe(merged[key])
+					}
+				})
+			})
 
-		this.endpoint.setTestPath("/path/to/request.notexist")
-		assertEquals("html", this.endpoint.extension)
-		assertEquals("text/html", this.endpoint.contentType)
-	}
+			describe(".extension and .contentType", function () {
+				it("should return the pre-defined values, or the default", function () {
+					endpoint.$("getPath", "/path/to/request.json")
+					expect(endpoint.extension).toBe("json")
+					expect(endpoint.contentType).toBe("application/json")
 
-	public void function CreateURLAbsolutePath() {
-		this.endpoint.setTestPath("/test")
-		var result = this.endpoint.createURL("/request.html")
-		assertEquals(this.contextRoot & "/request.html", result)
-	}
+					endpoint.$("getPath", "/path/to/request.notexist")
+					expect(endpoint.extension).toBe("html")
+					expect(endpoint.contentType).toBe("text/html")
 
-	public void function CreateURLRelativePathDotSlash() {
-		this.endpoint.setTestPath("/test")
-		var result = this.endpoint.createURL("./request.html")
-		assertEquals(this.contextRoot & "/test/request.html", result)
-	}
+					endpoint.$("getPath", "/path/to/request")
+					expect(endpoint.extension).toBe("html")
+					expect(endpoint.contentType).toBe("text/html")
+				})
+			})
 
-	public void function CreateURLRelativePathDotDotSlash() {
-		this.endpoint.setTestPath("/test")
-		var result = this.endpoint.createURL("../request.html")
-		assertEquals(this.contextRoot & "/request.html", result)
-	}
+			describe(".createURL", function () {
 
-	public void function CreateURLRelativePathDotDotSlashTwice() {
-		this.endpoint.setTestPath("/test/test")
-		var result = this.endpoint.createURL("../../request.html")
-		assertEquals(this.contextRoot & "/request.html", result)
-	}
+				it("should serialize request parameters in the query string", function () {
+					var result = endpoint.createURL("/request.html", {a: 1, b: 2});
+					// We don't know the order of the parameters. Split the result into an array.
+					var parts = result.listToArray("?&")
+					expect(result).toMatch("[?&]a=1")
+					expect(result).toMatch("[?&]b=2")
+				})
 
-	public void function CreateURLDotSlashHalfway() {
-		this.endpoint.setTestPath("/test/test")
-		var result = this.endpoint.createURL("/request/one/./two.html")
-		assertEquals(this.contextRoot & "/request/one/two.html", result)
-	}
+			})
 
-	public void function CreateURLDotDotSlashHalfway() {
-		this.endpoint.setTestPath("/test/test")
-		var result = this.endpoint.createURL("/request/one/../two.html")
-		assertEquals(this.contextRoot & "/request/two.html", result)
-	}
+			describe(".createURL without context root and index file", function () {
 
-	public void function CreateURLComplexRelativePath() {
-		this.endpoint.setTestPath("/test/test")
-		var result = this.endpoint.createURL("../../request/./one/two/../three.html")
-		assertEquals(this.contextRoot & "/request/one/three.html", result)
-	}
+				beforeEach(function () {
+					endpoint.$("getPath", "/test/test")
+				})
 
-	public void function CreateURLComplexRelativePathHalfway() {
-		this.endpoint.setTestPath("/test/test")
-		var result = this.endpoint.createURL("/request/./one/two/../three.html")
-		assertEquals(this.contextRoot & "/request/one/three.html", result)
-	}
+				it("absolute path", function () {
+					var result = endpoint.createURL("/request.html")
+					expect(result).toBe("/request.html")
+				})
 
-	public void function CreateURLWithParameters() {
-		this.endpoint.setTestPath("/test")
-		var result = this.endpoint.createURL("/request.html", {"a": 1, "b": 2});
-		// We don't know the order of the parameters. Split the result into an array.
-		var parts = result.listToArray("?&")
-		assertTrue(parts.find("a=1") > 0 && parts.find("b=2") > 0, "the created url should contain the parameters in the query string")
-	}
+				it("relative path starting with './'", function () {
+					var result = endpoint.createURL("./request.html")
+					expect(result).toBe("/test/test/request.html")
+				})
 
-	public void function CreateURLWithIndexFile() {
-		var endpoint = new EndpointStub()
-		endpoint.setIndexFile("/index.cfm")
-		var result = endpoint.createURL("/request.html")
-		assertEquals(this.contextRoot & "/index.cfm/request.html", result)
+				it("relative path starting with '../'", function () {
+					var result = endpoint.createURL("../request.html")
+					expect(result).toBe("/test/request.html")
+				})
+
+				it("relative path starting with '../../'", function () {
+					var result = endpoint.createURL("../../request.html")
+					expect(result).toBe("/request.html")
+				})
+
+				it("path with a './' in the middle", function () {
+					var result = endpoint.createURL("/request/one/./two.html")
+					expect(result).toBe("/request/one/two.html")
+				})
+
+				it("path with a '../' in the middle", function () {
+					var result = endpoint.createURL("/request/one/../two.html")
+					expect(result).toBe("/request/two.html")
+				})
+
+				it("relative path using '../' and './' at various locations", function () {
+					var result = endpoint.createURL("../../request/./one/two/../three.html")
+					expect(result).toBe("/request/one/three.html")
+				})
+
+			})
+
+			describe(".createURL without context root, with index file", function () {
+
+				beforeEach(function () {
+					endpoint.indexFile = "/index.cfm"
+					endpoint.$("getPath", "/test/test")
+				})
+
+				it("absolute path", function () {
+					var result = endpoint.createURL("/request.html")
+					expect(result).toBe("/index.cfm/request.html")
+				})
+
+				it("relative path starting with './'", function () {
+					var result = endpoint.createURL("./request.html")
+					expect(result).toBe("/index.cfm/test/test/request.html")
+				})
+
+				it("relative path starting with '../'", function () {
+					var result = endpoint.createURL("../request.html")
+					expect(result).toBe("/index.cfm/test/request.html")
+				})
+
+			})
+
+			describe(".createURL with context root, with or without index file", function () {
+
+				beforeEach(function () {
+					endpoint.$("getContextRoot", "/context")
+					endpoint.$property("contextRoot", "this", "/context")
+					endpoint.$("getPath", "/test/test")
+				})
+
+				describe("without index file", function () {
+
+					it("absolute path", function () {
+						var result = endpoint.createURL("/request.html")
+						expect(result).toBe("/context/request.html")
+					})
+
+					it("relative path starting with './'", function () {
+						var result = endpoint.createURL("./request.html")
+						expect(result).toBe("/context/test/test/request.html")
+					})
+
+					it("relative path starting with '../'", function () {
+						var result = endpoint.createURL("../request.html")
+						expect(result).toBe("/context/test/request.html")
+					})
+
+				})
+
+				describe("with index file", function () {
+
+					beforeEach(function () {
+						endpoint.indexFile = "/index.cfm"
+						endpoint.$("getPath", "/test/test")
+					})
+
+					it("absolute path", function () {
+						var result = endpoint.createURL("/request.html")
+						expect(result).toBe("/context/index.cfm/request.html")
+					})
+
+					it("relative path starting with './'", function () {
+						var result = endpoint.createURL("./request.html")
+						expect(result).toBe("/context/index.cfm/test/test/request.html")
+					})
+
+					it("relative path starting with '../'", function () {
+						var result = endpoint.createURL("../request.html")
+						expect(result).toBe("/context/index.cfm/test/request.html")
+					})
+
+				})
+
+			})
+
+
+		})
+
 	}
 
 }
