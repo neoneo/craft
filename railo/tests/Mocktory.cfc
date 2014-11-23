@@ -2,10 +2,12 @@ import testbox.system.Assertion;
 import testbox.system.MockBox;
 
 /**
-* A 'DSL' for quickly setting up mocks using MockBox.
-*/
+ * A 'DSL' for quickly setting up mocks using MockBox.
+ */
 component {
 
+	this.mockKeys = ["$object", "$class", "$interface"];
+	this.resultKeys = ["$results", "$callback", "$returns", "$args"];
 	// Struct of comparisons and numbers of arguments.
 	this.comparisons = {
 		$times: 1,
@@ -14,26 +16,110 @@ component {
 		$between: 2
 	}
 
-	public void function init(required MockBox mockFactory) {
+	public void function init(required MockBox mockFactory, Function expand) {
 		this.mockFactory = arguments.mockFactory;
 		this.assert = new Assertion();
+		this.expand = arguments.expand ?: function (name) {
+			return arguments.name;
+		}
 	}
 
-	public Any function mock(required Struct descriptor) {
+	public Any function mock(required Any descriptor) {
 
-		var mockDescriptor = Duplicate(arguments.descriptor, false); // Make a shallow copy of the descriptor.
-		// The descriptor must be a mock descriptor.
-		if (!this.isMockDescriptor(mockDescriptor)) {
-			Throw("Invalid mock descriptor", "IllegalArgumentException", "A mock descriptor has at least a $class or $object key.");
+		if (IsSimpleValue(arguments.descriptor)) {
+			// Descriptor is a string with a class mapping.
+			return this.mock({
+				$class: this.expand(arguments.descriptor)
+			});
+		} else if (IsObject(arguments.descriptor)) {
+			return this.mock({
+				$object: arguments.descriptor
+			});
 		}
+
+		// The descriptor must be a mock descriptor.
+		if (!this.isMockDescriptor(arguments.descriptor)) {
+			Throw("Invalid mock descriptor", "IllegalArgumentException", "A mock descriptor has at least one of the following keys: " & this.mockKeys.toList(", "));
+		}
+
+		var mockDescriptor = normalize(arguments.descriptor);
 
 		var object = mockDescriptor.keyExists("$object") ?
 			// If the object is already a mock, don't mock again.
 			StructKeyExists(mockDescriptor.$object, "mockBox") ? mockDescriptor.$object : this.mockFactory.prepareMock(mockDescriptor.$object) :
-			this.mockFactory.createMock(mockDescriptor.$class);
+			mockDescriptor.keyExists("$class") ? this.mockFactory.createMock(this.expand(mockDescriptor.$class)) :
+			this.mockFactory.createStub(implements = this.expand(mockDescriptor.$interface));
+
+		// Mock functions.
+		for (var key in mockDescriptor) {
+			if (!this.isMockKey(key)) {
+				// Find out if this is a function or a property (where we assume a getter has to be mocked).
+				var functionName = this.isFunction(object, key) ? key : "get" & key;
+				for (var resultDescriptor in mockDescriptor[key]) {
+					this.mockFunction(object, functionName, resultDescriptor);
+				}
+			}
+		}
+
+		// Append the current descriptor if the object was mocked earlier.
+		if (!StructKeyExists(object, "_mockDescriptor")) {
+			mockDescriptor.$object = object;
+			object._mockDescriptor = mockDescriptor;
+		} else {
+			for (var key in mockDescriptor) {
+				if (!this.isMockKey(key)) {
+					if (!object._mockDescriptor.keyExists(key)) {
+						object._mockDescriptor[key] = mockDescriptor[key];
+					} else {
+						// Merge with the existing array of result descriptors.
+						object._mockDescriptor[key].append(mockDescriptor[key], true);
+					}
+				}
+			}
+		}
+
+		return object;
+	}
+
+	public Boolean function isMockDescriptor(required Struct descriptor) {
+		return !IsObject(arguments.descriptor) && arguments.descriptor.some(function (key) {
+			return this.isMockKey(arguments.key);
+		});
+	}
+
+	public Boolean function isResultDescriptor(required Struct descriptor) {
+		return !IsObject(arguments.descriptor) && arguments.descriptor.some(function (key) {
+			return this.isResultKey(arguments.key);
+		});
+	}
+
+	private Boolean function isMockKey(required String key) {
+		return this.mockKeys.find(arguments.key) > 0;
+	}
+
+	private Boolean function isResultKey(required String key) {
+		return this.resultKeys.find(arguments.key) > 0;
+	}
+
+	private Boolean function isFunction(required Any object, required String name) {
+		return GetMetadata(arguments.object).findKey("functions", "all").some(function (result) {
+			// Each result has a value key that contains an array of function metadata structs.
+			return arguments.result.value.some(function (metadata) {
+				return arguments.metadata.name == name;
+			});
+		});
+	}
+
+	/**
+	 * Returns a copy of the mock descriptor where all keys have an array of result descriptors.
+	 */
+	private Struct function normalize(required Struct descriptor) {
+
+		// Make a shallow copy of the descriptor. We don't want to duplicate objects.
+		var mockDescriptor = Duplicate(arguments.descriptor, false);
 
 		for (var key in mockDescriptor) {
-			if (key != "$object" && key != "$class") {
+			if (!this.isMockKey(key)) {
 				/*
 					Determine the value to be returned from the mocked function.
 					We have the following cases:
@@ -50,7 +136,7 @@ component {
 				var result = mockDescriptor[key] ?: JavaCast("null", 0);
 				var descriptors = []; // Array of result descriptors for this function (will have length 1 in all except 1 case).
 				if (IsNull(result)) {
-					descriptors.append({$returns: JavaCast("null", 0)})
+					descriptors.append({$returns: JavaCast("null", 0)});
 				} else if (IsStruct(result)) {
 					if (this.isResultDescriptor(result)) {
 						descriptors.append(result);
@@ -84,30 +170,29 @@ component {
 						// Empty array.
 						descriptors.append({$returns: result});
 					}
+				} else if (IsCustomFunction(result) || IsClosure(result)) {
+					descriptors.append({$callback: result});
 				} else {
 					// It's a value of some other type.
 					descriptors.append({$returns: result});
 				}
 
-				// Find out if this is a function or a property (where we assume a getter has to be mocked).
-				var functionName = this.isFunction(object, key) ? key : "get" & key;
-
-				// Overwrite the key, so that we always have an array of result descriptors.
+				// Overwrite the key.
 				mockDescriptor[key] = descriptors.map(function (descriptor) {
 					// Convert comparison values to arrays (if necessary) and make sure the last item is a message.
+					// We need to make a shallow copy of the result descriptor, because this one was not
 					local.descriptor = Duplicate(arguments.descriptor, false);
 					this.comparisons.each(function (comparison, count) {
 						if (descriptor.keyExists(arguments.comparison)) {
 							var value = descriptor[arguments.comparison];
 							if (!IsArray(value)) {
+								// Only $times, $atLeast and $atMost.
 								descriptor[arguments.comparison] = [value, ""];
 							} else if (value.len() <= arguments.count) {
 								descriptor[arguments.comparison].append("");
 							}
 						}
 					});
-					// Mock the function.
-					this.mockFunction(object, functionName, arguments.descriptor);
 
 					return descriptor;
 				});
@@ -115,37 +200,7 @@ component {
 			}
 		}
 
-		// Append the current descriptor if the object was mocked earlier.
-		if (!StructKeyExists(object, "_mockDescriptor")) {
-			object._mockDescriptor = mockDescriptor;
-		} else {
-			for (var key in mockDescriptor) {
-				if (key != "$class" && key != "$object") {
-					if (!object._mockDescriptor.keyExists(key)) {
-						object._mockDescriptor[key] = mockDescriptor[key];
-					} else {
-						// Merge with the existing array of result descriptors.
-						object._mockDescriptor[key].append(mockDescriptor[key], true);
-					}
-				}
-			}
-		}
-
-		return object;
-	}
-
-	public Boolean function isMockDescriptor(required Struct descriptor) {
-		return !IsObject(arguments.descriptor) && (arguments.descriptor.keyExists("$object") || arguments.descriptor.keyExists("$class"));
-	}
-
-	public Boolean function isResultDescriptor(required Struct descriptor) {
-		// We want to be able to return null, so we can't use StructKeyExists for $returns.
-		return !IsObject(arguments.descriptor) && (arguments.descriptor.keyExists("$results") || arguments.descriptor.keyExists("$callback") || arguments.descriptor.keyArray().find("$returns") > 0);
-	}
-
-	private Boolean function isFunction(required Any object, required String name) {
-		// Using StructKeyExists will invoke the function if invokeImplicitAccessor = true. That would increase the call count.
-		return StructKeyArray(arguments.object).findNoCase(arguments.name) > 0 && IsCustomFunction(object[arguments.name]);
+		return mockDescriptor;
 	}
 
 	private void function mockFunction(required Any object, required String name, required Struct descriptor) {
@@ -161,62 +216,63 @@ component {
 		} else if (arguments.descriptor.keyExists("$callback")) {
 			arguments.object.$callback(arguments.descriptor.$callback);
 		} else {
-			// $returns exists, but may contain null.
+			// $returns may or may not exist, and may or may not contain null.
 			arguments.object.$results(arguments.descriptor.$returns ?: JavaCast("null", 0));
 		}
 
 	}
 
-	public void function verify(required Any mockObject) {
+	public void function verify(required Any mockObject, Struct descriptor) {
 
-		var mockDescriptor = arguments.mockObject._mockDescriptor;
-		var callLog = arguments.mockObject.$callLog();
+		var mockDescriptor = IsNull(arguments.descriptor) ? arguments.mockObject._mockDescriptor : this.normalize(arguments.descriptor);
 
 		for (var key in mockDescriptor) {
-			if (key != "$object" && key != "$class") {
+			if (!this.isMockKey(key)) {
 				// All keys have an array of result descriptors.
 				for (var descriptor in mockDescriptor[key]) {
 					var functionName = this.isFunction(arguments.mockObject, key) ? key : "get" & key;
 					// Test for existence of one of the comparison types. The values are arrays of comparison values and messages.
 					for (var comparison in ["$times", "$atLeast", "$atMost", "$between"]) {
 						if (descriptor.keyExists(comparison)) {
-							var count = this.callCount(callLog, functionName, descriptor.$args ?: []);
-
+							var count = this.callCount(arguments.mockObject, functionName, descriptor.$args ?: NullValue());
 							if (comparison == "$times") {
-								assert.isEqual(descriptor.$times[1], count, descriptor.$times[2]);
+								this.assert.isEqual(descriptor.$times[1], count, descriptor.$times[2]);
 							} else if (comparison == "$atLeast") {
 								// The isGTE, isLTE and between assertions have the actual value is their first argument.
-								assert.isGTE(count, descriptor.$atLeast[1], descriptor.$atLeast[2]);
+								this.assert.isGTE(count, descriptor.$atLeast[1], descriptor.$atLeast[2]);
 							} else if (comparison == "$atMost") {
-								assert.isLTE(count, descriptor.$atMost[1], descriptor.$atMost[2]);
+								this.assert.isLTE(count, descriptor.$atMost[1], descriptor.$atMost[2]);
 							} else if (comparison == "$between") {
-								assert.between(count, descriptor.$between[1], descriptor.$between[2], descriptor.$between[3]);
+								this.assert.between(count, descriptor.$between[1], descriptor.$between[2], descriptor.$between[3]);
 							}
 
 							break;
 						}
 					}
-				};
+				}
 			}
 		}
 
 	}
 
-	private Numeric function callCount(required Struct callLog, required String methodName, required Array args) {
+	public Numeric function callCount(required Any mockObject, required String methodName, Any args) {
+
+		var callLog = arguments.mockObject.$callLog();
+
 		// The $ methods on the mock, as generated by MockBox, don't take arguments into account.
-		if (!arguments.callLog.keyExists(arguments.methodName)) {
+		if (!callLog.keyExists(arguments.methodName)) {
 			return 0;
 		}
 
-		var calls = arguments.callLog[arguments.methodName];
+		var calls = callLog[arguments.methodName];
 		// Calls is an array of argument scopes.
-		local.args = arguments.args;
 		return calls.reduce(function (count, callArgs) {
-			if (args.len() == arguments.callArgs.len()) {
-				local.callArgs = arguments.callArgs;
+			if (IsNull(args)) {
+				// No arguments specified, so just count calls.
+				return arguments.count + 1;
+			} else if (args.len() == arguments.callArgs.len()) {
 				if (args.every(function (value, index) {
-					// Object equality. Probably not supported in ColdFusion.
-					return arguments.value === callArgs[index];
+					return this.isEqual(arguments.value, callArgs[arguments.index]);
 				})) {
 					return arguments.count + 1;
 				}
@@ -224,6 +280,53 @@ component {
 
 			return arguments.count;
 		}, 0);
+	}
+
+	public Boolean function isEqual(required Any value1, required Any value2) {
+
+		if (IsNull(arguments.value1) && IsNull(arguments.value2)) {
+			return true;
+		} else if (IsNull(arguments.value1) || IsNull(arguments.value2)) {
+			return false;
+		}
+
+		local.value1 = arguments.value1;
+		local.value2 = arguments.value2;
+
+		if (IsSimpleValue(value1) && IsSimpleValue(value2)) {
+
+			return value1 == value2;
+
+		} else if (IsObject(value1) && IsObject(value2)) {
+
+			var system = CreateObject("java", "java.lang.System");
+			return system.identityHashCode(value1) == system.identityHashCode(value2);
+
+		} else if (IsStruct(value1) && IsStruct(value2)) {
+
+			return value1.len() == value2.len() && value1.every(function (key) {
+				return value2.keyExists(arguments.key) && 	this.isEqual(value1[arguments.key], value2[arguments.key]);
+			});
+
+		} else if (IsArray(value1) && IsArray(value2)) {
+
+			return value1.len() == value2.len() && value1.every(function (_, index) {
+				return this.isEqual(value1[arguments.index], value2[arguments.index]);
+			});
+
+		} else if (IsQuery(value1) && IsQuery(value2)) {
+
+			if (value1.recordCount() == value2.recordCount() && value1.columnList() == value2.columnList()) {
+				return Compare(SerializeJSON(value1), SerializeJSON(value2)) == 0;
+			}
+
+		} else if (IsXMLDoc(value1) && IsXMLDoc(value2) || IsXMLElem(value1) && IsXMLElem(value2)) {
+
+			return ToString(value1) == ToString(value2);
+
+		}
+
+		return false;
 	}
 
 }

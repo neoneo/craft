@@ -3,6 +3,7 @@ component {
 	this.name = "craft tests";
 	this.mappings["/tests"] = GetDirectoryFromPath(GetCurrentTemplatePath());
 	this.invokeImplicitAccessor = true;
+	processingdirective preservecase="true";
 
 	public Boolean function onRequestStart() {
 		var nullSupport = {x: NullValue()}.keyExists("x")

@@ -62,14 +62,18 @@ component accessors="true" {
 		return !this.childCollection.isEmpty();
 	}
 
-	public PathSegment[] function getChildren() {
+	public Array function getChildren() {
 		return this.childCollection.toArray();
 	}
 
-	public void function addChild(required PathSegment child, PathSegment beforeChild) {
-		// TODO: implement check for duplicates
-		this.childCollection.add(argumentCollection: ArrayToStruct(arguments))
-		arguments.child.parent = this
+	public Boolean function addChild(required PathSegment child, PathSegment beforeChild) {
+
+		var success = this.childCollection.add(arguments.child, arguments.beforeChild ?: null)
+		if (success) {
+			arguments.child.parent = this
+		}
+
+		return success;
 	}
 
 	public Boolean function removeChild(required PathSegment child) {

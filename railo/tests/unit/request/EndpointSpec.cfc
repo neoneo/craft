@@ -1,13 +1,11 @@
-import craft.request.*;
-
-component extends="testbox.system.BaseSpec" {
+component extends="tests.MocktorySpec" {
 
 	function run() {
 
 		describe("Endpoint", function () {
 
 			beforeEach(function () {
-				endpoint = prepareMock(new Endpoint())
+				endpoint = mock("Endpoint")
 				endpoint.$("getContextRoot", "")
 				endpoint.$property("contextRoot", "this", "")
 			})
@@ -34,6 +32,7 @@ component extends="testbox.system.BaseSpec" {
 			})
 
 			describe(".extension and .contentType", function () {
+
 				it("should return the pre-defined values, or the default", function () {
 					endpoint.$("getPath", "/path/to/request.json")
 					expect(endpoint.extension).toBe("json")
@@ -47,6 +46,7 @@ component extends="testbox.system.BaseSpec" {
 					expect(endpoint.extension).toBe("html")
 					expect(endpoint.contentType).toBe("text/html")
 				})
+
 			})
 
 			describe(".createURL", function () {
@@ -180,7 +180,6 @@ component extends="testbox.system.BaseSpec" {
 				})
 
 			})
-
 
 		})
 

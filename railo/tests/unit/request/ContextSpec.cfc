@@ -2,9 +2,12 @@ import craft.output.*;
 
 import craft.request.*;
 
-component extends="testbox.system.BaseSpec" {
+component extends="tests.MocktorySpec" {
 
 	function beforeAll() {
+
+		super.beforeAll()
+
 		// Create a path structure that contains segments using all types of path matchers
 		// FIXME: We're using real objects where mocks should be used.
 		root = new RootPathSegment()
@@ -14,8 +17,7 @@ component extends="testbox.system.BaseSpec" {
 		test3 = new StaticPathSegment("test3", "third")
 		entire = new EntirePathSegment("entire")
 
-		mocktory = new tests.Mocktory($mockbox)
-		mocktory.mock({
+		mock({
 			$object: root,
 			children: [
 				{
@@ -47,9 +49,7 @@ component extends="testbox.system.BaseSpec" {
 		describe("Context", function () {
 
 			beforeEach(function () {
-				endpoint = mocktory.mock({
-					$object: CreateObject("Endpoint")
-				})
+				endpoint = mock("Endpoint")
 
 				context = CreateObject("Context") // Don't use new, since there is much logic in the constructor that we want to test.
 			})
@@ -57,7 +57,7 @@ component extends="testbox.system.BaseSpec" {
 			describe(".init", function () {
 
 				beforeEach(function () {
-					mocktory.mock({
+					mock({
 						$object: endpoint,
 						// The context always asks the endpoint for the extension.
 						extension: {
@@ -78,7 +78,7 @@ component extends="testbox.system.BaseSpec" {
 				it("should get the extension, the content type and the request method from the endpoint", function () {
 					endpoint.$("getPath", "/")
 					context.init(endpoint, root)
-					mocktory.verify(endpoint)
+					verify(endpoint)
 				})
 
 				it("should set the matching path segment when the path has no extension", function () {
@@ -186,19 +186,18 @@ component extends="testbox.system.BaseSpec" {
 
 			describe(".createURL", function () {
 				it("should forward the call to endpoint.createURL", function () {
-					mocktory.mock({
+					mock({
 						$object: endpoint,
 						createURL: {
 							$args: ["/test"],
-							$returns: "/testing",
+							$returns: "/test1/test2",
 							$times: 1
 						}
 					})
 
 					context.endpoint = endpoint
-					expect(context.createURL("/test")).toBe("/testing")
-
-					mocktory.verify(endpoint)
+					expect(context.createURL("/test")).toBe("/test1/test2")
+					verify(endpoint)
 				})
 			})
 

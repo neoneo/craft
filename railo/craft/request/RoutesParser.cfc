@@ -18,7 +18,7 @@ component {
 		this.indentLevels.clear()
 		FileRead(arguments.path).listToArray(Chr(10)).each(function (route) {
 			// Strip off comments.
-			var route = Trim(arguments.route.reReplace("##.*$", ""))
+			var route = arguments.route.reReplace("##.*$", "").trim()
 			if (!route.isEmpty()) {
 				parse(route)
 			}
@@ -33,7 +33,7 @@ component {
 
 		this.indentLevels.clear()
 		FileRead(arguments.path).listToArray(Chr(10)).each(function (route) {
-			var route = Trim(arguments.route.reReplace("##.*$", ""))
+			var route = arguments.route.reReplace("##.*$", "").trim()
 			if (!route.isEmpty()) {
 				remove(route)
 			}
@@ -121,7 +121,7 @@ component {
 
 			return {
 				pattern: parts[1].reReplace("\\([@\\])", "\1", "all"),
-				parameterName: ArrayLen(parts) == 2 ? parts[2] : null
+				parameterName: parts[2] ?: null
 			};
 		} else {
 			return {

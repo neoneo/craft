@@ -127,7 +127,6 @@ component extends="testbox.system.BaseSpec" {
 				})
 
 				it("should return true if the given metadata belongs to a subclass", function () {
-
 					expect(objectHelper.extends(metadata, metadata.name)).toBeTrue()
 					expect(objectHelper.extends(submetadata, metadata.name)).toBeTrue()
 					expect(objectHelper.extends(subsubmetadata, metadata.name)).toBeTrue()
