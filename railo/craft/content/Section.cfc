@@ -7,6 +7,7 @@ import craft.util.ScopeCollection;
 component implements="Content" accessors="true" {
 
 	property Array components setter="false"; // Component[]
+	property Boolean hasComponents setter="false";
 	property Array placeholders setter="false"; // Placeholder[]
 
 	/*
@@ -19,6 +20,10 @@ component implements="Content" accessors="true" {
 
 	public void function accept(required Visitor visitor) {
 		arguments.visitor.visitSection(this)
+	}
+
+	public Boolean function getHasComponents() {
+		return !this.componentCollection.isEmpty();
 	}
 
 	public Component[] function getComponents() {
@@ -43,16 +48,16 @@ component implements="Content" accessors="true" {
 		return placeholders;
 	}
 
-	public void function addComponent(required Component component, Component beforeComponent) {
-		this.componentCollection.add(argumentCollection: ArrayToStruct(arguments))
+	public Boolean function addComponent(required Component component, Component beforeComponent) {
+		return this.componentCollection.add(arguments.component, arguments.beforeComponent ?: null);
 	}
 
-	public void function removeComponent(required Component component) {
-		this.componentCollection.remove(arguments.component)
+	public Boolean function removeComponent(required Component component) {
+		return this.componentCollection.remove(arguments.component);
 	}
 
-	public void function moveComponent(required Component component, Component beforeComponent) {
-		this.componentCollection.move(argumentCollection: ArrayToStruct(arguments))
+	public Boolean function moveComponent(required Component component, Component beforeComponent) {
+		return this.componentCollection.move(arguments.component, arguments.beforeComponent ?: null);
 	}
 
 	public void function traverse(required Visitor visitor) {

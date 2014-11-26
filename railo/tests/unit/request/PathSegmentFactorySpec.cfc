@@ -1,4 +1,4 @@
-import craft.request.*;
+import craft.request.PathSegmentFactory;
 
 component extends="tests.MocktorySpec" {
 

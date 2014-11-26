@@ -1,4 +1,7 @@
-import craft.request.*;
+import craft.request.DynamicPathSegment;
+import craft.request.EntirePathSegment;
+import craft.request.PathSegment;
+import craft.request.StaticPathSegment;
 
 component extends="tests.MocktorySpec" {
 
@@ -63,6 +66,10 @@ component extends="tests.MocktorySpec" {
 
 			describe(".parent", function () {
 
+				beforeEach(function () {
+					segment = new PathSegment()
+				})
+
 				it("should return the parent or null", function () {
 					expect(segment.hasParent).toBeFalse()
 					expect(segment.parent).toBeNull()
@@ -74,28 +81,37 @@ component extends="tests.MocktorySpec" {
 
 			})
 
-			describe("child relationships", function () {
+			describe("child relationship", function () {
 
 				beforeEach(function () {
 					collection = mock({
 						$class: "Collection",
 						isEmpty: true,
-						toArray: [],
-						add: {
-							$results: [true, false]
-						},
-						remove: {
-							$results: [true, false]
-						}
+						toArray: []
 					})
-					segment = mock("PathSegment")
-					segment.$("createCollection", collection)
+					segment = mock({
+						$class: "PathSegment",
+						createCollection: collection
+					})
 					segment.init()
+				})
+
+				describe(".children", function () {
+
+					it("should return all children as an array", function () {
+						expect(segment.children).toBeArray()
+						verify(collection, {
+							toArray: {
+								$times: 1
+							}
+						})
+					})
+
 				})
 
 				describe(".hasChildren", function () {
 
-					it("should call collection.isEmpty", function () {
+					it("should return whether the path segment has any children", function () {
 						expect(segment.hasChildren).toBeFalse() // The negation of isEmpty.
 						expect(collection.$count("isEmpty")).toBe(1)
 					})
@@ -104,7 +120,16 @@ component extends="tests.MocktorySpec" {
 
 				describe(".addChild", function () {
 
-					it("should call collection.add and set the parent on the child when successful", function () {
+					beforeEach(function () {
+						mock({
+							$object: collection,
+							add: {
+								$results: [true, false]
+							}
+						})
+					})
+
+					it("should add the child to the end and set the parent on the child when successful", function () {
 						var child1 = new PathSegment()
 
 						var success = segment.addChild(child1)
@@ -133,22 +158,34 @@ component extends="tests.MocktorySpec" {
 						expect(child2.parent).toBeNull()
 					})
 
-					it("before existing child should call collection.add", function () {
+					it("should add the child before the existing child and set the parent on the child when successful", function () {
 						var child = new PathSegment()
 						var beforeChild = new PathSegment()
 
 						var success = segment.addChild(child, beforeChild)
 
 						expect(success).toBeTrue()
-						expect(collection.$count("add")).toBe(1)
-						var callLog = collection.$callLog()
-						$assert.isSameInstance(child, callLog.add[1][1])
-						$assert.isSameInstance(beforeChild, callLog.add[1][2])
+						verify(collection, {
+							add: {
+								$args: [child, beforeChild],
+								$times: 1
+							}
+						})
+						$assert.isSameInstance(segment, child.parent)
 					})
 
 				})
 
 				describe(".removeChild", function () {
+
+					beforeEach(function () {
+						mock({
+							$object: collection,
+							remove: {
+								$results: [true, false]
+							}
+						})
+					})
 
 					it("should remove if the path segment is a child, and set its parent to null when successful", function () {
 						var child1 = new PathSegment()
@@ -179,6 +216,46 @@ component extends="tests.MocktorySpec" {
 							}
 						})
 						$assert.isSameInstance(child1, child2.parent)
+					})
+
+				})
+
+				describe(".moveChild", function () {
+
+					beforeEach(function () {
+						mock({
+							$object: collection,
+							move: true
+						})
+					})
+
+					it("should move the child to the end if no before child is provided", function () {
+						var child = new PathSegment()
+
+						var success = segment.moveChild(child)
+
+						expect(success).toBeTrue()
+						verify(collection, {
+							move: {
+								$args: [child, null],
+								$times: 1
+							}
+						})
+					})
+
+					it("should move the child before the existing child", function () {
+						var child = new PathSegment()
+						var beforeChild = new PathSegment()
+
+						var success = segment.moveChild(child, beforeChild)
+
+						expect(success).toBeTrue()
+						verify(collection, {
+							move: {
+								$args: [child, beforeChild],
+								$times: 1
+							}
+						})
 					})
 
 				})

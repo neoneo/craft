@@ -1,4 +1,5 @@
-import craft.request.*;
+import craft.request.PathSegment;
+import craft.request.RoutesParser;
 
 component extends="tests.MocktorySpec" {
 

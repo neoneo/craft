@@ -1,5 +1,3 @@
-import craft.output.*;
-
 import craft.request.*;
 
 component extends="tests.MocktorySpec" {

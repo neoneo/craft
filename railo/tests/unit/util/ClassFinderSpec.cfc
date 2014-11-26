@@ -1,4 +1,4 @@
-import craft.util.*;
+import craft.util.ClassFinder;
 
 component extends="testbox.system.BaseSpec" {
 

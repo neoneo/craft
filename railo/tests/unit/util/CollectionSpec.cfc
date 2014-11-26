@@ -1,5 +1,3 @@
-import craft.util.*;
-
 component extends="testbox.system.BaseSpec" skip="true" {
 
 	private Collection function createCollection() {

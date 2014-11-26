@@ -1,4 +1,4 @@
-import craft.util.*;
+import craft.util.FileFinder;
 
 component extends="testbox.system.BaseSpec" {
 

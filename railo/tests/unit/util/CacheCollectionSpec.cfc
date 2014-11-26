@@ -1,4 +1,5 @@
-import craft.util.*;
+import craft.util.CacheCollection;
+import craft.util.ScopeCache;
 
 component extends="CollectionSpec" {
 

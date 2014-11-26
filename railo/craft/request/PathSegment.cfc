@@ -86,6 +86,10 @@ component accessors="true" {
 		return success;
 	}
 
+	public Boolean function moveChild(required Component child, Component beforeChild) {
+		return this.childCollection.move(arguments.child, arguments.beforeChild ?: null);
+	}
+
 	public Boolean function getHasParent() {
 		return this.parent !== null;
 	}

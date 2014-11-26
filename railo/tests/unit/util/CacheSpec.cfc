@@ -1,4 +1,6 @@
-import craft.util.*;
+import craft.util.ObjectCache;
+import craft.util.ScopeCache;
+
 
 component extends="testbox.system.BaseSpec" {
 
