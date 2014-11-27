@@ -13,7 +13,7 @@ component implements="Content" {
 		arguments.visitor.visitDocument(this)
 	}
 
-	public void function addSection(required Section section, required String ref) {
+	public Boolean function fillPlaceholder(required String ref, required Section section) {
 
 		var ref = arguments.ref
 
@@ -28,22 +28,24 @@ component implements="Content" {
 
 		if (!this.sections.keyExists(ref)) {
 			this.sections[ref] = arguments.section
+			return true;
 		}
 
+		return false;
 	}
 
 	/**
 	 * Removes the `Section` that fills the placeholder with the given ref.
 	 */
-	public void function removeSection(required String ref) {
-		this.sections.delete(arguments.ref)
+	public Boolean function clearPlaceholder(required String ref) {
+		return this.sections.delete(arguments.ref, true);
 	}
 
 	/**
 	 * Replaces the current layout with the given layout.
 	 * Content in placeholders is retained, if the placeholders in the new layout have the same ref.
 	 */
-	public void function useLayout(required LayoutContent layout) {
+	public void function replaceLayout(required LayoutContent layout) {
 
 		// Check if the new layout has placeholders compatible with the old one.
 		var newPlaceholders = arguments.layout.getPlaceholders()
@@ -56,7 +58,7 @@ component implements="Content" {
 				})
 				if (index == 0) {
 					// The placeholder is not used. Remove the section.
-					removeSection(ref)
+					this.clearPlaceholder(ref)
 				}
 			}
 		)
