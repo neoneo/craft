@@ -12,7 +12,7 @@ component implements="LayoutContent" accessors="true" {
 	}
 
 	public Placeholder[] function getPlaceholders() {
-		return this.section.getPlaceholders();
+		return this.section.placeholders;
 	}
 
 }

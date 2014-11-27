@@ -12,18 +12,16 @@ component extends="Document" implements="LayoutContent" accessors="true" {
 	public Placeholder[] function getPlaceholders() {
 
 		var placeholders = []
-		var sections = this.sections
-
 		// Get the placeholders from the parent layout. Keep the ones that aren't used and add any new ones.
-		// FIXME: for some reason, can't call getPlaceholders() using implicit notation.
+		// FIXME: for some reason, can't call getPlaceholders() using implicit notation if layout is a DocumentLayout too.
 		this.layout.getPlaceholders().each(function (placeholder) {
 			var ref = arguments.placeholder.ref
-			if (!sections.keyExists(ref)) {
+			if (!this.sections.keyExists(ref)) {
 				// Unused placeholder.
 				placeholders.append(arguments.placeholder)
 			} else {
 				// Get the placeholders that are descendants of this section.
-				placeholders.append(sections[ref].getPlaceholders(), true) // Concatenate the descendants array.
+				placeholders.append(this.sections[ref].placeholders, true) // Concatenate the descendants array.
 			}
 		})
 

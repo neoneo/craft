@@ -109,6 +109,8 @@ component extends="tests.MocktorySpec" {
 
 					document.replaceLayout(layout2)
 
+					$assert.isSameInstance(layout2, document.layout)
+
 					var sections = this.document.sections
 					expect(sections.len()).toBe(1, "the old and new layout have one placeholder in common, so there should be one key")
 					expect(sections).toHaveKey("p1")
