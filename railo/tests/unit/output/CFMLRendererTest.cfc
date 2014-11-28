@@ -1,34 +1,45 @@
-import craft.output.*;
+import craft.output.CFMLRenderer;
 
-component extends="mxunit.framework.TestCase" {
+component extends="testbox.system.BaseSpec" {
 
-	this.mapping = "/tests/unit/output/templates"
+	function run() {
 
-	public void function setUp() {
-		this.renderer = new CFMLRenderer()
-		this.renderer.addMapping(this.mapping)
-		this.template = "renderer"
-	}
+		describe("CFMLRenderer", function () {
 
-	public void function Render_Should_ReturnOutputString() {
-		var output = this.renderer.render(this.template, {})
-		assertTrue(IsSimpleValue(output), "output should be a string")
-	}
+			beforeEach(function () {
+				renderer = new CFMLRenderer()
+				renderer.addMapping("/tests/unit/output/templates")
+				template = "renderer"
+			})
 
-	public void function Render_Should_ReturnOutputContainingSerializedModel() {
-		var model = {
-			number: 1,
-			string: "string",
-			boolean: true,
-			date: Now()
-		}
-		var output = this.renderer.render(this.template, model)
-		assertTrue(IsJSON(output), "the output should be a valid JSON string")
-		var deserialized = DeserializeJSON(output)
-		for (var key in model) {
-			assertTrue(deserialized.keyExists(key), "key '#key#' should exist in the returned JSON string")
-			assertTrue(deserialized[key] == model[key], "key '#key#' should be the same in the model and the returned JSON string")
-		}
+			describe(".render", function () {
+
+				it("should return output as a string", function () {
+					expect(renderer.render(template, {})).toBeTypeOf("string")
+				})
+
+				it("should pass the model to the template for rendering", function () {
+					var model = {
+						number: 1,
+						string: "string",
+						boolean: true,
+						date: Now()
+					}
+					var output = renderer.render(template, model)
+					// This template just serializes the model to JSON.
+					expect(IsJSON(output)).toBeTrue()
+					var deserialized = DeserializeJSON(output)
+					// All keys in the model should exist and have the same values.
+					for (var key in model) {
+						expect(deserialized).toHaveKey(key)
+						expect(deserialized[key]).toBe(model[key], "key '#key#' should be the same in the model and the returned JSON string")
+					}
+				})
+
+			})
+
+		})
+
 	}
 
 }
