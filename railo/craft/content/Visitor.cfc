@@ -1,10 +1,3 @@
-import craft.content.Composite;
-import craft.content.Document;
-import craft.content.Layout;
-import craft.content.Leaf;
-import craft.content.Placeholder;
-import craft.content.Section;
-
 interface {
 
 	public void function visitComposite(required Composite composite);
