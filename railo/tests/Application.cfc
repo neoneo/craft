@@ -16,12 +16,9 @@ component {
 	}
 
 	public void function onRequest(required String targetPage) {
-		include template="#arguments.targetPage#";
-	}
-
-	private void function runTests(required String mapping) {
+		var mapping = GetDirectoryFromPath(arguments.targetPage);
 		var testbox = new testbox.system.TestBox(directory = {
-			mapping: arguments.mapping,
+			mapping: mapping,
 			recurse: false,
 			filter: function (path) {
 				var class = mapping & "." & arguments.path.listLast("/").listFirst(".")

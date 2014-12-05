@@ -78,7 +78,7 @@ component extends="tests.MocktorySpec" {
 
 					verify(pathSegmentFactory, {
 						create: {
-							$times: 0
+							$times: 1
 						}
 					})
 				})
@@ -133,7 +133,7 @@ component extends="tests.MocktorySpec" {
 
 					verify(pathSegmentFactory, {
 						create: {
-							$times: 2
+							$times: 1 // Only level2, we created level1 manually.
 						}
 					})
 
