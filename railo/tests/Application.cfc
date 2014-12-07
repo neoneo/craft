@@ -16,7 +16,11 @@ component {
 	}
 
 	public void function onRequest(required String targetPage) {
-		var mapping = GetDirectoryFromPath(arguments.targetPage);
+		// The request does not have to be directed directly at /tests, but /tests must be in the url.
+		var directory = GetDirectoryFromPath(ExpandPath(arguments.targetPage));
+		// The directory should start with the directory of the /tests mapping.
+		var mapping = directory.replace(this.mappings["/tests"], "/tests/")
+
 		var testbox = new testbox.system.TestBox(directory = {
 			mapping: mapping,
 			recurse: false,

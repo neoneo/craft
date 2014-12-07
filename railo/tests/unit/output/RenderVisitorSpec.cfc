@@ -172,168 +172,227 @@ component extends="tests.MocktorySpec" {
 
 			})
 
+			describe(".visitLayout", function () {
+
+				it("should forward the call to its section", function () {
+					var section = mock({
+						$class: "Section",
+						accept: {
+							$args: [visitor],
+							$times: 1
+						}
+					})
+					var layout = mock({
+						$class: "Layout",
+						section: section
+					})
+
+					visitor.visitLayout(layout)
+
+					verify(section)
+				})
+
+			})
+
+			describe(".visitDocument", function () {
+
+				it("should forward the call to its layout", function () {
+					var layout = mock({
+						$class: "Layout",
+						accept: {
+							$args: [visitor],
+							$times: 1
+						}
+					})
+					var document = mock({
+						$class: "Document",
+						layout: layout
+					})
+					// Somehow, the sections don't exist unless we access them
+					document.sections
+
+					visitor.visitDocument(document)
+
+					verify(layout)
+				})
+
+			})
+
+			describe(".visitPlaceholder", function () {
+
+				it("should forward the call to the section if a matching section exists", function () {
+					var section = mock({
+						$class: "Section",
+						accept: null
+					})
+
+					// Inject this section for the placeholder 'p2'.
+					prepareMock(visitor).$property("sections", "this", {p2: section})
+
+					// Now the actual test.
+					var placeholder1 = mock({
+						$class: "Placeholder",
+						ref: "p1"
+					})
+
+					visitor.visitPlaceholder(placeholder1)
+					// The section should not have been called, because there is no placeholder 'p1'.
+					verify(section, {
+						accept: {
+							$times: 0
+						}
+					})
+
+					section.$reset()
+					var placeholder2 = mock({
+						$class: "Placeholder",
+						ref: "p2"
+					})
+					visitor.visitPlaceholder(placeholder2)
+					// Now we expect a call to the section.
+					verify(section, {
+						accept: {
+							$args: [visitor],
+							$times: 1
+						}
+					})
+
+				})
+
+			})
+
+			describe(".visitDocument", function () {
+
+				it("should forward the call to its layout", function () {
+					var layout = mock({
+						$class: "Layout",
+						accept: {
+							$args: [visitor],
+							$returns: null,
+							$times: 1
+						}
+					})
+					var document = mock({
+						$class: "Document",
+						layout: layout,
+						sections: {}
+					})
+
+					visitor.visitDocument(document)
+
+					verify(layout)
+				})
+
+			})
+
 		})
 
 	}
 
-	public void function VisitLayout_Should_CallSectionAccept() {
-		var section = mock(CreateObject("Section")).accept(visitor)
-		var layout = mock(CreateObject("Layout"))
-		layout.section = section
+	// public void function VisitDocument_Should_CallLayoutAccept() {
+	// }
 
-		visitor.visitLayout(layout)
+	// public void function VisitSectionWithoutComponents_Should_ReturnNoContent() {
+	// 	var section = mock(CreateObject("Section"))
+	// 	section.traverse = function () {} // No components.
 
-		section.verify().accept(visitor)
-	}
+	// 	visitor.visitSection(section)
 
-	public void function VisitDocument_Should_CallLayoutAccept() {
-		var layout = mock(CreateObject("Layout")).accept(visitor)
-		var document = mock(CreateObject("Document"))
-		document.layout = layout
-		document.sections = {}
+	// 	// The rendered content should be null.
+	// 	var content = visitor.content
+	// 	assertTrue(content === null, "content should be null")
+	// }
 
-		visitor.visitDocument(document)
+	// public void function VisitSectionWithOneComponent_Should_ReturnComponentContent() {
+	// 	var view = mock(CreateObject("stubs.ViewStub"))
+	// 		.render("{any}").returns("done") // This is what the component ultimately returns.
+	// 	var component = mock(CreateObject("Leaf"))
+	// 		.process("{object}").returns({})
+	// 		.view("{object}").returns(view)
 
-		layout.verify().accept(visitor)
-	}
+	// 	var section = mock(CreateObject("Section"))
+	// 	section.traverse = function () {
+	// 		visitor.visitLeaf(component)
+	// 	}
 
-	public void function VisitPlaceholder_ShouldNot_CallAccept_When_NoSections() {
-		var placeholder = mock(CreateObject("Placeholder")).accept(visitor)
-		placeholder.ref = "p1"
+	// 	// Test.
+	// 	visitor.visitSection(section)
 
-		visitor.visitPlaceholder(placeholder)
+	// 	component.verify().process("{object}")
+	// 	component.verify().view("{object}")
+	// 	view.verify().render("{any}")
 
-		placeholder.verify(0).accept(visitor)
-	}
+	// 	var content = visitor.content
+	// 	assertEquals("done", content)
+	// }
 
-	public void function VisitPlaceholder_Should_CallSectionAccept_When_MatchingSection() {
-		// To add sections to the visitor we have to utilize a document mock.
-		// The document will contain a section linked to placeholder 'p2'.
-		// The layout is needed because the visitor will try to get it from the document while visiting.
-		var layout = mock(CreateObject("Layout")).accept("{object}")
-		var section = mock(CreateObject("Section")).accept("{object}")
-		var document = mock(CreateObject("Document"))
-		document.layout = layout
-		document.sections = {"p2": section}
+	// public void function VisitSectionWithComponents_Should_ReturnConcatenatedContent_When_SimpleValues() {
+	// 	// If the section contains multiple components whose views return simple values, those values should be concatenated.
 
-		// Add the section by visiting the document. Unfortunately the visitor does not provide another way to do
-		visitor.visitDocument(document)
+	// 	var view1 = mock(CreateObject("stubs.ViewStub"))
+	// 		.render("{any}").returns("view1")
+	// 	var component1 = mock(CreateObject("Leaf"))
+	// 		.process("{object}").returns({})
+	// 		.view("{object}").returns(view1)
 
-		// Now the actual test.
-		var placeholder1 = mock(CreateObject("Placeholder"))
-		placeholder1.ref = "p1"
-		visitor.visitPlaceholder(placeholder1)
-		// The section should not have been called.
-		section.verify(0).accept("{object}")
+	// 	var view2 = mock(CreateObject("stubs.ViewStub"))
+	// 		.render("{any}").returns("view2")
+	// 	var component2 = mock(CreateObject("Leaf"))
+	// 		.process("{object}").returns({})
+	// 		.view("{object}").returns(view2)
 
-		var placeholder2 = mock(CreateObject("Placeholder"))
-		placeholder2.ref = "p2"
-		visitor.visitPlaceholder(placeholder2)
-		// Now we expect a call to the section.
-		section.verify().accept("{object}")
-	}
+	// 	var section = mock(CreateObject("Section"))
+	// 	section.traverse = function () {
+	// 		visitor.visitLeaf(component1)
+	// 		visitor.visitLeaf(component2)
+	// 	}
 
-	public void function VisitSectionWithoutComponents_Should_ReturnNoContent() {
-		var section = mock(CreateObject("Section"))
-		section.traverse = function () {} // No components.
+	// 	// Test.
+	// 	visitor.visitSection(section)
 
-		visitor.visitSection(section)
+	// 	component1.verify().process("{object}")
+	// 	component1.verify().view("{object}")
+	// 	view1.verify().render("{any}")
+	// 	component2.verify().process("{object}")
+	// 	component2.verify().view("{object}")
+	// 	view2.verify().render("{any}")
 
-		// The rendered content should be null.
-		var content = visitor.content
-		assertTrue(content === null, "content should be null")
-	}
+	// 	var content = visitor.content
+	// 	assertEquals("view1view2", content)
+	// }
 
-	public void function VisitSectionWithOneComponent_Should_ReturnComponentContent() {
-		var view = mock(CreateObject("stubs.ViewStub"))
-			.render("{any}").returns("done") // This is what the component ultimately returns.
-		var component = mock(CreateObject("Leaf"))
-			.process("{object}").returns({})
-			.view("{object}").returns(view)
+	// public void function VisitSectionWithComponents_Should_ThrowException_When_NotSimpleValues() {
+	// 	var view1 = mock(CreateObject("stubs.ViewStub"))
+	// 		.render("{any}").returns({key: "view1"}) // Complex value returned by view.
+	// 	var component1 = mock(CreateObject("Leaf"))
+	// 		.process("{object}").returns({})
+	// 		.view("{object}").returns(view1)
 
-		var section = mock(CreateObject("Section"))
-		section.traverse = function () {
-			visitor.visitLeaf(component)
-		}
+	// 	var view2 = mock(CreateObject("stubs.ViewStub"))
+	// 		.render("{any}").returns("view2") // This view renders a string.
+	// 	var component2 = mock(CreateObject("Leaf"))
+	// 		.process("{object}").returns({})
+	// 		.view("{object}").returns(view2)
 
-		// Test.
-		visitor.visitSection(section)
+	// 	var section = mock(CreateObject("Section"))
+	// 	section.traverse = function () {
+	// 		visitor.visitLeaf(component1)
+	// 		visitor.visitLeaf(component2)
+	// 	}
 
-		component.verify().process("{object}")
-		component.verify().view("{object}")
-		view.verify().render("{any}")
+	// 	// Test.
+	// 	try {
+	// 		visitor.visitSection(section)
+	// 		fail("exception should have been thrown")
+	// 	} catch (DatatypeConfigurationException e) {}
 
-		var content = visitor.content
-		assertEquals("done", content)
-	}
+	// 	component1.verify().process("{object}")
+	// 	component1.verify().view("{object}")
+	// 	view1.verify().render("{any}")
+	// 	component2.verify().process("{object}")
+	// 	component2.verify().view("{object}")
+	// 	view2.verify().render("{any}")
 
-	public void function VisitSectionWithComponents_Should_ReturnConcatenatedContent_When_SimpleValues() {
-		// If the section contains multiple components whose views return simple values, those values should be concatenated.
-
-		var view1 = mock(CreateObject("stubs.ViewStub"))
-			.render("{any}").returns("view1")
-		var component1 = mock(CreateObject("Leaf"))
-			.process("{object}").returns({})
-			.view("{object}").returns(view1)
-
-		var view2 = mock(CreateObject("stubs.ViewStub"))
-			.render("{any}").returns("view2")
-		var component2 = mock(CreateObject("Leaf"))
-			.process("{object}").returns({})
-			.view("{object}").returns(view2)
-
-		var section = mock(CreateObject("Section"))
-		section.traverse = function () {
-			visitor.visitLeaf(component1)
-			visitor.visitLeaf(component2)
-		}
-
-		// Test.
-		visitor.visitSection(section)
-
-		component1.verify().process("{object}")
-		component1.verify().view("{object}")
-		view1.verify().render("{any}")
-		component2.verify().process("{object}")
-		component2.verify().view("{object}")
-		view2.verify().render("{any}")
-
-		var content = visitor.content
-		assertEquals("view1view2", content)
-	}
-
-	public void function VisitSectionWithComponents_Should_ThrowException_When_NotSimpleValues() {
-		var view1 = mock(CreateObject("stubs.ViewStub"))
-			.render("{any}").returns({key: "view1"}) // Complex value returned by view.
-		var component1 = mock(CreateObject("Leaf"))
-			.process("{object}").returns({})
-			.view("{object}").returns(view1)
-
-		var view2 = mock(CreateObject("stubs.ViewStub"))
-			.render("{any}").returns("view2") // This view renders a string.
-		var component2 = mock(CreateObject("Leaf"))
-			.process("{object}").returns({})
-			.view("{object}").returns(view2)
-
-		var section = mock(CreateObject("Section"))
-		section.traverse = function () {
-			visitor.visitLeaf(component1)
-			visitor.visitLeaf(component2)
-		}
-
-		// Test.
-		try {
-			visitor.visitSection(section)
-			fail("exception should have been thrown")
-		} catch (DatatypeConfigurationException e) {}
-
-		component1.verify().process("{object}")
-		component1.verify().view("{object}")
-		view1.verify().render("{any}")
-		component2.verify().process("{object}")
-		component2.verify().view("{object}")
-		view2.verify().render("{any}")
-
-	}
+	// }
 
 }
