@@ -22,7 +22,7 @@ component {
 	public void function put(required Element element) {
 		var ref = arguments.element.ref
 		if (ref !== null) {
-			if (has(ref)) {
+			if (this.elements.keyExists(ref)) {
 				Throw("Element '#ref#' already exists", "AlreadyBoundException")
 			}
 			this.elements[ref] = arguments.element

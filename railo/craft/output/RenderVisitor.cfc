@@ -122,6 +122,7 @@ component implements="Visitor" accessors="true" {
 		)) {
 			this.content = this.output.toList("")
 		} else {
+			this.content = null
 			Throw("Cannot render content", "DatatypeConfigurationException", "If multiple components generate complex content, the section cannot render.");
 		}
 

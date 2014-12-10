@@ -285,114 +285,130 @@ component extends="tests.MocktorySpec" {
 
 			})
 
+			describe(".visitSection", function () {
+
+				it("should result in no content if the section has no components", function () {
+					var section = mock({
+						$class: "Section",
+						traverse: {
+							$args: [visitor],
+							$returns: null,
+							$times: 1
+						}
+					})
+
+					visitor.visitSection(section)
+
+					verify(section)
+					expect(visitor.content).toBeNull()
+				})
+
+				it("should result in content of any type if the section has a single component", function () {
+					var content = {type: "content"}
+					var leaf = mock({
+						$class: "Leaf",
+						process: {},
+						view: {
+							$class: "View",
+							render: content
+						}
+					})
+					var section = mock({
+						$class: "Section",
+						traverse: {
+							$args: [visitor],
+							$callback: function (visitor) {
+								arguments.visitor.visitLeaf(leaf)
+							},
+							$times: 1
+						}
+					})
+
+					visitor.visitSection(section)
+
+					verify(section)
+					expect(visitor.content).toBe(content)
+				})
+
+				it("should result in concatenated content of the components in the section if all components generate string content", function () {
+					var leaves = [
+						mock({
+							$class: "Leaf",
+							process: {},
+							view: {
+								$class: "View",
+								render: "con"
+							}
+						}),
+						mock({
+							$class: "Leaf",
+							process: {},
+							view: {
+								$class: "View",
+								render: "tent"
+							}
+						})
+					]
+					var section = mock({
+						$class: "Section",
+						traverse: {
+							$args: [visitor],
+							$callback: function (visitor) {
+								arguments.visitor.visitLeaf(leaves[1])
+								arguments.visitor.visitLeaf(leaves[2])
+							},
+							$times: 1
+						}
+					})
+
+					visitor.visitSection(section)
+
+					verify(section)
+					expect(visitor.content).toBe("content")
+				})
+
+				it("should throw DatatypeConfigurationException if there are multiple components of which some generate complex content", function () {
+					var leaves = [
+						mock({
+							$class: "Leaf",
+							process: {},
+							view: {
+								$class: "View",
+								render: "content"
+							}
+						}),
+						mock({
+							$class: "Leaf",
+							process: {},
+							view: {
+								$class: "View",
+								render: {type: "content"}
+							}
+						})
+					]
+					var section = mock({
+						$class: "Section",
+						traverse: {
+							$args: [visitor],
+							$callback: function (visitor) {
+								arguments.visitor.visitLeaf(leaves[1])
+								arguments.visitor.visitLeaf(leaves[2])
+							},
+							$times: 1
+						}
+					})
+
+					expect(function () {
+						visitor.visitSection(section)
+					}).toThrow("DatatypeConfigurationException")
+					verify(section)
+					expect(visitor.content).toBeNull()
+				})
+
+			})
+
 		})
 
 	}
-
-	// public void function VisitDocument_Should_CallLayoutAccept() {
-	// }
-
-	// public void function VisitSectionWithoutComponents_Should_ReturnNoContent() {
-	// 	var section = mock(CreateObject("Section"))
-	// 	section.traverse = function () {} // No components.
-
-	// 	visitor.visitSection(section)
-
-	// 	// The rendered content should be null.
-	// 	var content = visitor.content
-	// 	assertTrue(content === null, "content should be null")
-	// }
-
-	// public void function VisitSectionWithOneComponent_Should_ReturnComponentContent() {
-	// 	var view = mock(CreateObject("stubs.ViewStub"))
-	// 		.render("{any}").returns("done") // This is what the component ultimately returns.
-	// 	var component = mock(CreateObject("Leaf"))
-	// 		.process("{object}").returns({})
-	// 		.view("{object}").returns(view)
-
-	// 	var section = mock(CreateObject("Section"))
-	// 	section.traverse = function () {
-	// 		visitor.visitLeaf(component)
-	// 	}
-
-	// 	// Test.
-	// 	visitor.visitSection(section)
-
-	// 	component.verify().process("{object}")
-	// 	component.verify().view("{object}")
-	// 	view.verify().render("{any}")
-
-	// 	var content = visitor.content
-	// 	assertEquals("done", content)
-	// }
-
-	// public void function VisitSectionWithComponents_Should_ReturnConcatenatedContent_When_SimpleValues() {
-	// 	// If the section contains multiple components whose views return simple values, those values should be concatenated.
-
-	// 	var view1 = mock(CreateObject("stubs.ViewStub"))
-	// 		.render("{any}").returns("view1")
-	// 	var component1 = mock(CreateObject("Leaf"))
-	// 		.process("{object}").returns({})
-	// 		.view("{object}").returns(view1)
-
-	// 	var view2 = mock(CreateObject("stubs.ViewStub"))
-	// 		.render("{any}").returns("view2")
-	// 	var component2 = mock(CreateObject("Leaf"))
-	// 		.process("{object}").returns({})
-	// 		.view("{object}").returns(view2)
-
-	// 	var section = mock(CreateObject("Section"))
-	// 	section.traverse = function () {
-	// 		visitor.visitLeaf(component1)
-	// 		visitor.visitLeaf(component2)
-	// 	}
-
-	// 	// Test.
-	// 	visitor.visitSection(section)
-
-	// 	component1.verify().process("{object}")
-	// 	component1.verify().view("{object}")
-	// 	view1.verify().render("{any}")
-	// 	component2.verify().process("{object}")
-	// 	component2.verify().view("{object}")
-	// 	view2.verify().render("{any}")
-
-	// 	var content = visitor.content
-	// 	assertEquals("view1view2", content)
-	// }
-
-	// public void function VisitSectionWithComponents_Should_ThrowException_When_NotSimpleValues() {
-	// 	var view1 = mock(CreateObject("stubs.ViewStub"))
-	// 		.render("{any}").returns({key: "view1"}) // Complex value returned by view.
-	// 	var component1 = mock(CreateObject("Leaf"))
-	// 		.process("{object}").returns({})
-	// 		.view("{object}").returns(view1)
-
-	// 	var view2 = mock(CreateObject("stubs.ViewStub"))
-	// 		.render("{any}").returns("view2") // This view renders a string.
-	// 	var component2 = mock(CreateObject("Leaf"))
-	// 		.process("{object}").returns({})
-	// 		.view("{object}").returns(view2)
-
-	// 	var section = mock(CreateObject("Section"))
-	// 	section.traverse = function () {
-	// 		visitor.visitLeaf(component1)
-	// 		visitor.visitLeaf(component2)
-	// 	}
-
-	// 	// Test.
-	// 	try {
-	// 		visitor.visitSection(section)
-	// 		fail("exception should have been thrown")
-	// 	} catch (DatatypeConfigurationException e) {}
-
-	// 	component1.verify().process("{object}")
-	// 	component1.verify().view("{object}")
-	// 	view1.verify().render("{any}")
-	// 	component2.verify().process("{object}")
-	// 	component2.verify().view("{object}")
-	// 	view2.verify().render("{any}")
-
-	// }
 
 }
