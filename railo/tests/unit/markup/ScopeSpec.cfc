@@ -94,9 +94,12 @@ component extends="tests.MocktorySpec" {
 
 				describe(".put", function () {
 
-					it("should store the element if an element with that ref exists in the parent", function () {
+					it("should throw AlreadyBoundException if an element with that ref exists in the parent", function () {
 						parent.put(element1)
-						scope.put(element2)
+
+						expect(function () {
+							scope.put(element2)
+						}).toThrow("AlreadyBoundException")
 					})
 
 				})
@@ -118,14 +121,6 @@ component extends="tests.MocktorySpec" {
 
 						var result = scope.get("ref")
 						$assert.isSameInstance(element1, result)
-					})
-
-					it("should return the element with the ref from the closest scope", function () {
-						parent.put(element1)
-						scope.put(element2)
-
-						var result = scope.get("ref")
-						$assert.isSameInstance(element2, result)
 					})
 
 				})

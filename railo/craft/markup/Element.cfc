@@ -57,18 +57,26 @@ component accessors="true" abstract="true" {
 
 	public Boolean function getChildrenReady() {
 		return this.children.every(function (child) {
-			return arguments.child.getReady();
+			return arguments.child.getReady(); // Using the property accessors throws.
 		});
 	}
 
 	public Element[] function getSiblings() {
 		return this.getHasParent() ? this.parent.children.filter(function (element) {
 			return arguments.element !== this;
-		}) : []
+		}) : [];
 	}
 
 	public Numeric function getSiblingIndex() {
-		return this.getHasParent() ? this.parent.children.find(this) : 0
+		if (this.getHasParent()) {
+			// children.find(this) compares based on the values of the properties.
+			// Using === (probably) compares by hash code.
+			return this.parent.children.find(function (child) {
+				return arguments.child === this;
+			});
+		}
+
+		return 0;
 	}
 
 }
