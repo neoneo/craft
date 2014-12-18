@@ -6,13 +6,11 @@ component {
 	processingdirective preservecase="true";
 
 	public Boolean function onRequestStart() {
-		var nullSupport = {x: NullValue()}.keyExists("x")
-
-		if (!nullSupport) {
+		if (!GetPageContext().getConfig().getFullNullSupport()) {
 			abort showerror="Null support is disabled";
 		}
 
-		return nullSupport;
+		return true;
 	}
 
 	public void function onRequest(required String targetPage) {

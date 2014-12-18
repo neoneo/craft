@@ -72,7 +72,7 @@ component {
 			var value = nodeAttributes[name] ?: arguments.attribute.default ?: null
 
 			if (value === null && (arguments.attribute.required ?: false)) {
-				Throw("Attribute '#name#' is required", "IllegalArgumentException");
+				Throw("Attribute '#name#' is required", "MissingArgumentException");
 			}
 
 			if (value !== null) {
