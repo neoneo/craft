@@ -67,7 +67,7 @@ component {
 
 		if (path == ".") {
 			if (this.indentLevels.isEmpty()) {
-				Throw("Route '.' cannot be the first route", "NoSuchElementException");
+				Throw("Route '.' cannot be the first route", "ParseException");
 			}
 			pathSegment = this.indentLevels.last()
 			path = ""
@@ -116,7 +116,7 @@ component {
 			var parts = arguments.segment.split("(?<!(?<!\\)\\)@")
 			// We accept 1 or 2 parts. It's a Java array so we can't use member functions.
 			if (ArrayLen(parts) > 2) {
-				Throw("Invalid path segment '#arguments.segment#'", "IllegalArgumentException", "Escape @ signs with a \ where applicable");
+				Throw("Invalid path segment '#arguments.segment#'", "ParseException", "Escape @ signs with a \ where applicable");
 			}
 
 			return {
@@ -205,7 +205,7 @@ component {
 
 	private Any function pick(required Array array, required Numeric index) {
 		if (arguments.array.len() < arguments.index) {
-			Throw("Number of items does not match", "NoSuchElementException", "Expected #arguments.index# but found #arguments.array.len()#");
+			Throw("Number of items does not match", "ParseException", "Expected #arguments.index# but found #arguments.array.len()#");
 		}
 
 		return arguments.array[arguments.index];

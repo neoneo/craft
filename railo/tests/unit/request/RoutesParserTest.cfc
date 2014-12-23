@@ -42,11 +42,11 @@ component extends="tests.MocktorySpec" {
 					parser = new RoutesParser(root, pathSegmentFactory, commandFactory)
 				})
 
-				it("should throw NoSuchElementException if there are not enough words", function () {
+				it("should throw ParseException if there are not enough words", function () {
 					var route = "GET /index"
 					expect(function () {
 						parser.parse(route)
-					}).toThrow("NoSuchElementException")
+					}).toThrow("ParseException")
 				})
 
 				it("should parse '/'", function () {
@@ -190,7 +190,7 @@ component extends="tests.MocktorySpec" {
 					var route2 = "GET /wrong@escaped@par index"
 					expect(function () {
 						parser.parse(route2)
-					}).toThrow("IllegalArgumentException")
+					}).toThrow("ParseException")
 				})
 
 				it("should ignore multiple whitespace characters", function () {
@@ -203,11 +203,11 @@ component extends="tests.MocktorySpec" {
 
 				describe("for relative routes", function () {
 
-					it("should throw NoSuchElementException if an invalid indent is encountered", function () {
+					it("should throw ParseException if an invalid indent is encountered", function () {
 						var route1 = "GET > /route1 route1"
 						expect(function () {
 							parser.parse(route1)
-						}).toThrow("NoSuchElementException")
+						}).toThrow("ParseException")
 
 						// For the next test, parse a proper route first.
 						var route = "GET / root"
@@ -216,7 +216,7 @@ component extends="tests.MocktorySpec" {
 						var route2 = "GET >> /route2 route2"
 						expect(function () {
 							parser.parse(route2)
-						}).toThrow("NoSuchElementException")
+						}).toThrow("ParseException")
 					})
 
 					it("should interpret a dot as the current route", function () {
@@ -224,7 +224,7 @@ component extends="tests.MocktorySpec" {
 						// Parsing this right away should throw an exception.
 						expect(function () {
 							parser.parse(dotRoute)
-						}).toThrow("NoSuchElementException")
+						}).toThrow("ParseException")
 
 						// First parsing a route and then the dot route should work.
 						var route = "POST /route postcommand" // Use a differen method, so we get two commands.

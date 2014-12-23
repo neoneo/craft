@@ -71,7 +71,7 @@ component {
 	}
 
 	/**
-	 * Returns the metadata of all properties defined in the given metadata (obtained using `GetMetData` or `GetComponentMetadata`).
+	 * Returns the metadata of all properties defined in the given metadata (obtained using `GetMetadata` or `GetComponentMetadata`).
 	 */
 	public Struct[] function collectProperties(required Struct metadata) {
 
