@@ -23,21 +23,21 @@ component extends="tests.MocktorySpec" {
 				}
 
 
-				it("should register nothing if settings.ini is not found", function () {
+				it("should register nothing if craft.ini is not found", function () {
 					tagRepository.register(mapping & "/nosettings")
 					expect(tagRepository.tagNames).toBeEmpty()
 				})
 
-				it("should throw UnknownNamespaceException if no craft section is defined in settings.ini", function () {
+				it("should throw ConfigurationException if no craft section is defined in craft.ini", function () {
 					expect(function () {
 						tagRepository.register(mapping & "/nocraftsection")
-					}).toThrow("UnknownNamespaceException")
+					}).toThrow("ConfigurationException")
 				})
 
-				it("should throw UnknownNamespaceException if no namespace is defined in craft.ini", function () {
+				it("should throw ConfigurationException if no namespace is defined in craft.ini", function () {
 					expect(function () {
 						tagRepository.register(mapping & "/nonamespace")
-					}).toThrow("UnknownNamespaceException")
+					}).toThrow("ConfigurationException")
 				})
 
 				it("should register only elements, and only those that are not abstract", function () {
@@ -86,16 +86,16 @@ component extends="tests.MocktorySpec" {
 					expect(sameItems(tagNames, ["yes", "yessub", "subyes"])).toBeTrue()
 				})
 
-				it("should throw DuplicateTagNameException if a tag by the given name is already registered", function () {
+				it("should throw AlreadyBoundException if a tag by the given name is already registered", function () {
 					expect(function () {
 						tagRepository.register(mapping & "/multiple/tagnames")
-					}).toThrow("DuplicateTagNameException")
+					}).toThrow("AlreadyBoundException")
 				})
 
-				it("should throw DuplicateNamespaceException if a namespace by the given name is already registered", function () {
+				it("should throw AlreadyBoundException if a namespace by the given name is already registered", function () {
 					expect(function () {
 						tagRepository.register(mapping & "/multiple/namespaces")
-					}).toThrow("DuplicateNamespaceException")
+					}).toThrow("AlreadyBoundException")
 				})
 
 			})
@@ -115,10 +115,10 @@ component extends="tests.MocktorySpec" {
 					expect(elementFactory).toBeInstanceOf(dotMapping & ".factory.directive.ElementFactoryStub")
 				})
 
-				it("should throw UnknownNamespaceException if no namespace by the given name is registered", function () {
+				it("should throw NotBoundException if no namespace by the given name is registered", function () {
 					expect(function () {
 						tagRepository.elementFactory("nonexisting")
-					}).toThrow("UnknownNamespaceException")
+					}).toThrow("NotBoundException")
 				})
 
 			})
@@ -134,16 +134,16 @@ component extends="tests.MocktorySpec" {
 					$assert.isSameInstance(elementFactory, tagRepository.elementFactory("http://neoneo.nl/craft/factory/nodirective"))
 				})
 
-				it("should throw UnknownNamespaceException if no namespace by the given name is registered", function () {
+				it("should throw NotBoundException if no namespace by the given name is registered", function () {
 					var elementFactory = mock({$interface: "ElementFactory"})
 					expect(function () {
 						tagRepository.setElementFactory("http://neoneo.nl/craft/", elementFactory)
-					}).toThrow("UnknownNamespaceException")
+					}).toThrow("NotBoundException")
 
 					tagRepository.register(mapping & "/factory/nodirective")
 					expect(function () {
 						tagRepository.setElementFactory("http://neoneo.nl/craft/nonexisting", elementFactory)
-					}).toThrow("UnknownNamespaceException")
+					}).toThrow("NotBoundException")
 				})
 
 			})
@@ -165,7 +165,7 @@ component extends="tests.MocktorySpec" {
 
 			describe(".deregister", function () {
 
-				it("should remove the namespace defined in settings.ini", function () {
+				it("should remove the namespace defined in craft.ini", function () {
 					// First register some namespaces.
 					tagRepository.register(mapping & "/recursive")
 
@@ -178,36 +178,36 @@ component extends="tests.MocktorySpec" {
 					expect(tags).notToHaveKey("http://neoneo.nl/craft/dir2")
 				})
 
-				it("should throw UnknownNamespaceException if no craft section is defined in settings.ini", function () {
+				it("should throw NotBoundException if no craft section is defined in craft.ini", function () {
 					expect(function () {
 						tagRepository.deregister(mapping & "/nocraftsection")
-					}).toThrow("UnknownNamespaceException")
+					}).toThrow("NotBoundException")
 				})
 
-				it("should throw UnknownNamespaceException if no namespace is defined in settings.ini", function () {
+				it("should throw NotBoundException if no namespace is defined in craft.ini", function () {
 					expect(function () {
 						tagRepository.deregister(mapping & "/nonamespace")
-					}).toThrow("UnknownNamespaceException")
+					}).toThrow("NotBoundException")
 				})
 
 			})
 
 			describe(".get", function () {
 
-				it("should throw UnknownNamespaceException if no namespace by the given name is registered", function () {
+				it("should throw NotBoundException if no namespace by the given name is registered", function () {
 					tagRepository.register(mapping & "/create")
 
 					expect(function () {
 						tagRepository.get("http://doesnotexist", "tagelement")
-					}).toThrow("UnknownNamespaceException")
+					}).toThrow("NotBoundException")
 				})
 
-				it("should throw UnknownTagNameException if no tag by the given name is registered", function () {
+				it("should throw NotBoundException if no tag by the given name is registered", function () {
 					tagRepository.register(mapping & "/create")
 
 					expect(function () {
 						tagRepository.get("http://neoneo.nl/craft", "doesnotexist")
-					}).toThrow("UnknownTagNameException")
+					}).toThrow("NotBoundException")
 				})
 
 				it("should return the corresponding tag metadata if requested by tag name", function () {
