@@ -1,198 +1,235 @@
-import craft.markup.*;
+import craft.markup.TagRepository;
 
-component extends="mxunit.framework.TestCase" {
+component extends="tests.MocktorySpec" {
 
-	public void function setUp() {
-		this.elementFactory = mock(CreateObject("stubs.ElementFactoryMock"))
-		this.repository = new TagRepository(this.elementFactory)
-		this.mapping = "/tests/unit/markup/stubs"
-		this.dotMapping = this.mapping.listChangeDelims(".", "/")
-	}
+	function run() {
 
-	public void function RegisterWithNoSettings_ShouldNot_RegisterAnything() {
-		this.repository.register(this.mapping & "/nosettings")
-		assertTrue(this.repository.tagNames.isEmpty())
-	}
+		describe("TagRepository", function () {
 
-	public void function RegisterWithNoCraftSection_Should_ThrowNoSuchElementException() {
-		try {
-			this.repository.register(this.mapping & "/nocraftsection")
-			fail("if there is no section named 'craft' in craft.ini, an exception should be thrown")
-		} catch (NoSuchElementException e) {}
-	}
+			beforeEach(function () {
+				elementFactory = mock({
+					$interface: "ElementFactory"
+				})
+				tagRepository = new TagRepository(elementFactory)
 
-	public void function RegisterWithNoNamespace_Should_ThrowNoSuchElementException() {
-		try {
-			this.repository.register(this.mapping & "/nonamespace")
-			fail("if no namespace is defined in craft.ini, an exception should be thrown")
-		} catch (NoSuchElementException e) {}
-	}
+				mapping = "/tests/unit/markup/stubs"
+				dotMapping = mapping.listChangeDelims(".", "/")
+			})
 
-	public void function RegisterWithSimpleSettings_Should_RegisterOnlyNonAbstractElements() {
-		this.repository.register(this.mapping & "/recursive/dir2/sub")
+			describe(".register", function () {
 
-		var tags = this.repository.tagNames
+				var sameItems = function (expected, actual) {
+					return arguments.expected.containsAll(arguments.actual) && arguments.actual.containsAll(arguments.expected);
+				}
 
-		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir2"), "there should be a key for the namespace as defined in craft.ini")
-		tagNames = tags["http://neoneo.nl/craft/dir2"]
 
-		assertFalse(tagNames.find("noelement") > 0, "if a component does not extend Element, it should not be registered")
-		assertFalse(tagNames.find("abstractelement") > 0, "if a component has the 'abstract' annotation, it should not be registered")
-		assertTrue(sameContents(["some", "extendssome", "extendsextendssome"], tagNames), "found tag names '#tagNames.toList()#'")
+				it("should register nothing if settings.ini is not found", function () {
+					tagRepository.register(mapping & "/nosettings")
+					expect(tagRepository.tagNames).toBeEmpty()
+				})
 
-	}
+				it("should throw UnknownNamespaceException if no craft section is defined in settings.ini", function () {
+					expect(function () {
+						tagRepository.register(mapping & "/nocraftsection")
+					}).toThrow("UnknownNamespaceException")
+				})
 
-	public void function Register_Should_LookInSubdirectories() {
-		this.repository.register(this.mapping & "/recursive/dir1")
+				it("should throw UnknownNamespaceException if no namespace is defined in craft.ini", function () {
+					expect(function () {
+						tagRepository.register(mapping & "/nonamespace")
+					}).toThrow("UnknownNamespaceException")
+				})
 
-		var tags = this.repository.tagNames
+				it("should register only elements, and only those that are not abstract", function () {
+					tagRepository.register(mapping & "/recursive/dir2/sub")
 
-		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
-		tagNames = tags["http://neoneo.nl/craft/dir1"]
+					var tags = tagRepository.tagNames
 
-		// There are 2 directories, with 1 element each.
-		assertEquals(2, tagNames.len())
-		// SomeElement has no tag annotation, so the fully qualified name should be returned.
-		assertTrue(sameContents([this.dotMapping & ".recursive.dir1.SomeElement", "dir1sub"], tagNames), "found tag names '#tagNames.toList()#'")
-	}
+					expect(tags).toHaveKey("http://neoneo.nl/craft/dir2")
+					tagNames = tags["http://neoneo.nl/craft/dir2"]
 
-	public void function Register_Should_RegisterMultipleNamespaces() {
-		// This test combines the previous two tests by registering the parent directory.
-		this.repository.register(this.mapping & "/recursive")
+					expect(tagNames.find("noelement")).toBe(0)
+					expect(tagNames.find("abstractelement")).toBe(0)
+					expect(sameItems(tagNames, ["extendsextendssome", "extendssome", "some"])).toBeTrue()
+				})
 
-		var tags = this.repository.tagNames
-		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
-		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir2"))
-	}
+				it("should register elements in subdirectories", function () {
+					tagRepository.register(mapping & "/recursive/dir1")
 
-	public void function Register_Should_FollowDirectoriesDirective() {
-		this.repository.register(this.mapping & "/directory")
+					var tags = tagRepository.tagNames
 
-		var tags = this.repository.tagNames
-		assertTrue(tags.keyExists("http://neoneo.nl/craft/directory"))
-		tagNames = tags["http://neoneo.nl/craft/directory"]
+					expect(tags).toHaveKey("http://neoneo.nl/craft/dir1")
+					tagNames = tags["http://neoneo.nl/craft/dir1"]
 
-		// There are 3 directories that should be inspected, with 1 element each.
-		assertTrue(sameContents(["yes", "yessub", "subyes"], tagNames), "found tag names '#tagNames.toList()#'")
-	}
+					// There are 2 directories, with 1 element each.
+					expect(tagNames).toHaveLength(2)
+					// SomeElement has no tag annotation, so the fully qualified name should be returned.
+					expect(sameItems(tagNames, ["dir1sub", dotMapping & ".recursive.dir1.SomeElement"])).toBeTrue()
+				})
 
-	private Boolean function sameContents(required Array array1, required Array array2) {
-		return arguments.array1.containsAll(arguments.array2) && arguments.array2.containsAll(arguments.array1);
-	}
+				it("should register multiple namespaces", function () {
+					tagRepository.register(mapping & "/recursive")
 
-	public void function Register_Should_ThrowAlreadyBoundException_When_ExistingTag() {
-		try {
-			this.repository.register(this.mapping & "/multiple/tagnames")
-			fail("exception should have been thrown")
-		} catch (AlreadyBoundException e) {
-			assertTrue(e.message.startsWith("Tag"))
-		}
-	}
+					var tags = tagRepository.tagNames
+					expect(tags).toHaveKey("http://neoneo.nl/craft/dir1")
+					expect(tags).toHaveKey("http://neoneo.nl/craft/dir2")
+				})
 
-	public void function Register_Should_ThrowAlreadyBoundException_When_ExistingNamespace() {
-		try {
-			this.repository.register(this.mapping & "/multiple/namespaces")
-			fail("exception should have been thrown")
-		} catch (AlreadyBoundException e) {
-			assertTrue(e.message.startsWith("Namespace"))
-		}
-	}
+				it("should follow the directories directive", function () {
+					tagRepository.register(mapping & "/directory")
 
-	public void function ElementFactory_Should_ReturnDefaultFactory_When_NoFactoryDirective() {
-		this.repository.register(this.mapping & "/factory/nodirective")
+					var tags = tagRepository.tagNames
+					expect(tags).toHaveKey("http://neoneo.nl/craft/directory")
+					tagNames = tags["http://neoneo.nl/craft/directory"]
 
-		assertSame(this.elementFactory, this.repository.elementFactory("http://neoneo.nl/craft/factory/nodirective"))
-	}
+					// There are 3 directories that should be inspected, with 1 element each.
+					expect(sameItems(tagNames, ["yes", "yessub", "subyes"])).toBeTrue()
+				})
 
-	public void function SetElementFactory_Should_SetFactoryForNamespace() {
-		this.repository.register(this.mapping & "/factory/nodirective")
-		// Set some element factory for the namespace just registered.
-		var elementFactory = CreateObject("stubs.factory.directive.ElementFactoryStub")
-		this.repository.setElementFactory("http://neoneo.nl/craft/factory/nodirective", elementFactory)
+				it("should throw DuplicateTagNameException if a tag by the given name is already registered", function () {
+					expect(function () {
+						tagRepository.register(mapping & "/multiple/tagnames")
+					}).toThrow("DuplicateTagNameException")
+				})
 
-		assertSame(elementFactory, this.repository.elementFactory("http://neoneo.nl/craft/factory/nodirective"))
-	}
+				it("should throw DuplicateNamespaceException if a namespace by the given name is already registered", function () {
+					expect(function () {
+						tagRepository.register(mapping & "/multiple/namespaces")
+					}).toThrow("DuplicateNamespaceException")
+				})
 
-	public void function SetElementFactory_Should_ThrowNoSuchElementException_When_NonExistingNamespace() {
-		var elementFactory = CreateObject("stubs.factory.directive.ElementFactoryStub")
-		try {
-			this.repository.setElementFactory("http://neoneo.nl/craft/", elementFactory)
-			fail("exception should have been thrown")
-		} catch (NoSuchElementException e) {}
+			})
 
-		this.repository.register(this.mapping & "/factory/nodirective")
-		try {
-			this.repository.setElementFactory("http://neoneo.nl/craft/nonexisting", elementFactory)
-			fail("exception should have been thrown")
-		} catch (NoSuchElementException e) {}
-	}
+			describe(".elementFactory", function () {
 
-	public void function Register_Should_ReturnCorrectFactory_When_FactoryDirective() {
-		this.repository.register(this.mapping & "/factory/directive")
+				it("should return the default factory if there is not factory directive", function () {
+					tagRepository.register(mapping & "/factory/nodirective")
 
-		var elementFactory = this.repository.elementFactory("http://neoneo.nl/craft/factory/directive")
-		assertTrue(IsInstanceOf(elementFactory, this.dotMapping & ".factory.directive.ElementFactoryStub"),
-			"element factory should be an instance of ElementFactoryStub")
-	}
+					$assert.isSameInstance(elementFactory, tagRepository.elementFactory("http://neoneo.nl/craft/factory/nodirective"))
+				})
 
-	// The following tests are integration tests, strictly speaking.
+				it("should return the factory defined by the factory directive", function () {
+					tagRepository.register(mapping & "/factory/directive")
 
-	public void function Deregister_Should_RemoveNamespace() {
-		// First register some namespaces.
-		this.repository.register(this.mapping & "/recursive")
+					var elementFactory = tagRepository.elementFactory("http://neoneo.nl/craft/factory/directive")
+					expect(elementFactory).toBeInstanceOf(dotMapping & ".factory.directive.ElementFactoryStub")
+				})
 
-		// Deregister one of the mappings.
-		this.repository.deregister(this.mapping & "/recursive/dir2")
+				it("should throw UnknownNamespaceException if no namespace by the given name is registered", function () {
+					expect(function () {
+						tagRepository.elementFactory("nonexisting")
+					}).toThrow("UnknownNamespaceException")
+				})
 
-		// Test.
-		var tags = this.repository.tagNames
-		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
-		assertFalse(tags.keyExists("http://neoneo.nl/craft/dir2"))
-	}
+			})
 
-	public void function DeregisterNamespace_Should_RemoveNamespace() {
-		this.repository.register(this.mapping & "/recursive")
+			describe(".setElementFactory", function () {
 
-		this.repository.deregisterNamespace("http://neoneo.nl/craft/dir2")
+				it("should set the factory for the given namespace", function () {
+					tagRepository.register(mapping & "/factory/nodirective")
+					// Set some element factory for the namespace just registered.
+					var elementFactory = mock({$interface: "ElementFactory"})
+					tagRepository.setElementFactory("http://neoneo.nl/craft/factory/nodirective", elementFactory)
 
-		// Test.
-		var tags = this.repository.tagNames
-		assertTrue(tags.keyExists("http://neoneo.nl/craft/dir1"))
-		assertFalse(tags.keyExists("http://neoneo.nl/craft/dir2"))
-	}
+					$assert.isSameInstance(elementFactory, tagRepository.elementFactory("http://neoneo.nl/craft/factory/nodirective"))
+				})
 
-	public void function Get_Should_ThrowException_When_NonExistentNamespace() {
-		this.repository.register(this.mapping & "/create")
+				it("should throw UnknownNamespaceException if no namespace by the given name is registered", function () {
+					var elementFactory = mock({$interface: "ElementFactory"})
+					expect(function () {
+						tagRepository.setElementFactory("http://neoneo.nl/craft/", elementFactory)
+					}).toThrow("UnknownNamespaceException")
 
-		try {
-			var metadata = this.repository.get("http://doesnotexist", "tagelement")
-			fail("get should have thrown an exception")
-		} catch (NoSuchElementException e) {}
-	}
+					tagRepository.register(mapping & "/factory/nodirective")
+					expect(function () {
+						tagRepository.setElementFactory("http://neoneo.nl/craft/nonexisting", elementFactory)
+					}).toThrow("UnknownNamespaceException")
+				})
 
-	public void function Get_Should_ThrowException_When_NonExistentTag() {
-		this.repository.register(this.mapping & "/create")
+			})
 
-		try {
-			var metadata = this.repository.get("http://neoneo.nl/craft", "doesnotexist")
-			fail("get should have thrown an exception")
-		} catch (NoSuchElementException e) {}
-	}
+			describe(".deregisterNamespace", function () {
 
-	public void function Get_Should_ReturnTagMetadata_When_TagName() {
-		this.repository.register(this.mapping & "/create")
+				it("should remove the namespace by the given name", function () {
+					tagRepository.register(mapping & "/recursive")
 
-		var metadata = this.repository.get("http://neoneo.nl/craft", "tagelement")
+					tagRepository.deregisterNamespace("http://neoneo.nl/craft/dir2")
 
-		assertEquals(this.dotMapping & ".create.TagElement", metadata.class)
-	}
+					// Test.
+					var tags = tagRepository.tagNames
+					expect(tags).toHaveKey("http://neoneo.nl/craft/dir1")
+					expect(tags).notToHaveKey("http://neoneo.nl/craft/dir2")
+				})
 
-	public void function Get_Should_ReturnTagMetadata_When_NoTagName() {
-		this.repository.register(this.mapping & "/create")
+			})
 
-		var metadata = this.repository.get("http://neoneo.nl/craft", this.dotMapping & ".create.NoTagElement")
+			describe(".deregister", function () {
 
-		assertEquals(this.dotMapping & ".create.NoTagElement", metadata.class)
+				it("should remove the namespace defined in settings.ini", function () {
+					// First register some namespaces.
+					tagRepository.register(mapping & "/recursive")
+
+					// Deregister one of the mappings.
+					tagRepository.deregister(mapping & "/recursive/dir2")
+
+					// Test.
+					var tags = tagRepository.tagNames
+					expect(tags).toHaveKey("http://neoneo.nl/craft/dir1")
+					expect(tags).notToHaveKey("http://neoneo.nl/craft/dir2")
+				})
+
+				it("should throw UnknownNamespaceException if no craft section is defined in settings.ini", function () {
+					expect(function () {
+						tagRepository.deregister(mapping & "/nocraftsection")
+					}).toThrow("UnknownNamespaceException")
+				})
+
+				it("should throw UnknownNamespaceException if no namespace is defined in settings.ini", function () {
+					expect(function () {
+						tagRepository.deregister(mapping & "/nonamespace")
+					}).toThrow("UnknownNamespaceException")
+				})
+
+			})
+
+			describe(".get", function () {
+
+				it("should throw UnknownNamespaceException if no namespace by the given name is registered", function () {
+					tagRepository.register(mapping & "/create")
+
+					expect(function () {
+						tagRepository.get("http://doesnotexist", "tagelement")
+					}).toThrow("UnknownNamespaceException")
+				})
+
+				it("should throw UnknownTagNameException if no tag by the given name is registered", function () {
+					tagRepository.register(mapping & "/create")
+
+					expect(function () {
+						tagRepository.get("http://neoneo.nl/craft", "doesnotexist")
+					}).toThrow("UnknownTagNameException")
+				})
+
+				it("should return the corresponding tag metadata if requested by tag name", function () {
+					tagRepository.register(mapping & "/create")
+
+					var metadata = tagRepository.get("http://neoneo.nl/craft", "tagelement")
+
+					expect(metadata.class).toBe(dotMapping & ".create.TagElement")
+				})
+
+				it("should return the corresponding tag metadata if requested by class name", function () {
+					tagRepository.register(mapping & "/create")
+
+					var metadata = tagRepository.get("http://neoneo.nl/craft", dotMapping & ".create.NoTagElement")
+
+					expect(metadata.class).toBe(dotMapping & ".create.NoTagElement")
+				})
+
+			})
+
+		})
+
 	}
 
 }

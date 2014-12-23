@@ -30,13 +30,13 @@ component accessors="true" {
 			var sections = GetProfileSections(settingsFile)
 			// If there is no section named 'craft', or if this section doesn't contain a namespace key, throw an exception.
 			if (!sections.keyExists("craft") || sections.craft.listFind("namespace") == 0) {
-				Throw("Namespace not found in #settingsFile#", "NoSuchElementException");
+				Throw("Namespace not found in #settingsFile#", "UnknownNamespaceException");
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
 
 			if (this.tags.keyExists(namespace)) {
-				Throw("Namespace '#namespace#' already exists", "AlreadyBoundException");
+				Throw("Namespace '#namespace#' already exists", "DuplicateNamespaceException");
 			}
 			this.tags[namespace] = {}
 
@@ -89,7 +89,7 @@ component accessors="true" {
 							})
 						}
 						if (this.tags[namespace].keyExists(tagName)) {
-							Throw("Tag '#tagName#' already exists in namespace '#namespace#'", "AlreadyBoundException");
+							Throw("Tag '#tagName#' already exists in namespace '#namespace#'", "DuplicateTagNameException");
 						}
 						// Store the tag data.
 						this.tags[namespace][tagName] = data
@@ -121,7 +121,7 @@ component accessors="true" {
 			var sections = GetProfileSections(settingsFile)
 			// If there is no section named 'craft', or if this section doesn't contain a namespace key, throw an exception.
 			if (!sections.keyExists("craft") || sections.craft.listFind("namespace") == 0) {
-				Throw("Namespace not found in #settingsFile#", "NoSuchElementException");
+				Throw("Namespace not found in #settingsFile#", "UnknownNamespaceException");
 			}
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
@@ -160,13 +160,13 @@ component accessors="true" {
 	public Struct function get(required String namespace, required String tagName) {
 
 		if (!this.tags.keyExists(arguments.namespace)) {
-			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException");
+			Throw("Namespace '#arguments.namespace#' not found", "UnknownNamespaceException");
 		}
 
 		var tags = this.tags[arguments.namespace]
 
 		if (!tags.keyExists(arguments.tagName)) {
-			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NoSuchElementException");
+			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "UnknownTagNameException");
 		}
 
 		return tags[arguments.tagName];
@@ -177,7 +177,7 @@ component accessors="true" {
 	 */
 	public ElementFactory function elementFactory(required String namespace) {
 		if (!this.factories.keyExists(arguments.namespace)) {
-			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException");
+			Throw("Namespace '#arguments.namespace#' not found", "UnknownNamespaceException");
 		}
 
 		return this.factories[arguments.namespace];
@@ -185,7 +185,7 @@ component accessors="true" {
 
 	public void function setElementFactory(required String namespace, required ElementFactory elementFactory) {
 		if (!this.tags.keyExists(arguments.namespace)) {
-			Throw("Namespace '#arguments.namespace#' not found", "NoSuchElementException");
+			Throw("Namespace '#arguments.namespace#' not found", "UnknownNamespaceException");
 		}
 
 		this.factories[arguments.namespace] = arguments.elementFactory
