@@ -1,4 +1,7 @@
-import craft.request.*;
+import craft.request.Context;
+import craft.request.EntirePathSegment;
+import craft.request.RootPathSegment;
+import craft.request.StaticPathSegment;
 
 component extends="tests.MocktorySpec" {
 
@@ -183,7 +186,7 @@ component extends="tests.MocktorySpec" {
 			})
 
 			describe(".createURL", function () {
-				it("should forward the call to endpoint.createURL", function () {
+				it("should create the url", function () {
 					mock({
 						$object: endpoint,
 						createURL: {

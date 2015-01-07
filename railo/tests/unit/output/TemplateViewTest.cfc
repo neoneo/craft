@@ -15,7 +15,7 @@ component extends="tests.MocktorySpec" {
 
 			describe(".render", function () {
 
-				it("should forward the call to the template renderer and return the result", function () {
+				it("should render the template using the model", function () {
 					mock({
 						$object: templateRenderer,
 						render: {

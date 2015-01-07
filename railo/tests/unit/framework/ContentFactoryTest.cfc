@@ -1,54 +1,114 @@
-import craft.content.*;
+import craft.framework.ContentFactory;
 
-import craft.framework.*;
+component extends="tests.MocktorySpec" {
 
-import craft.util.*;
+	mapping = "/tests/unit/framework/stubs"
+	dotMapping = mapping.listChangeDelims(".", "/")
 
-component extends="mxunit.framework.TestCase" {
+	function run() {
 
-	this.mapping = "/tests/unit/framework/stubs"
-	this.dotMapping = this.mapping.listChangeDelims(".", "/")
+		describe("ContentFactory", function () {
 
-	public void function setUp() {
-		this.viewFactory = mock(CreateObject("ViewFactory"))
-		this.contentFactory = new stubs.ContentFactoryMock(this.viewFactory)
+			beforeEach(function () {
+				viewFactory = mock("ViewFactory")
+				componentFinder = mock("ClassFinder")
+				objectHelper = mock({
+					$class: "ObjectHelper",
+					initialize: null
+				})
 
-		var componentFinder = mock(CreateObject("ClassFinder")).get("{string}").returns(this.dotMapping & ".SomeContent")
-		this.contentFactory.componentFinder = componentFinder
+				contentFactory = mock(new ContentFactory(viewFactory))
+					.$property("componentFinder", "this", componentFinder)
+					.$property("objectHelper", "this", objectHelper)
+			})
 
-		this.objectHelper = mock(CreateObject("ObjectHelper")).initialize("{object}", "{struct}")
-		this.contentFactory.objectHelper = this.objectHelper
+			describe(".create", function () {
+
+				beforeEach(function () {
+					mock({
+						$object: componentFinder,
+						get: dotMapping & ".SomeContent"
+					})
+				})
+
+				it("should create the content object", function () {
+					var result = contentFactory.create("SomeContent")
+
+					expect(result).toBeInstanceOf(dotMapping & ".SomeContent")
+					verify(objectHelper, {
+						initialize: {
+							$args: [result, {}],
+							$times: 1
+						}
+					})
+				})
+
+				it("should inject the view factory in the content object", function () {
+					var result = contentFactory.create("SomeContent")
+
+					$assert.isSameInstance(viewFactory, result.getViewFactory())
+				})
+
+				it("should inject the given properties into the content object", function () {
+					var properties = {
+						property1: "property1",
+						property2: "property2"
+					}
+
+					var result = contentFactory.create("SomeContent", properties)
+
+					verify(objectHelper, {
+						initialize: {
+							$args: [result, properties],
+							$times: 1
+						}
+					})
+				})
+
+			})
+
+			describe(".addMapping", function () {
+
+				it("should add the mapping", function () {
+					mock({
+						$object: componentFinder,
+						addMapping: null
+					})
+
+					contentFactory.addMapping("/some/mapping")
+
+					verify(componentFinder, {
+						addMapping: {
+							$args: ["/some/mapping"],
+							$times: 1
+						}
+					})
+				})
+
+			})
+
+			describe(".removeMapping", function () {
+
+				it("should remove the mapping", function () {
+					mock({
+						$object: componentFinder,
+						removeMapping: null
+					})
+
+					contentFactory.removeMapping("/some/mapping")
+
+					verify(componentFinder, {
+						removeMapping: {
+							$args: ["/some/mapping"],
+							$times: 1
+						}
+					})
+				})
+
+			})
+
+		})
+
 	}
-
-	public void function Create_Should_ReturnContentInstance() {
-
-		var component = this.contentFactory.create("SomeContent")
-
-		assertTrue(IsInstanceOf(component, this.dotMapping & ".SomeContent"))
-		this.objectHelper.verify().initialize("{object}", "{struct}")
-	}
-
-	public void function Create_Should_InjectViewFactory() {
-		var component = this.contentFactory.create("SomeContent")
-
-		assertSame(this.viewFactory, component.getViewFactory())
-	}
-
-	public void function Create_Should_InjectParameters() {
-		var parameters = {
-			parameter1: "par1",
-			parameter2: "par2"
-		}
-		// might mock lets the test fail if we mock using the real parameters.
-		// so test using a real object helper..
-		this.contentFactory.objectHelper = new ObjectHelper()
-
-		var component = this.contentFactory.create("SomeContent", parameters)
-
-		assertTrue(IsInstanceOf(component, this.dotMapping & ".SomeContent"))
-		assertEquals(parameters, component.parameters)
-	}
-
-	// TODO: add tests for addMapping, removeMapping and the other create* methods.
 
 }

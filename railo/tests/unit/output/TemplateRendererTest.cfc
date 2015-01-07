@@ -16,7 +16,7 @@ component extends="tests.MocktorySpec" {
 
 			describe(".addMapping", function () {
 
-				it("should forward the call to templateFinder.addMapping", function () {
+				it("should add the mapping", function () {
 					mock({
 						$object: templateFinder,
 						addMapping: {
@@ -35,7 +35,7 @@ component extends="tests.MocktorySpec" {
 
 			describe(".removeMapping", function () {
 
-				it("should forward the call to templateFinder.removeMapping", function () {
+				it("should remove the mapping", function () {
 					mock({
 						$object: templateFinder,
 						removeMapping: {
@@ -54,7 +54,7 @@ component extends="tests.MocktorySpec" {
 
 			describe(".clearMappings", function () {
 
-				it("should forward the call to templateFinder.clear", function () {
+				it("should clear the mappings", function () {
 					mock({
 						$object: templateFinder,
 						clear: {
