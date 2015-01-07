@@ -1,4 +1,4 @@
-import craft.output.*;
+import craft.output.View;
 
 component extends="View" {
 

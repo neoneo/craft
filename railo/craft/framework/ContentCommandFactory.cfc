@@ -12,7 +12,7 @@ component implements="CommandFactory" accessors="true" {
 
 	property String path;
 
-	this.path = null
+	this.path = ""
 
 	public void function init(required TagRepository tagRepository, required Scope scope) {
 		this.tagRepository = arguments.tagRepository
@@ -25,13 +25,8 @@ component implements="CommandFactory" accessors="true" {
 	 * The identifier is the path to the xml file that defines the `Content`.
 	 */
 	public Command function create(required String identifier) {
-
 		// Pass the file builder and the path. The command will use them when first requested.
-		var command = new ContentCommand(this.fileBuilder, this.path & "/" & arguments.identifier)
-
-		this.commands[arguments.identifier] = command
-
-		return command;
+		return new ContentCommand(this.fileBuilder, this.path & (arguments.identifier.startsWith("/") ? "" : "/") & arguments.identifier);
 	}
 
 }

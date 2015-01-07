@@ -28,8 +28,7 @@ component accessors="true" {
 		try {
 			var context = new Context(this.endpoint, this.root)
 		} catch (FileNotFoundException e) {
-			header statuscode="404";
-			WriteOutput("404 not found")
+			header statuscode="404" statustext="Not found";
 			return;
 		}
 
@@ -79,8 +78,7 @@ component accessors="true" {
 				return;
 			}
 		} else {
-			header statuscode="405";
-			WriteOutput("405 method not allowed")
+			header statuscode="405" statustext="Method not allowed";
 			return;
 		}
 

@@ -1,50 +1,64 @@
-component extends="mxunit.framework.TestCase" {
+import craft.framework.DefaultElementFactory;
 
-	public void function implement() {
-		Throw("implement");
-	}
+component extends="tests.MocktorySpec" {
 
-	public void function Get_Should_ReturnElementWithAttributes_When_TagAndAttributes() {
-		this.repository.register(this.mapping & "/create")
+	mapping = "/tests/unit/framework/stubs"
+	dotMapping = mapping.listChangeDelims(".", "/")
 
-		var attributes = {
-			ref: CreateUniqueId(),
-			name: CreateGUID()
-		}
-		var element = this.repository.get("http://neoneo.nl/craft", "tagelement", attributes)
+	function run() {
 
-		assertTrue(IsInstanceOf(element, "TagElement"))
-		assertEquals(attributes.ref, element.ref)
-		assertEquals(attributes.name, element.name)
-	}
+		describe("DefaultElementFactory", function () {
 
-	public void function Get_Should_ReturnElementWithAttributes_When_ComponentAndAttributes() {
-		this.repository.register(this.mapping & "/create")
+			beforeEach(function () {
+				contentFactory = mock("ContentFactory")
+				objectHelper = mock({
+					$class: "ObjectHelper",
+					initialize: null
+				})
+				elementFactory = mock(new DefaultElementFactory(contentFactory))
+					.$property("objectHelper", "this", objectHelper)
+			})
 
-		var attributes = {
-			ref: CreateUniqueId(),
-			name: CreateGUID()
-		}
-		var element = this.repository.get("http://neoneo.nl/craft", this.dotMapping & ".create.NoTagElement", attributes)
+			describe(".create", function () {
 
-		assertTrue(IsInstanceOf(element, "NoTagElement"))
-		assertEquals(attributes.ref, element.ref)
-		assertEquals(attributes.name, element.name)
-	}
+				it("should create the element", function () {
+					var result = elementFactory.create(dotMapping & ".SomeElement", {})
 
-	public void function Get_Should_ReturnElementWithoutAttributes_When_TagAndUndefinedAttributes() {
-		this.repository.register(this.mapping & "/create")
+					expect(result).toBeInstanceOf(dotMapping & ".SomeElement")
+					verify(objectHelper, {
+						initialize: {
+							$args: [result, {}],
+							$times: 1
+						}
+					})
+				})
 
-		var attributes = {
-			foo: CreateUniqueId(),
-			bar: CreateGUID(),
-			ref: CreateUniqueId()
-		}
-		var element = this.repository.get("http://neoneo.nl/craft", "tagelement", attributes)
+				it("should inject the content factory into the element", function () {
+					var result = elementFactory.create(dotMapping & ".SomeElement", {})
 
-		assertTrue(IsInstanceOf(element, "TagElement"))
-		assertEquals(attributes.ref, element.ref)
-		assertTrue(element.name === null)
+					$assert.isSameInstance(contentFactory, result.getContentFactory())
+				})
+
+				it("should inject the given attributes into the element", function () {
+					var attributes = {
+						ref: "ref",
+						attribute: "attribute"
+					}
+
+					var result = elementFactory.create(dotMapping & ".SomeElement", attributes)
+
+					verify(objectHelper, {
+						initialize: {
+							$args: [result, attributes],
+							$times: 1
+						}
+					})
+				})
+
+			})
+
+		})
+
 	}
 
 }

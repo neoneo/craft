@@ -92,7 +92,7 @@ component {
 	/**
 	 * Returns whether any of the framework objects have to be constructed (again) in order for the changes to take effect.
 	 */
-	public Boolean function canCommitWithoutConstruction() {
+	public Boolean function isUnobtrusiveCommit() {
 		return this.actions.every(function (object, data) {
 			return !arguments.data.construct;
 		});
