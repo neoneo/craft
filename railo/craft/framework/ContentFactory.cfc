@@ -43,6 +43,10 @@ component {
 		this.componentFinder.removeMapping(arguments.mapping)
 	}
 
+	public void function clearMappings() {
+		this.componentFinder.clear()
+	}
+
 	public Document function createDocument(required LayoutContent layout) {
 		return new Document(arguments.layout);
 	}

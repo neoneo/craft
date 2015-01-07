@@ -12,14 +12,9 @@ component extends="tests.MocktorySpec" {
 			beforeEach(function () {
 				viewFactory = mock("ViewFactory")
 				componentFinder = mock("ClassFinder")
-				objectHelper = mock({
-					$class: "ObjectHelper",
-					initialize: null
-				})
 
 				contentFactory = mock(new ContentFactory(viewFactory))
 					.$property("componentFinder", "this", componentFinder)
-					.$property("objectHelper", "this", objectHelper)
 			})
 
 			describe(".create", function () {
@@ -29,6 +24,11 @@ component extends="tests.MocktorySpec" {
 						$object: componentFinder,
 						get: dotMapping & ".SomeContent"
 					})
+					objectHelper = mock({
+						$class: "ObjectHelper",
+						initialize: null
+					})
+					contentFactory.$property("objectHelper", "this", objectHelper)
 				})
 
 				it("should create the content object", function () {
@@ -43,7 +43,7 @@ component extends="tests.MocktorySpec" {
 					})
 				})
 
-				it("should inject the view factory in the content object", function () {
+				it("should inject the view factory into the content object", function () {
 					var result = contentFactory.create("SomeContent")
 
 					$assert.isSameInstance(viewFactory, result.getViewFactory())
@@ -76,7 +76,7 @@ component extends="tests.MocktorySpec" {
 					})
 
 					contentFactory.addMapping("/some/mapping")
-
+					debug(componentFinder.$callLog())
 					verify(componentFinder, {
 						addMapping: {
 							$args: ["/some/mapping"],
@@ -100,6 +100,25 @@ component extends="tests.MocktorySpec" {
 					verify(componentFinder, {
 						removeMapping: {
 							$args: ["/some/mapping"],
+							$times: 1
+						}
+					})
+				})
+
+			})
+
+			describe(".clearMappings", function () {
+
+				it("should clear the mapping", function () {
+					mock({
+						$object: componentFinder,
+						clear: null
+					})
+
+					contentFactory.clearMappings()
+
+					verify(componentFinder, {
+						clear: {
 							$times: 1
 						}
 					})
