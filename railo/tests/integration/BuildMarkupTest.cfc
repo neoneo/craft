@@ -1,28 +1,28 @@
-import craft.content.*;
+import craft.content.Component;
+import craft.content.Content;
+import craft.content.Document;
+import craft.content.DocumentLayout;
+import craft.content.Layout;
+import craft.content.Placeholder;
+import craft.content.Section;
 
-import craft.markup.*;
+import craft.framework.ContentFactory;
+import craft.framework.DefaultElementFactory;
+import craft.framework.ViewFactory;
 
-import craft.output.*;
+import craft.markup.DirectoryBuilder;
+import craft.markup.FileBuilder;
+import craft.markup.TagRepository;
 
-component extends="mxunit.framework.TestCase" {
+import craft.output.CFMLRenderer;
 
-	public void function beforeTests() {
+component extends="testbox.system.BaseSpec" {
 
-		var templateRenderer = new CFMLRenderer()
-		var viewFactory = new ViewFactory(templateRenderer)
-		var contentFactory = new ContentFactory(viewFactory)
-		contentFactory.addMapping("/craft/content/")
-
-		var factory = new ElementFactory(contentFactory)
-		factory.register("/tests/integration/markup/elements")
-		factory.register("/craft/markup/library")
-
-		this.factory = factory
-
-		this.path = ExpandPath("/tests/integration/markup")
+	function beforeAll() {
+		path = ExpandPath("/tests/integration/markup")
 
 		// The markup tags should result in specific component types.
-		this.types = {
+		types = {
 			composite: GetComponentMetaData("markup.elements.components.Composite").name,
 			leaf: GetComponentMetaData("markup.elements.components.Leaf").name,
 			document: GetComponentMetaData("Document").name,
@@ -31,62 +31,79 @@ component extends="mxunit.framework.TestCase" {
 			placeholder: GetComponentMetaData("Placeholder").name,
 			section: GetComponentMetaData("Section").name
 		}
-
 	}
 
-	public void function FileBuilder_Should_ThrowException_When_ElementIsDependent() {
+	function run() {
 
-		var builder = new FileBuilder(this.factory)
+		describe("Building markup documents", function () {
 
-		var path = this.path & "/content/document.xml"
-		try {
-			var element = builder.build(path)
-			fail("build should have thrown an exception")
-		} catch (InstantiationException e) {}
+			beforeEach(function () {
+				templateRenderer = new CFMLRenderer()
+				viewFactory = new ViewFactory(templateRenderer)
+				contentFactory = new ContentFactory(viewFactory)
+				elementFactory = new DefaultElementFactory(contentFactory)
+				tagRepository = new TagRepository(elementFactory)
 
-	}
+				contentFactory.addMapping("/craft/content/")
+				tagRepository.register("/tests/integration/markup/elements")
+				tagRepository.register("/craft/markup/library")
 
-	public void function DirectoryBuilder_Should_ThrowException_When_ElementIsDependent() {
+			})
 
-		var builder = new DirectoryBuilder(this.factory)
+			describe("using FileBuilder", function () {
 
-		var path = this.path & "/invalid"
-		try {
-			var documents = builder.build(path)
-			fail("build should have thrown an exception")
-		} catch (InstantiationException e) {}
+				it("should throw InstantiationException if the element is dependent on another", function () {
+					var builder = new FileBuilder(tagRepository)
+					var path = path & "/content/document.xml"
 
-	}
+					expect(function () {
+						builder.build(path)
+					}).toThrow("InstantiationException")
+				})
 
-	public void function ElementMarkup() {
+				it("should create an element whose product is the content", function () {
+					var builder = new FileBuilder(tagRepository)
+					var path = path & "/content/element.xml"
 
-		var builder = new FileBuilder(this.factory)
+					var element = builder.build(path)
 
-		var path = this.path & "/content/element.xml"
-		var element = builder.build(path)
+					// The element has constructed a component we're interested in.
+					var component = element.product
 
-		// The element has constructed a component we're interested in.
-		var component = element.product
+					var root = XMLParse(FileRead(path)).xmlRoot
+					expect(isEquivalent(component, root)).toBeTrue()
+				})
 
-		var root = XMLParse(FileRead(path)).xmlRoot
+			})
 
-		assertTrue(isEquivalent(component, root))
+			describe("using DirectoryBuilder", function () {
 
-	}
+				it("should throw InstantiationException if the document is dependent on another", function () {
+					var builder = new DirectoryBuilder(tagRepository)
+					var path = path & "/invalid"
 
-	public void function DocumentMarkup() {
+					expect(function () {
+						builder.build(path)
+					}).toThrow("InstantiationException")
+				})
 
-		// The document depends on a tree of layouts that have to be loaded with a DirectoryBuilder.
-		var builder = new DirectoryBuilder(factory)
+				it("should create an element whose product is the content", function () {
+					// The document depends on a tree of layouts that have to be loaded with a DirectoryBuilder.
+					var builder = new DirectoryBuilder(tagRepository)
+					var path = path & "/documents"
 
-		var path = this.path & "/documents"
-		var documents = builder.build(path)
+					var documents = builder.build(path)
 
-		// Compare the products with the corresponding xml documents.
-		DirectoryList(path, false, "path", "*.xml").each(function (path) {
-			var document = documents[arguments.path].product
-			var root = XMLParse(FileRead(arguments.path)).xmlRoot
-			assertTrue(isEquivalent(document, root))
+					// Compare the products with the corresponding xml documents.
+					DirectoryList(path, false, "path", "*.xml").each(function (path) {
+						var document = documents[arguments.path].product
+						var root = XMLParse(FileRead(arguments.path)).xmlRoot
+						expect(isEquivalent(document, root)).toBeTrue()
+					})
+				})
+
+			})
+
 		})
 
 	}
@@ -96,21 +113,21 @@ component extends="mxunit.framework.TestCase" {
 		var tagName = arguments.node.xmlName.replace(arguments.node.xmlNsPrefix & ":", "")
 
 		// The content should be of the type specified.
-		var type = this.types[tagName]
+		var type = types[tagName]
 		if (!IsInstanceOf(arguments.content, type)) {
-			Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# does not produce a component of type #type#")
+			Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# does not produce a component of type #type#");
 		}
 
 		if (tagName == "composite" || tagName == "leaf") {
 			// The ref attribute should have been passed on to the component.
 			if (arguments.node.xmlAttributes.ref != arguments.content.ref) {
-				Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# does not produce a component with this ref")
+				Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# does not produce a component with this ref");
 			}
 		}
 
 		// This function can only test cases where nodes and components are in a one to one correspondence.
 		var children = null
-		if (IsInstanceOf(arguments.content, "craft.content.Component")) {
+		if (IsInstanceOf(arguments.content, "Component")) {
 			if (arguments.content.hasChildren) {
 				var children = arguments.content.children
 			}
@@ -125,7 +142,7 @@ component extends="mxunit.framework.TestCase" {
 		} else if (tagName == "section") {
 			var children = arguments.content.components
 		} else {
-			Throw("Unknown content instance: #tagName#")
+			Throw("Unknown content instance: #tagName#");
 		}
 
 		if (children !== null) {
@@ -135,7 +152,7 @@ component extends="mxunit.framework.TestCase" {
 				return isEquivalent(arguments.child, nodes[arguments.index])
 			})
 		} else {
-			return true
+			return true;
 		}
 	}
 
