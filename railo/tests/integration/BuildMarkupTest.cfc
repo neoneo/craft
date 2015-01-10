@@ -1,4 +1,3 @@
-import craft.content.Component;
 import craft.content.Content;
 import craft.content.Document;
 import craft.content.DocumentLayout;
@@ -19,17 +18,18 @@ import craft.output.CFMLRenderer;
 component extends="testbox.system.BaseSpec" {
 
 	function beforeAll() {
-		path = ExpandPath("/tests/integration/markup")
+		mapping = "/tests/integration/markup"
+		path = ExpandPath(mapping)
 
 		// The markup tags should result in specific component types.
 		types = {
-			composite: GetComponentMetaData("markup.elements.components.Composite").name,
-			leaf: GetComponentMetaData("markup.elements.components.Leaf").name,
-			document: GetComponentMetaData("Document").name,
-			documentlayout: GetComponentMetaData("DocumentLayout").name,
-			layout: GetComponentMetaData("Layout").name,
-			placeholder: GetComponentMetaData("Placeholder").name,
-			section: GetComponentMetaData("Section").name
+			composite: GetComponentMetadata("markup.components.Composite").name,
+			leaf: GetComponentMetadata("markup.components.Leaf").name,
+			document: GetComponentMetadata("Document").name,
+			documentlayout: GetComponentMetadata("DocumentLayout").name,
+			layout: GetComponentMetadata("Layout").name,
+			placeholder: GetComponentMetadata("Placeholder").name,
+			section: GetComponentMetadata("Section").name
 		}
 	}
 
@@ -44,17 +44,16 @@ component extends="testbox.system.BaseSpec" {
 				elementFactory = new DefaultElementFactory(contentFactory)
 				tagRepository = new TagRepository(elementFactory)
 
-				contentFactory.addMapping("/craft/content/")
-				tagRepository.register("/tests/integration/markup/elements")
+				contentFactory.addMapping(mapping & "/components")
+				tagRepository.register(mapping & "/elements")
 				tagRepository.register("/craft/markup/library")
-
 			})
 
 			describe("using FileBuilder", function () {
 
-				it("should throw InstantiationException if the element is dependent on another", function () {
+				it("should throw InstantiationException if the document depends on another element", function () {
 					var builder = new FileBuilder(tagRepository)
-					var path = path & "/content/document.xml"
+					var path = path & "/content/valid/document.xml"
 
 					expect(function () {
 						builder.build(path)
@@ -63,7 +62,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it("should create an element whose product is the content", function () {
 					var builder = new FileBuilder(tagRepository)
-					var path = path & "/content/element.xml"
+					var path = path & "/content/valid/element.xml"
 
 					var element = builder.build(path)
 
@@ -78,9 +77,9 @@ component extends="testbox.system.BaseSpec" {
 
 			describe("using DirectoryBuilder", function () {
 
-				it("should throw InstantiationException if the document is dependent on another", function () {
+				it("should throw InstantiationException if any document in the directory depends on an unknown element", function () {
 					var builder = new DirectoryBuilder(tagRepository)
-					var path = path & "/invalid"
+					var path = path & "/content/invalid"
 
 					expect(function () {
 						builder.build(path)
@@ -90,7 +89,7 @@ component extends="testbox.system.BaseSpec" {
 				it("should create an element whose product is the content", function () {
 					// The document depends on a tree of layouts that have to be loaded with a DirectoryBuilder.
 					var builder = new DirectoryBuilder(tagRepository)
-					var path = path & "/documents"
+					var path = path & "/content/valid"
 
 					var documents = builder.build(path)
 
@@ -115,19 +114,19 @@ component extends="testbox.system.BaseSpec" {
 		// The content should be of the type specified.
 		var type = types[tagName]
 		if (!IsInstanceOf(arguments.content, type)) {
-			Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# does not produce a component of type #type#");
+			Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# should produce a component of type #type#");
 		}
 
 		if (tagName == "composite" || tagName == "leaf") {
 			// The ref attribute should have been passed on to the component.
 			if (arguments.node.xmlAttributes.ref != arguments.content.ref) {
-				Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# does not produce a component with this ref");
+				Throw("Node #arguments.node.xmlName####arguments.node.xmlAttributes.ref# should produce a component with this ref");
 			}
 		}
 
 		// This function can only test cases where nodes and components are in a one to one correspondence.
 		var children = null
-		if (IsInstanceOf(arguments.content, "Component")) {
+		if (IsInstanceOf(arguments.content, "craft.content.Component")) {
 			if (arguments.content.hasChildren) {
 				var children = arguments.content.children
 			}

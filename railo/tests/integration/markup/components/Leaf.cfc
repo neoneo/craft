@@ -1,4 +1,4 @@
-component extends="craft.content.Composite" accessors="true" {
+component extends="craft.content.Leaf" accessors="true" {
 
 	property String ref;
 
@@ -12,8 +12,8 @@ component extends="craft.content.Composite" accessors="true" {
 		}
 	}
 
-	public String function view(required Context context) {
-		return "composite"
+	public Any function view(required Context context) {
+		return this.getViewFactory().create("leaf")
 	}
 
 }

@@ -14,13 +14,13 @@ component extends="Element" abstract="true" {
 		if (arguments.scope.has(layoutRef)) {
 			var layout = arguments.scope.get(layoutRef)
 
-			if (layout.ready && this.getChildrenReady()) {
+			if (layout.getReady() && this.getChildrenReady()) {
 				var document = this.createDocument(layout.product)
 
 				// The child elements are all section elements. Each section element may contain multiple child elements.
 				this.children.each(function (child) {
 					// Add the section under the placeholder attribute.
-					document.addSection(arguments.child.product, arguments.child.placeholder)
+					document.fillPlaceholder(arguments.child.placeholder, arguments.child.product)
 				})
 
 				this.product = document
