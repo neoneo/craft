@@ -29,6 +29,7 @@ component extends="testbox.system.BaseSpec" {
 				elementFactory = new DefaultElementFactory(contentFactory)
 				tagRepository = new TagRepository(elementFactory)
 
+				templateRenderer.addMapping(mapping & "/templates")
 				contentFactory.addMapping(mapping & "/components")
 				tagRepository.register(mapping & "/elements")
 				tagRepository.register("/craft/markup/library")
@@ -38,31 +39,43 @@ component extends="testbox.system.BaseSpec" {
 				context = CreateObject("Context") // Create a stub.
 			})
 
-			it("should render the content using templates", function () {
-				// Make the templates available.
-				templateRenderer.addMapping(mapping & "/templates")
+			it("should render the element using templates", function () {
+				var builder = new FileBuilder(tagRepository)
+				var path = path & "/content/valid/element.xml"
 
+				var element = builder.build(path)
+				var component = element.product
+
+				var visitor = new RenderVisitor(context)
+				visitor.visitComposite(component)
+
+				dump(visitor.content)
+			})
+
+			it("should render the documents using templates", function () {
 				var path = path & "/content/valid"
 				var documents = builder.build(path)
 
 				for (var name in documents) {
-					var document = documents[name].product
-					var visitor = new RenderVisitor(context)
+					if (!name.endsWith("element.xml")) {
+						var document = documents[name].product
+						var visitor = new RenderVisitor(context)
 
-					switch (GetMetadata(document).name.listLast(".")) {
-						case "Composite":
-							visitor.visitComposite(document)
-							break;
-						case "Layout":
-							visitor.visitLayout(document)
-							break;
-						case "Document":
-						case "DocumentLayout":
-							visitor.visitDocument(document)
-							break;
+						switch (GetMetadata(document).name.listLast(".")) {
+							case "Composite":
+								visitor.visitComposite(document)
+								break;
+							case "Layout":
+								visitor.visitLayout(document)
+								break;
+							case "Document":
+							case "DocumentLayout":
+								visitor.visitDocument(document)
+								break;
 
+						}
+						// dump(var = visitor.content, label = GetMetadata(document).name.listLast("."))
 					}
-					dump(var = visitor.content, label = GetMetadata(document).name.listLast("."))
 				}
 			})
 
