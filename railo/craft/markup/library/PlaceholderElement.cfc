@@ -2,7 +2,7 @@ component extends="ComponentElement" accessors="true" tag="placeholder" {
 
 	property String ref required="true";
 
-	private Component function create() {
+	private Component function createComponent() {
 		return this.getContentFactory().createPlaceholder(this.ref);
 	}
 

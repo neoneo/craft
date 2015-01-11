@@ -183,8 +183,9 @@ component extends="tests.MocktorySpec" {
 						expect(child1.parent).toBeNull()
 
 						// Remove another child. This will now return false.
+						var parent = mock("Composite")
 						var child2 = mock("Component")
-						child2.parent = child1
+						child2.parent = parent
 
 						var success = composite.removeChild(child2)
 
@@ -195,7 +196,7 @@ component extends="tests.MocktorySpec" {
 								$times: 1
 							}
 						})
-						$assert.isSameInstance(child1, child2.parent)
+						$assert.isSameInstance(parent, child2.parent)
 					})
 
 				})

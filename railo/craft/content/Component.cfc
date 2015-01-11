@@ -9,7 +9,7 @@ component implements="Content" accessors="true" {
 
 	property Boolean hasChildren setter="false";
 	property Boolean hasParent setter="false";
-	property Component parent;
+	property Composite parent;
 
 	this.parent = null
 

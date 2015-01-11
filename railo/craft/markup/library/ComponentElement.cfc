@@ -6,13 +6,13 @@ import craft.markup.Scope;
 component extends="Element" abstract="true" {
 
 	public void function construct( Scope scope) {
-		this.product = create()
+		this.product = createComponent()
 	}
 
 	/**
 	 * Creates the `Component`.
 	 */
-	private Component function create() {
+	private Component function createComponent() {
 		abort showerror="Not implemented";
 	}
 

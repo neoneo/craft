@@ -1,6 +1,6 @@
 import craft.util.ScopeCollection;
 
-component extends="CollectionSpec" {
+component extends="CollectionTest" {
 
 	private Collection function createCollection() {
 		return new ScopeCollection()

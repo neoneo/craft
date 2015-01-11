@@ -17,7 +17,7 @@ component extends="tests.MocktorySpec" {
 					.$property("componentFinder", "this", componentFinder)
 			})
 
-			describe(".create", function () {
+			describe(".createComponent", function () {
 
 				beforeEach(function () {
 					mock({
@@ -31,8 +31,8 @@ component extends="tests.MocktorySpec" {
 					contentFactory.$property("objectHelper", "this", objectHelper)
 				})
 
-				it("should create the content object", function () {
-					var result = contentFactory.create("SomeContent")
+				it("should create the component", function () {
+					var result = contentFactory.createComponent("SomeContent")
 
 					expect(result).toBeInstanceOf(dotMapping & ".SomeContent")
 					verify(objectHelper, {
@@ -43,19 +43,19 @@ component extends="tests.MocktorySpec" {
 					})
 				})
 
-				it("should inject the view factory into the content object", function () {
-					var result = contentFactory.create("SomeContent")
+				it("should inject the view factory into the component", function () {
+					var result = contentFactory.createComponent("SomeContent")
 
 					$assert.isSameInstance(viewFactory, result.getViewFactory())
 				})
 
-				it("should inject the given properties into the content object", function () {
+				it("should inject the given properties into the component", function () {
 					var properties = {
 						property1: "property1",
 						property2: "property2"
 					}
 
-					var result = contentFactory.create("SomeContent", properties)
+					var result = contentFactory.createComponent("SomeContent", properties)
 
 					verify(objectHelper, {
 						initialize: {

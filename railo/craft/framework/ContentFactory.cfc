@@ -1,4 +1,4 @@
-import craft.content.Content;
+import craft.content.Component;
 import craft.content.Document;
 import craft.content.DocumentLayout;
 import craft.content.Layout;
@@ -19,7 +19,19 @@ component {
 		this.objectHelper = new ObjectHelper()
 	}
 
-	public Content function create(required String name, Struct properties = {}) {
+	public void function addMapping(required String mapping) {
+		this.componentFinder.addMapping(arguments.mapping)
+	}
+
+	public void function removeMapping(required String mapping) {
+		this.componentFinder.removeMapping(arguments.mapping)
+	}
+
+	public void function clearMappings() {
+		this.componentFinder.clear()
+	}
+
+	public Component function createComponent(required String name, Struct properties = {}) {
 
 		var className = this.componentFinder.get(arguments.name)
 		var component = CreateObject(className)
@@ -33,18 +45,6 @@ component {
 		this.objectHelper.initialize(component, arguments.properties)
 
 		return component;
-	}
-
-	public void function addMapping(required String mapping) {
-		this.componentFinder.addMapping(arguments.mapping)
-	}
-
-	public void function removeMapping(required String mapping) {
-		this.componentFinder.removeMapping(arguments.mapping)
-	}
-
-	public void function clearMappings() {
-		this.componentFinder.clear()
 	}
 
 	public Document function createDocument(required LayoutContent layout) {

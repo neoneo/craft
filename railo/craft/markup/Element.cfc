@@ -2,7 +2,7 @@
  * Represents a markup element.
  * An `Element` constructs a product in one or more steps.
  */
-component accessors="true" abstract="true" {
+component accessors="true" {
 
 	// All elements may have a 'ref' attribute.
 	property String ref;
