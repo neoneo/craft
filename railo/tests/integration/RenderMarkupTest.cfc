@@ -38,14 +38,12 @@ component extends="testbox.system.BaseSpec" {
 				tagRepository.register(mapping & "/elements")
 				tagRepository.register("/craft/markup/library")
 
-				builder = new DirectoryBuilder(tagRepository)
-
 				context = CreateObject("Context") // Create a stub.
 			})
 
 			it("should render the element using templates", function () {
 				var builder = new FileBuilder(tagRepository)
-				var path = path & "/content/template/element.xml"
+				var path = path & "/markup/template/element.xml"
 
 				var element = builder.build(path)
 				var component = element.product
@@ -77,7 +75,7 @@ component extends="testbox.system.BaseSpec" {
 				viewFactory.addMapping(mapping & "/views")
 
 				var builder = new FileBuilder(tagRepository)
-				var path = path & "/content/template/element.xml"
+				var path = path & "/markup/template/element.xml"
 
 				var element = builder.build(path)
 				var component = element.product
@@ -115,7 +113,9 @@ component extends="testbox.system.BaseSpec" {
 			})
 
 			it("should render the documents using templates", function () {
-				var path = path & "/content/template"
+				var builder = new DirectoryBuilder(tagRepository)
+				var path = path & "/markup/template"
+
 				var documents = builder.build(path)
 
 				// We have tested element.xml already in the previous test, so filter that out.
@@ -170,6 +170,97 @@ component extends="testbox.system.BaseSpec" {
 
 				// The document has already filled all placeholders.
 				expect(results["document.xml"]).toBe(document)
+			})
+
+			it("should render the documents using views", function () {
+				viewFactory.addMapping(mapping & "/views")
+
+				var builder = new DirectoryBuilder(tagRepository)
+				var path = path & "/markup/view"
+
+				var documents = builder.build(path)
+
+				var results = documents.filter(function (name) {
+					return !arguments.name == "element.xml";
+				}).map(function (name, element) {
+					// Visit the element and return the content.
+					var document = documents[name].product
+					var visitor = new RenderVisitor(context)
+
+					if (IsInstanceOf(document, "Layout")) {
+						visitor.visitLayout(document)
+					} else if (IsInstanceOf(document, "Document")) {
+						// Document and DocumentLayout.
+						visitor.visitDocument(document)
+					}
+
+					return visitor.content;
+				})
+
+				var layout = {
+					ref: "layout",
+					children: [
+						{
+							ref: "composite1",
+							children: [
+								// placeholder1.1
+							]
+						},
+						{ref: "leaf2"},
+						{
+							ref: "composite3",
+							children: [
+								// placeholder3.1
+							]
+						}
+					]
+				}
+
+				expect(results["layout.xml"]).toBe(layout)
+
+				var documentlayout1 = {
+					ref: "documentlayout1",
+					children: [
+						{ref: "leaf1.1.1"},
+						// placeholder1.1.2
+						{ref: "leaf1.1.3"}
+					]
+				}
+				// documentlayout1 fills placeholder1.1
+				layout.children[1].children.append(documentlayout1)
+				expect(results["documentlayout1.xml"]).toBe(layout)
+
+				var documentlayout2 = {
+					ref: "documentlayout2",
+					children: [
+						{ref: "leaf1.1.2.1"}
+						// placeholder1.1.2.2
+					]
+				}
+				// documentlayout2 fills placeholder1.1.2
+				documentlayout1.children.insertAt(2, documentlayout2)
+				expect(results["documentlayout2.xml"]).toBe(layout)
+
+				// document fills 2 placeholders.
+				var document1 = {
+					ref: "document1",
+					children: [
+						{ref: "leaf1.1.2.2.1"}
+					]
+				}
+				var document2 = {
+					ref: "document2",
+					children: [
+						{ref: "leaf3.1.1"}
+					]
+				}
+
+				// placeholder1.1.2.2 is introduced by documentlayout2.
+				documentlayout2.children.append(document1)
+				// placeholder3.1 is introduced by layout.
+				layout.children[3].children.append(document2)
+
+				expect(results["document.xml"]).toBe(layout)
 			})
 
 		})

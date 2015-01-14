@@ -6,12 +6,12 @@ import craft.markup.Scope;
 /**
  * Base implementation of an element that produces a `Composite`.
  */
-component extends="Element" abstract="true" {
+component extends="ComponentElement" abstract="true" {
 
 	public void function construct(required Scope scope) {
 
 		if (this.getChildrenReady()) {
-			var composite = createComposite()
+			var composite = createComponent()
 
 			this.children.each(function (child) {
 				composite.addChild(arguments.child.product)
@@ -22,10 +22,7 @@ component extends="Element" abstract="true" {
 
 	}
 
-	/**
-	 * Creates the `Composite` to which the children are added.
-	 */
-	private Composite function createComposite() {
+	private Composite function createComponent() {
 		abort showerror="Not implemented";
 	}
 

@@ -9,16 +9,10 @@ component extends="Element" abstract="true" {
 		this.product = createComponent()
 	}
 
-	/**
-	 * Creates the `Component`.
-	 */
 	private Component function createComponent() {
 		abort showerror="Not implemented";
 	}
 
-	/**
-	 * The product of a `ComponentElement` can only be a `Component`.
-	 */
 	public Component function getProduct() {
 		return this.product
 	}

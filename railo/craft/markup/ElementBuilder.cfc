@@ -18,9 +18,6 @@ component {
 		// construct() returns an array of elements whose construction could not complete in one go.
 		var deferred = this.construct(element, localScope)
 
-		// The element may depend on other elements, outside the current scope. Remove it from the deferred elements.
-		deferred.delete(element)
-
 		// Loop through the deferred elements until there are none left. Each turn should diminish the size of the array.
 		while (!deferred.isEmpty()) {
 			var count = deferred.len()
@@ -41,7 +38,7 @@ component {
 			}
 		}
 
-		// If the element is not ready yet, give it one more try. Just in case it was waiting for some other deferred element.
+		// If the element is not ready yet, give it one more try. Just in case it was waiting for some descendant element.
 		if (!element.ready) {
 			element.construct(localScope)
 		}
@@ -113,10 +110,14 @@ component {
 
 		arguments.element.construct(arguments.scope)
 
-		if (!arguments.element.ready) {
-			deferred.append(arguments.element)
-		} else {
-			arguments.scope.put(arguments.element)
+		// The root element may depend on other elements, outside the current scope, so don't push it on the deferred elements array.
+		// Neither put it in the current scope.
+		if (arguments.element.hasParent) {
+			if (!arguments.element.ready) {
+				deferred.append(arguments.element)
+			} else {
+				arguments.scope.put(arguments.element)
+			}
 		}
 
 		return deferred;

@@ -173,11 +173,11 @@ component extends="mxunit.framework.TestCase" {
 
 		var expected = {
 			component: "composite1",
-			__content__: [
+			__children__: [
 				{component: "leaf1"},
 				{
 					component: "composite",
-					__content__: [
+					__children__: [
 						{component: "leaf1"},
 						{component: "p"},
 						{component: "leaf2"},
@@ -186,7 +186,7 @@ component extends="mxunit.framework.TestCase" {
 				},
 				{
 					component: "composite2",
-					__content__: [
+					__children__: [
 						{component: "p2"},
 						{component: "leaf2"},
 						{component: "leaf3"}

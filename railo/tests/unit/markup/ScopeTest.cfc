@@ -92,17 +92,17 @@ component extends="tests.MocktorySpec" {
 					})
 				})
 
-				describe(".put", function () {
+				// describe(".put", function () {
 
-					it("should throw AlreadyBoundException if an element with that ref exists in the parent", function () {
-						parent.put(element1)
+				// 	it("should throw AlreadyBoundException if an element with that ref exists in the parent", function () {
+				// 		parent.put(element1)
 
-						expect(function () {
-							scope.put(element2)
-						}).toThrow("AlreadyBoundException")
-					})
+				// 		expect(function () {
+				// 			scope.put(element2)
+				// 		}).toThrow("AlreadyBoundException")
+				// 	})
 
-				})
+				// })
 
 				describe(".has", function () {
 

@@ -19,10 +19,11 @@ component extends="tests.MocktorySpec" {
 
 				describe("constructing", function () {
 
-					var create = function (ref) {
+					var create = function (ref, hasParent) {
 						var element = mock({
 							$class: "Element",
 							ref: arguments.ref,
+							hasParent: arguments.hasParent,
 							construct: function () {
 								element.constructed = true
 							},
@@ -35,7 +36,7 @@ component extends="tests.MocktorySpec" {
 					}
 
 					beforeEach(function () {
-						element = create("ref")
+						element = create("ref", false)
 						mock({
 							$object: elementBuilder,
 							instantiate: function () {
@@ -68,9 +69,9 @@ component extends="tests.MocktorySpec" {
 
 						beforeEach(function () {
 							element.children = [
-								create("child1"),
-								create("child2"),
-								create("child3"),
+								create("child1", true),
+								create("child2", true),
+								create("child3", true),
 							]
 						})
 
@@ -102,14 +103,15 @@ component extends="tests.MocktorySpec" {
 							beforeEach(function () {
 								// Add some elements that wait for other elements to be constructed first.
 								children = element.children
+								var parent = children[2]
 								grandchildren = [
-									create("grandchild1"),
-									create("grandchild2"),
-									create("grandchild3")
+									create("grandchild1", true),
+									create("grandchild2", true),
+									create("grandchild3", true)
 								]
-								children[2].children = grandchildren
+								parent.children = grandchildren
 
-								until = children[2].children[3] // The last element to be traversed.
+								until = parent.children[3] // The last element to be traversed.
 								// The first deferred waits for the last child to finish.
 								deferred1 = mock({
 									$class: "Element",
