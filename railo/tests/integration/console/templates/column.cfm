@@ -1,5 +1,5 @@
 <cfoutput>
 	<column span="#span#">
-		#__content__.toList("")#
+		#__children__.toList("")#
 	</column>
 </cfoutput>

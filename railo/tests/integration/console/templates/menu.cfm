@@ -1,3 +1,3 @@
 <menu>
-	<cfoutput>#__content__.toList("")#</cfoutput>
+	<cfoutput>#__children__.toList("")#</cfoutput>
 </menu>

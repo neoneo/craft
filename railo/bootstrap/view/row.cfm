@@ -1,3 +1,3 @@
 <div class="row">
-	<cfoutput>#__content__.toList()#</cfoutput>
+	<cfoutput>#__children__.toList()#</cfoutput>
 </div>

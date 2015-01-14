@@ -1,1 +1,1 @@
-<cfoutput>#component#,#__content__.toList()#,#component#</cfoutput>
+<cfoutput>#component#,#__children__.toList()#,#component#</cfoutput>
