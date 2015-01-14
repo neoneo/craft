@@ -17,6 +17,8 @@ component {
 		this.viewFactory = arguments.viewFactory
 		this.componentFinder = new ClassFinder()
 		this.objectHelper = new ObjectHelper()
+
+		this.componentTrait = new trait.Component()
 	}
 
 	public void function addMapping(required String mapping) {
@@ -37,9 +39,7 @@ component {
 		var component = CreateObject(className)
 
 		// Inject the view factory.
-		component.setViewFactory = this.__setViewFactory__
-		component.getViewFactory = this.__getViewFactory__
-
+		this.objectHelper.mixin(component, this.componentTrait)
 		component.setViewFactory(this.viewFactory)
 
 		this.objectHelper.initialize(component, arguments.properties)
@@ -65,17 +65,6 @@ component {
 
 	public Section function createSection() {
 		return new Section();
-	}
-
-	// Methods to be injected in new instances.
-
-	private void function __setViewFactory__(required ViewFactory viewFactory) {
-		this.viewFactory = arguments.viewFactory
-		StructDelete(this, "setViewFactory")
-	}
-
-	private ViewFactory function __getViewFactory__() {
-		return this.viewFactory;
 	}
 
 }

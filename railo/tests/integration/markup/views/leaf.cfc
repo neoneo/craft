@@ -1,7 +1,9 @@
-component implements="craft.output.View" {
+component extends="craft.output.View" {
 
 	public Any function render(required Any model) {
-		return arguments.model
+		return {
+			ref: arguments.model.ref
+		}
 	}
 
 }

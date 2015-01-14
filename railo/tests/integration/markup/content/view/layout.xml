@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<layout xmlns="http://neoneo.nl/craft" xmlns:t="http://neoneo.nl/craft/test" ref="layout">
+	<!-- Layouts returning complex data may only contain one item. Its section has no view so it cannot combine complex content. -->
+	<t:composite ref="layout">
+		<t:composite ref="composite1">
+			<placeholder ref="placeholder1.1" />
+		</t:composite>
+		<t:leaf ref="leaf2" />
+		<t:composite ref="composite3">
+			<placeholder ref="placeholder3.1" />
+		</t:composite>
+	</t:composite>
+</layout>

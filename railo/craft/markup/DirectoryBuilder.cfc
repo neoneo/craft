@@ -15,7 +15,7 @@ component {
 
 		DirectoryList(arguments.path, false, "path", "*.xml").each(function (path) {
 			var document = XMLParse(FileRead(arguments.path))
-			var element = elements[arguments.path] = this.elementBuilder.build(document)
+			var element = elements[arguments.path.listLast(server.separator.file)] = this.elementBuilder.build(document)
 			if (element.ready) {
 				this.scope.put(element)
 			}

@@ -143,16 +143,54 @@ component extends="testbox.system.BaseSpec" {
 
 			describe(".collectProperties", function () {
 
-				it("should return the properties defined in the class and its superclasses", function () {
+				it("should return the property metadata defined in the class and its superclasses", function () {
 					var metadata = GetComponentMetadata("classes.SubSubClass")
 					var properties = objectHelper.collectProperties(metadata)
+						.sort(function (propertyA, propertyB) {
+							return CompareNoCase(arguments.propertyA.name, arguments.propertyB.name);
+						})
 
-					// The properties are returned in the order of definition, from subclass to superclass
 					expect(properties).toBe([
+						{name: "property1", type: "String"},
 						{name: "property2", type: "String", setter: "yes", default: "property"},
-						{name: "property4", type: "String"},
 						{name: "property3", type: "String"},
-						{name: "property1", type: "String"}
+						{name: "property4", type: "String"}
+					])
+				})
+
+			})
+
+			describe(".collectFunctions", function () {
+
+				it("should return the function metadata defined in the class and its superclasses", function () {
+					var metadata = GetComponentMetadata("classes.SubSubClass")
+					var functions = objectHelper.collectFunctions(metadata)
+						.map(function (metadata) {
+							// For this test we are only interested in the existence of the function with the proper access level.
+							return {
+								name: arguments.metadata.name,
+								access: arguments.metadata.access
+							};
+						})
+						.sort(function (functionA, functionB) {
+							return CompareNoCase(arguments.functionA.name, arguments.functionB.name);
+						})
+
+					expect(functions).toBe([
+						{name: "anotherPublicMethod", access: "public"},
+						{name: "getProperty1", access: "public"},
+						{name: "getProperty2", access: "public"},
+						{name: "getProperty3", access: "public"},
+						{name: "getproperty4", access: "public"},
+						{name: "init", access: "private"},
+						{name: "packageMethod", access: "package"},
+						{name: "privateMethod", access: "private"},
+						{name: "publicMethod", access: "private"},
+						{name: "remoteMethod", access: "remote"},
+						{name: "setProperty1", access: "public"},
+						{name: "setProperty2", access: "public"},
+						{name: "setProperty3", access: "public"},
+						{name: "setProperty4", access: "public"}
 					])
 				})
 

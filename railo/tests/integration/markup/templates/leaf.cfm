@@ -1,1 +1,1 @@
-<cfoutput>#component#</cfoutput>
+<cfoutput>#ref#</cfoutput>

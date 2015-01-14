@@ -1,3 +1,7 @@
+import craft.content.Composite;
+import craft.content.Document;
+import craft.content.Layout;
+
 import craft.framework.ContentFactory;
 import craft.framework.DefaultElementFactory;
 import craft.framework.ViewFactory;
@@ -41,7 +45,7 @@ component extends="testbox.system.BaseSpec" {
 
 			it("should render the element using templates", function () {
 				var builder = new FileBuilder(tagRepository)
-				var path = path & "/content/valid/element.xml"
+				var path = path & "/content/template/element.xml"
 
 				var element = builder.build(path)
 				var component = element.product
@@ -49,38 +53,133 @@ component extends="testbox.system.BaseSpec" {
 				var visitor = new RenderVisitor(context)
 				visitor.visitComposite(component)
 
-				dump(visitor.content)
+				// The content should be the concatenation of all refs, in depth first order.
+				// Empty composites result in an empty sublist.
+				var expected = "root" &
+						"leaf1" &
+						"composite2" &
+							"composite2.1" &
+								"leaf2.1.1" &
+								"leaf2.1.2" &
+							"composite2.1" &
+							"leaf2.2" &
+							"composite2.3" &
+								"" &
+							"composite2.3" &
+						"composite2" &
+						"leaf3" &
+					"root"
+
+				expect(visitor.content).toBe(expected)
+			})
+
+			it("should render the element using views", function () {
+				viewFactory.addMapping(mapping & "/views")
+
+				var builder = new FileBuilder(tagRepository)
+				var path = path & "/content/template/element.xml"
+
+				var element = builder.build(path)
+				var component = element.product
+
+				var visitor = new RenderVisitor(context)
+				visitor.visitComposite(component)
+
+				// The views just return the model they receive. It contains the ref and children if applicable.
+				var expected = {
+					ref: "root",
+					children: [
+						{ref: "leaf1"},
+						{
+							ref: "composite2",
+							children: [
+								{
+									ref: "composite2.1",
+									children: [
+										{ref: "leaf2.1.1"},
+										{ref: "leaf2.1.2"}
+									]
+								},
+								{ref: "leaf2.2"},
+								{
+									ref: "composite2.3",
+									children: []
+								}
+							]
+						},
+						{ref: "leaf3"}
+					]
+				}
+
+				expect(visitor.content).toBe(expected)
 			})
 
 			it("should render the documents using templates", function () {
-				var path = path & "/content/valid"
+				var path = path & "/content/template"
 				var documents = builder.build(path)
 
-				for (var name in documents) {
-					if (!name.endsWith("element.xml")) {
-						var document = documents[name].product
-						var visitor = new RenderVisitor(context)
+				// We have tested element.xml already in the previous test, so filter that out.
+				var results = documents.filter(function (name) {
+					return !arguments.name == "element.xml";
+				}).map(function (name, element) {
+					// Visit the element and return the content.
+					var document = documents[name].product
+					var visitor = new RenderVisitor(context)
 
-						switch (GetMetadata(document).name.listLast(".")) {
-							case "Composite":
-								visitor.visitComposite(document)
-								break;
-							case "Layout":
-								visitor.visitLayout(document)
-								break;
-							case "Document":
-							case "DocumentLayout":
-								visitor.visitDocument(document)
-								break;
-
-						}
-						// dump(var = visitor.content, label = GetMetadata(document).name.listLast("."))
+					if (IsInstanceOf(document, "Layout")) {
+						visitor.visitLayout(document)
+					} else if (IsInstanceOf(document, "Document")) {
+						// Document and DocumentLayout.
+						visitor.visitDocument(document)
 					}
-				}
+
+					return visitor.content;
+				})
+
+				// The documents are nested layouts. Create strings with placeholders in the proper places, and replace them for each expectation.
+				var layout = "composite1" &
+						"placeholder1.1" &
+					"composite1" &
+					"leaf2" &
+					"composite3" &
+						"placeholder3.1" &
+					"composite3"
+				// documentlayout1.xml fills placeholder1.1 and introduces placeholder1.1.2
+				var documentlayout1 = fill(layout, {
+					"placeholder1.1": "leaf1.1.1" & "placeholder1.1.2" & "leaf1.1.3"
+				})
+				// documentlayout2.xml fills placeholder1.1.2 and introduces placeholder1.1.2.2
+				var documentlayout2 = fill(documentlayout1, {
+					"placeholder1.1.2": "leaf1.1.2.1" & "placeholder1.1.2.2"
+				})
+				// document.xml fills placeholder 1.1.2.2 and placeholder3.1
+				var document = fill(documentlayout2, {
+					"placeholder1.1.2.2": "leaf1.1.2.2.1",
+					"placeholder3.1": "leaf3.1.1"
+				})
+
+				// Any unused placeholders will be empty.
+				layout = fill(layout, {"placeholder1.1": "", "placeholder3.1": ""})
+				expect(results["layout.xml"]).toBe(layout)
+
+				documentlayout1 = fill(documentlayout1, {"placeholder1.1.2": "", "placeholder3.1": ""})
+				expect(results["documentlayout1.xml"]).toBe(documentlayout1)
+
+				documentlayout2 = fill(documentlayout2, {"placeholder1.1.2.2": "", "placeholder3.1": ""})
+				expect(results["documentlayout2.xml"]).toBe(documentlayout2)
+
+				// The document has already filled all placeholders.
+				expect(results["document.xml"]).toBe(document)
 			})
 
 		})
 
+	}
+
+	private String function fill(required String content, required Struct placeholders) {
+		return arguments.placeholders.reduce(function (result, placeholder, content) {
+			return arguments.result.replace(arguments.placeholder, arguments.content);
+		}, arguments.content);
 	}
 
 }

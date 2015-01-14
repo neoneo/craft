@@ -8,7 +8,7 @@ component extends="craft.content.Composite" accessors="true" {
 
 	public Struct function process(required Context context) {
 		return {
-			component: getRef()
+			ref: getRef()
 		}
 	}
 

@@ -43,7 +43,7 @@ component implements="Visitor" accessors="true" {
 
 		if (view !== null) {
 			// Put the content of the children on the model so the view can include it.
-			model.__content__ = this.output
+			model.__children__ = this.output
 			this.content = view.render(model)
 			// Append the generated content on the 'parent' output array.
 			output.append(this.content)
