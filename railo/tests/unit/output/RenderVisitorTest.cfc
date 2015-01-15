@@ -174,7 +174,7 @@ component extends="tests.MocktorySpec" {
 
 			describe(".visitLayout", function () {
 
-				it("should forward the call to its section", function () {
+				it("should let its section process the request", function () {
 					var section = mock({
 						$class: "Section",
 						accept: {
@@ -194,33 +194,9 @@ component extends="tests.MocktorySpec" {
 
 			})
 
-			describe(".visitDocument", function () {
-
-				it("should forward the call to its layout", function () {
-					var layout = mock({
-						$class: "Layout",
-						accept: {
-							$args: [visitor],
-							$times: 1
-						}
-					})
-					var document = mock({
-						$class: "Document",
-						layout: layout
-					})
-					// Somehow, the sections don't exist unless we access them
-					document.sections
-
-					visitor.visitDocument(document)
-
-					verify(layout)
-				})
-
-			})
-
 			describe(".visitPlaceholder", function () {
 
-				it("should forward the call to the section if a matching section exists", function () {
+				it("should let the corresponding section process the request if that section exists", function () {
 					var section = mock({
 						$class: "Section",
 						accept: null
@@ -263,7 +239,7 @@ component extends="tests.MocktorySpec" {
 
 			describe(".visitDocument", function () {
 
-				it("should forward the call to its layout", function () {
+				it("should let its layout process the request", function () {
 					var layout = mock({
 						$class: "Layout",
 						accept: {
