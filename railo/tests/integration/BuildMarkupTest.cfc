@@ -53,7 +53,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it("should throw InstantiationException if the document depends on another element", function () {
 					var builder = new FileBuilder(tagRepository)
-					var path = path & "/content/valid/document.xml"
+					var path = path & "/markup/template/document.xml"
 
 					expect(function () {
 						builder.build(path)
@@ -62,7 +62,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it("should create an element whose product is the content", function () {
 					var builder = new FileBuilder(tagRepository)
-					var path = path & "/content/valid/element.xml"
+					var path = path & "/markup/template/element.xml"
 
 					var element = builder.build(path)
 
@@ -79,7 +79,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it("should throw InstantiationException if any document in the directory depends on an unknown element", function () {
 					var builder = new DirectoryBuilder(tagRepository)
-					var path = path & "/content/invalid"
+					var path = path & "/markup/invalid"
 
 					expect(function () {
 						builder.build(path)
@@ -89,13 +89,15 @@ component extends="testbox.system.BaseSpec" {
 				it("should create an element whose product is the content", function () {
 					// The document depends on a tree of layouts that have to be loaded with a DirectoryBuilder.
 					var builder = new DirectoryBuilder(tagRepository)
-					var path = path & "/content/valid"
+					var path = path & "/markup/template"
 
 					var documents = builder.build(path)
 
+					expect(documents).notToBeEmpty()
+
 					// Compare the products with the corresponding xml documents.
 					DirectoryList(path, false, "path", "*.xml").each(function (path) {
-						var document = documents[arguments.path].product
+						var document = documents[arguments.path.listLast(server.separator.file)].product
 						var root = XMLParse(FileRead(arguments.path)).xmlRoot
 						expect(isEquivalent(document, root)).toBeTrue()
 					})

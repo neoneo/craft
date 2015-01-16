@@ -1,7 +1,3 @@
-import craft.content.Composite;
-import craft.content.Document;
-import craft.content.Layout;
-
 import craft.framework.ContentFactory;
 import craft.framework.DefaultElementFactory;
 import craft.framework.ViewFactory;
@@ -126,12 +122,7 @@ component extends="testbox.system.BaseSpec" {
 					var document = documents[name].product
 					var visitor = new RenderVisitor(context)
 
-					if (IsInstanceOf(document, "Layout")) {
-						visitor.visitLayout(document)
-					} else if (IsInstanceOf(document, "Document")) {
-						// Document and DocumentLayout.
-						visitor.visitDocument(document)
-					}
+					document.accept(visitor)
 
 					return visitor.content;
 				})
