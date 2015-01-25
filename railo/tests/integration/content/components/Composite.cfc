@@ -13,7 +13,7 @@ component extends="craft.content.Composite" accessors="true" {
 	}
 
 	public View function view(required Context context) {
-		return this.viewFactory.create("composite")
+		return this.viewRepository.create("composite")
 	}
 
 }

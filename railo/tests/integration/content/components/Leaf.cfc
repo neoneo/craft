@@ -13,7 +13,7 @@ component extends="craft.content.Leaf" accessors="true" {
 	}
 
 	public View function view(required Context context) {
-		return this.viewFactory.create("leaf")
+		return this.viewRepository.create("leaf")
 	}
 
 }

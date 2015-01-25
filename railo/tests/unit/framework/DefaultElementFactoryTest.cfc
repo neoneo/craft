@@ -10,13 +10,7 @@ component extends="tests.MocktorySpec" {
 		describe("DefaultElementFactory", function () {
 
 			beforeEach(function () {
-				contentFactory = mock("ContentFactory")
-				objectHelper = mock({
-					$class: "ObjectHelper",
-					initialize: null
-				})
-				elementFactory = mock(new DefaultElementFactory(contentFactory))
-					.$property("objectHelper", "this", objectHelper)
+				elementFactory = new DefaultElementFactory()
 			})
 
 			describe(".create", function () {
@@ -25,18 +19,6 @@ component extends="tests.MocktorySpec" {
 					var result = elementFactory.create(dotMapping & ".SomeElement", {})
 
 					expect(result).toBeInstanceOf(dotMapping & ".SomeElement")
-					verify(objectHelper, {
-						initialize: {
-							$args: [result, {}],
-							$times: 1
-						}
-					})
-				})
-
-				it("should inject the content factory into the element", function () {
-					var result = elementFactory.create(dotMapping & ".SomeElement", {})
-
-					$assert.isSameInstance(contentFactory, result.getContentFactory())
 				})
 
 				it("should inject the given attributes into the element", function () {
@@ -47,12 +29,9 @@ component extends="tests.MocktorySpec" {
 
 					var result = elementFactory.create(dotMapping & ".SomeElement", attributes)
 
-					verify(objectHelper, {
-						initialize: {
-							$args: [result, attributes],
-							$times: 1
-						}
-					})
+					expect(result).toBeInstanceOf(dotMapping & ".SomeElement")
+					expect(result.ref).toBe(attributes.ref)
+					expect(result.attribute).toBe(attributes.attribute)
 				})
 
 			})

@@ -1,18 +1,17 @@
+import craft.request.Context;
+
 component extends="View" {
 
-	public void function init(required String template, Struct properties = {}) {
+	public void function init(required TemplateRenderer templateRenderer, required String template) {
+		super.init(arguments.templateRenderer)
 		this.template = arguments.template
-		this.properties = arguments.properties
 	}
 
 	/**
 	 * Renders the view by delegating to the `TemplateRenderer`.
 	 */
-	public String function render(required Any model) {
-
-		var model = IsStruct(arguments.model) ? arguments.model.append(this.properties) : this.properties
-
-		return this.templateRenderer.render(this.template, model);
+	public String function render(required Struct model, required Context context) {
+		return this.templateRenderer.render(this.template, arguments.model);
 	}
 
 }

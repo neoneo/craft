@@ -11,8 +11,9 @@ component extends="tests.MocktorySpec" {
 					$class: "Context",
 					requestMethod: "get"
 				})
+				viewRepository = mock("ViewRepository")
 
-				visitor = new RenderVisitor(context)
+				visitor = new RenderVisitor(context, viewRepository)
 			})
 
 			describe(".visitLeaf", function () {
@@ -22,7 +23,7 @@ component extends="tests.MocktorySpec" {
 					var view = mock({
 						$class: "View",
 						render: {
-							$args: [model],
+							$args: [model, context],
 							$returns: "done",
 							$times: 1
 						}
@@ -36,6 +37,14 @@ component extends="tests.MocktorySpec" {
 						},
 						view: {
 							$args: [context],
+							$returns: "view",
+							$times: 1
+						}
+					})
+					mock({
+						$object: viewRepository,
+						get: {
+							$args: ["view"],
 							$returns: view,
 							$times: 1
 						}
@@ -45,6 +54,7 @@ component extends="tests.MocktorySpec" {
 					visitor.visitLeaf(leaf)
 
 					verify(leaf)
+					verify(viewRepository)
 					verify(view)
 
 					// The visitor should make the rendered output ('done') available.
@@ -89,7 +99,6 @@ component extends="tests.MocktorySpec" {
 							$times: 1
 						}
 					})
-
 					var composite = mock({
 						$class: "Composite",
 						process: {
@@ -99,7 +108,7 @@ component extends="tests.MocktorySpec" {
 						},
 						view: {
 							$args: [context],
-							$returns: view,
+							$returns: "view",
 							$times: 1
 						},
 						traverse: {
@@ -107,10 +116,19 @@ component extends="tests.MocktorySpec" {
 							$times: 1
 						}
 					})
+					mock({
+						$object: viewRepository,
+						get: {
+							$args: ["view"],
+							$returns: view,
+							$times: 1
+						}
+					})
 
 					visitor.visitComposite(composite)
 
 					verify(composite)
+					verify(viewRepository)
 					verify(view)
 
 					expect(visitor.content).toBe("done")
@@ -263,7 +281,7 @@ component extends="tests.MocktorySpec" {
 
 			describe(".visitSection", function () {
 
-				it("should result in no content if the section has no components", function () {
+				it("should result in no content if the section contains no components", function () {
 					var section = mock({
 						$class: "Section",
 						traverse: {
@@ -279,15 +297,20 @@ component extends="tests.MocktorySpec" {
 					expect(visitor.content).toBeNull()
 				})
 
-				it("should result in content of any type if the section has a single component", function () {
+				it("should result in content of any type if the section contains a single component", function () {
 					var content = {type: "content"}
+					var view = mock({
+						$class: "View",
+						render: content
+					})
 					var leaf = mock({
 						$class: "Leaf",
 						process: {},
-						view: {
-							$class: "View",
-							render: content
-						}
+						view: "view"
+					})
+					mock({
+						$object: viewRepository,
+						get: view
 					})
 					var section = mock({
 						$class: "Section",
@@ -306,25 +329,40 @@ component extends="tests.MocktorySpec" {
 					expect(visitor.content).toBe(content)
 				})
 
-				it("should result in concatenated content of the components in the section if all components generate string content", function () {
+				it("should result in concatenated of generated content if all components generate string content", function () {
 					var leaves = [
 						mock({
 							$class: "Leaf",
 							process: {},
-							view: {
-								$class: "View",
-								render: "con"
-							}
+							view: "con"
 						}),
 						mock({
 							$class: "Leaf",
 							process: {},
-							view: {
-								$class: "View",
-								render: "tent"
-							}
+							view: "tent"
 						})
 					]
+					mock({
+						$object: viewRepository,
+						get: [
+							{
+								$args: ["con"],
+								$returns: {
+									$class: "View",
+									render: "con"
+								}
+							},
+							{
+								$args: ["tent"],
+								$returns: {
+									$class: "View",
+									// Return a stringifiable object.
+									render: new stubs.StringifiableStub("tent")
+								}
+							}
+						]
+					})
+
 					var section = mock({
 						$class: "Section",
 						traverse: {
@@ -348,20 +386,34 @@ component extends="tests.MocktorySpec" {
 						mock({
 							$class: "Leaf",
 							process: {},
-							view: {
-								$class: "View",
-								render: "content"
-							}
+							view: "string"
 						}),
 						mock({
 							$class: "Leaf",
 							process: {},
-							view: {
-								$class: "View",
-								render: {type: "content"}
-							}
+							view: "struct"
 						})
 					]
+					mock({
+						$object: viewRepository,
+						get: [
+							{
+								$args: ["string"],
+								$returns: {
+									$class: "View",
+									render: "content"
+								}
+							},
+							{
+								$args: ["struct"],
+								$returns: {
+									$class: "View",
+									render: {type: "content"}
+								}
+							}
+						]
+					})
+
 					var section = mock({
 						$class: "Section",
 						traverse: {

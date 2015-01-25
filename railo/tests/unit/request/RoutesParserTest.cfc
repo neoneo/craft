@@ -22,24 +22,17 @@ component extends="tests.MocktorySpec" {
 				beforeEach(function () {
 					root = new PathSegment()
 
-					pathSegmentFactory = mock({
-						$class: "PathSegmentFactory",
-						create: function (pattern, parameterName) {
-							return new PathSegment(pattern, parameterName);
-						}
-					})
-
 					commandFactory = mock({
 						$interface: "CommandFactory",
 						create: function (identifier) {
 							return mock({
 								$interface: "Command",
 								identifier: arguments.identifier
-							})
+							});
 						}
 					})
 
-					parser = new RoutesParser(root, pathSegmentFactory, commandFactory)
+					parser = new RoutesParser(root, commandFactory)
 				})
 
 				it("should throw ParseException if there are not enough words", function () {
@@ -57,12 +50,6 @@ component extends="tests.MocktorySpec" {
 					$assert.isSameInstance(root, pathSegment)
 
 					verifyCommand(root, "GET", "rootcommand")
-
-					verify(pathSegmentFactory, {
-						create: {
-							$times: 0
-						}
-					})
 				})
 
 				it("should parse a one level path", function () {
@@ -75,12 +62,6 @@ component extends="tests.MocktorySpec" {
 					$assert.isSameInstance(root, pathSegment.parent)
 
 					verifyCommand(pathSegment, "GET", "level1command")
-
-					verify(pathSegmentFactory, {
-						create: {
-							$times: 1
-						}
-					})
 				})
 
 				it("should parse a two level path", function () {
@@ -96,12 +77,6 @@ component extends="tests.MocktorySpec" {
 					expect(parent.pattern).toBe("level1")
 
 					$assert.isSameInstance(root, parent.parent)
-
-					verify(pathSegmentFactory, {
-						create: {
-							$times: 2
-						}
-					})
 				})
 
 				it("should parse a path that does not start with a slash", function () {
@@ -130,13 +105,6 @@ component extends="tests.MocktorySpec" {
 					$assert.isSameInstance(root, parent.parent)
 
 					verifyCommand(pathSegment, "GET", "level2command")
-
-					verify(pathSegmentFactory, {
-						create: {
-							$times: 1 // Only level2, we created level1 manually.
-						}
-					})
-
 				})
 
 				it("should parse two routes with different http methods and return the same path segment", function () {
@@ -151,12 +119,6 @@ component extends="tests.MocktorySpec" {
 
 					verifyCommand(pathSegment1, "GET", "getcommand")
 					verifyCommand(pathSegment1, "POST", "postcommand")
-
-					verify(pathSegmentFactory, {
-						create: {
-							$times: 1
-						}
-					})
 				})
 
 				it("should set the parameter if specified using @", function () {

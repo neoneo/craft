@@ -6,14 +6,17 @@ import craft.content.Placeholder;
 import craft.content.Section;
 import craft.content.Visitor;
 
+import craft.output.ViewRepository;
+
 import craft.request.Context;
 
 component implements="Visitor" accessors="true" {
 
 	property Any content setter="false";
 
-	public void function init(required Context context) {
+	public void function init(required Context context, required ViewRepository viewRepository) {
 
+		this.viewRepository = arguments.viewRepository
 		this.context = arguments.context
 
 		// Define state. The following state variables will be modified during component traversal.
@@ -32,19 +35,20 @@ component implements="Visitor" accessors="true" {
 		var output = this.output
 
 		var model = arguments.composite.process(this.context)
-		var view = output !== null ? arguments.composite.view(this.context) : null
+		var viewMapping = output !== null ? arguments.composite.view(this.context) : null
 
 		// Overwrite state. Set output to null if there is no view defined.
 		// As a consequence, children will not be rendered either.
-		this.output = view !== null ? [] : null
+		this.output = viewMapping !== null ? [] : null
 
 		// During traversal, the output of the children will be appended to the output array.
 		arguments.composite.traverse(this)
 
-		if (view !== null) {
+		if (viewMapping !== null) {
 			// Put the content of the children on the model so the view can include it.
 			model.__children__ = this.output
-			this.content = view.render(model)
+			// Get the view and render it using the model.
+			this.content = this.viewRepository.get(viewMapping).render(model, this.context)
 			// Append the generated content on the 'parent' output array.
 			output.append(this.content)
 		}
@@ -72,9 +76,9 @@ component implements="Visitor" accessors="true" {
 
 		// If output is null, rendering the view is useless.
 		if (this.output !== null) {
-			var view = arguments.leaf.view(this.context)
-			if (view !== null) {
-				this.content = view.render(model)
+			var viewMapping = arguments.leaf.view(this.context)
+			if (viewMapping !== null) {
+				this.content = this.viewRepository.get(viewMapping).render(model, this.context)
 				this.output.append(this.content)
 			}
 		}
@@ -117,7 +121,7 @@ component implements="Visitor" accessors="true" {
 			this.content = this.output[1]
 		} else if (this.output.every(
 			function (output) {
-				return IsSimpleValue(arguments.output) || arguments.output === null;
+				return arguments.output === null || IsSimpleValue(arguments.output) || IsInstanceOf(arguments.output, "Stringifiable");
 			}
 		)) {
 			this.content = this.output.toList("")

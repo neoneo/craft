@@ -1,6 +1,4 @@
-import craft.framework.ContentFactory;
 import craft.framework.DefaultElementFactory;
-import craft.framework.ViewFactory;
 
 import craft.markup.DirectoryBuilder;
 import craft.markup.FileBuilder;
@@ -8,6 +6,7 @@ import craft.markup.TagRepository;
 
 import craft.output.CFMLRenderer;
 import craft.output.RenderVisitor;
+import craft.output.ViewRepository;
 
 import craft.request.Context;
 
@@ -24,13 +23,11 @@ component extends="testbox.system.BaseSpec" {
 
 			beforeEach(function () {
 				templateRenderer = new CFMLRenderer()
-				viewFactory = new ViewFactory(templateRenderer)
-				contentFactory = new ContentFactory(viewFactory)
-				elementFactory = new DefaultElementFactory(contentFactory)
+				viewRepository = new ViewRepository(templateRenderer)
+				elementFactory = new DefaultElementFactory()
 				tagRepository = new TagRepository(elementFactory)
 
 				templateRenderer.addMapping(mapping & "/templates")
-				contentFactory.addMapping(mapping & "/components")
 				tagRepository.register(mapping & "/elements")
 				tagRepository.register("/craft/markup/library")
 
@@ -44,7 +41,7 @@ component extends="testbox.system.BaseSpec" {
 				var element = builder.build(path)
 				var component = element.product
 
-				var visitor = new RenderVisitor(context)
+				var visitor = new RenderVisitor(context, viewRepository)
 				visitor.visitComposite(component)
 
 				// The content should be the concatenation of all refs, in depth first order.
@@ -68,7 +65,7 @@ component extends="testbox.system.BaseSpec" {
 			})
 
 			it("should render the element using views", function () {
-				viewFactory.addMapping(mapping & "/views")
+				viewRepository.addMapping(mapping & "/views")
 
 				var builder = new FileBuilder(tagRepository)
 				var path = path & "/markup/template/element.xml"
@@ -76,7 +73,7 @@ component extends="testbox.system.BaseSpec" {
 				var element = builder.build(path)
 				var component = element.product
 
-				var visitor = new RenderVisitor(context)
+				var visitor = new RenderVisitor(context, viewRepository)
 				visitor.visitComposite(component)
 
 				// The views just return the model they receive. It contains the ref and children if applicable.
@@ -120,7 +117,7 @@ component extends="testbox.system.BaseSpec" {
 				}).map(function (name, element) {
 					// Visit the element and return the content.
 					var document = documents[name].product
-					var visitor = new RenderVisitor(context)
+					var visitor = new RenderVisitor(context, viewRepository)
 
 					document.accept(visitor)
 
@@ -164,7 +161,7 @@ component extends="testbox.system.BaseSpec" {
 			})
 
 			it("should render the documents using views", function () {
-				viewFactory.addMapping(mapping & "/views")
+				viewRepository.addMapping(mapping & "/views")
 
 				var builder = new DirectoryBuilder(tagRepository)
 				var path = path & "/markup/view"
@@ -176,7 +173,7 @@ component extends="testbox.system.BaseSpec" {
 				}).map(function (name, element) {
 					// Visit the element and return the content.
 					var document = documents[name].product
-					var visitor = new RenderVisitor(context)
+					var visitor = new RenderVisitor(context, viewRepository)
 
 					if (IsInstanceOf(document, "Layout")) {
 						visitor.visitLayout(document)

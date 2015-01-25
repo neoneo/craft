@@ -12,11 +12,11 @@ component extends="mxunit.framework.TestCase" {
 		var templateRenderer = new CFMLRenderer()
 		templateRenderer.addMapping(this.mapping & "/templates")
 
-		var viewFactory = new ViewFactory(templateRenderer)
-		this.viewFactory = viewFactory
+		var viewRepository = new ViewRepository(templateRenderer)
+		this.viewRepository = viewRepository
 		// We don't add a mapping yet, so that we get template views only.
 
-		this.contentFactory = new ContentFactory(viewFactory)
+		this.contentFactory = new ContentFactory(viewRepository)
 		this.contentFactory.addMapping(this.mapping & "/components")
 
 		this.visitor = new RenderVisitor(context)
@@ -141,7 +141,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function RenderNestedCompositeViewWithPlaceholders() {
 		// The main functionality has been tested in the tests above. The purpose of this test is to test the view component functionality.
-		this.viewFactory.addMapping(this.mapping & "/views")
+		this.viewRepository.addMapping(this.mapping & "/views")
 
 		var section = new Section()
 		section.addComponent(nestedComposite(true))
@@ -208,8 +208,8 @@ component extends="mxunit.framework.TestCase" {
 		// The layout contains placeholders p1, p2 and p3.
 		// Create a 2nd layout that only includes placeholders p1 en p2.
 		var composite = this.contentFactory.create("Composite", {ref: "composite"})
-		composite.addChild(new Placeholder(this.viewFactory, {ref: "p1"}))
-		composite.addChild(new Placeholder(this.viewFactory, {ref: "p2"}))
+		composite.addChild(new Placeholder(this.viewRepository, {ref: "p1"}))
+		composite.addChild(new Placeholder(this.viewRepository, {ref: "p2"}))
 		var section2 = new Section()
 		section2.addComponent(composite)
 		var layout2 = new Layout(section2)
@@ -255,7 +255,7 @@ component extends="mxunit.framework.TestCase" {
 		var composite = this.contentFactory.create("Composite", {ref: "composite"})
 		composite.addChild(this.contentFactory.create("Leaf", {ref: "leaf1"}))
 		if (arguments.placeholder) {
-			composite.addChild(new Placeholder(this.viewFactory, {ref: "p"}))
+			composite.addChild(new Placeholder(this.viewRepository, {ref: "p"}))
 		}
 		composite.addChild(this.contentFactory.create("Leaf", {ref: "leaf2"}))
 		composite.addChild(this.contentFactory.create("Leaf", {ref: "leaf3"}))
@@ -268,12 +268,12 @@ component extends="mxunit.framework.TestCase" {
 		composite1.addChild(this.contentFactory.create("Leaf", {ref: "leaf1"}))
 
 		if (arguments.placeholders) {
-			composite1.addChild(new Placeholder(this.viewFactory, {ref: "p1"}))
+			composite1.addChild(new Placeholder(this.viewRepository, {ref: "p1"}))
 		}
 
 		var composite2 = this.contentFactory.create("Composite", {ref: "composite2"})
 		if (arguments.placeholders) {
-			composite2.addChild(new Placeholder(this.viewFactory, {ref: "p2"}))
+			composite2.addChild(new Placeholder(this.viewRepository, {ref: "p2"}))
 		}
 		composite2.addChild(this.contentFactory.create("Leaf", {ref: "leaf2"}))
 		composite2.addChild(this.contentFactory.create("Leaf", {ref: "leaf3"}))
@@ -281,7 +281,7 @@ component extends="mxunit.framework.TestCase" {
 		composite1.addChild(composite2)
 		composite1.addChild(this.contentFactory.create("Leaf", {ref: "leaf4"}))
 		if (arguments.placeholders) {
-			composite1.addChild(new Placeholder(this.viewFactory, {ref: "p3"}))
+			composite1.addChild(new Placeholder(this.viewRepository, {ref: "p3"}))
 		}
 
 		return composite1;

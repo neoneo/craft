@@ -26,9 +26,9 @@ component implements="Content" accessors="true" {
 	}
 
 	/**
-	 * Returns the `View` that renders this `Component`, or null.
+	 * Returns the mapping for the `View` that renders this `Component`, or null.
 	 */
-	public Any function view(required Context context) {
+	public String function view(required Context context) {
 		abort showerror="Not implemented";
 	}
 

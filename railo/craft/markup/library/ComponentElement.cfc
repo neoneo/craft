@@ -13,8 +13,4 @@ component extends="Element" abstract="true" {
 		abort showerror="Not implemented";
 	}
 
-	public Component function getProduct() {
-		return this.product
-	}
-
 }

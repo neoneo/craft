@@ -37,7 +37,7 @@ component implements="Content" accessors="true" {
 	private Placeholder[] function placeholdersFromComponents(required Component[] components) {
 
 		var placeholders = []
-		arguments.components.each(function (component) {
+		ArrayEach(arguments.components, function (component) {
 			if (IsInstanceOf(arguments.component, "Placeholder")) {
 				placeholders.append(arguments.component)
 			} else if (arguments.component.hasChildren) {

@@ -12,8 +12,8 @@ component extends="craft.content.Composite" accessors="true" {
 		}
 	}
 
-	public Any function view(required Context context) {
-		return this.viewFactory.create("composite")
+	public String function view(required Context context) {
+		return "composite"
 	}
 
 }

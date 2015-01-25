@@ -12,8 +12,8 @@ component extends="craft.content.Leaf" accessors="true" {
 		}
 	}
 
-	public Any function view(required Context context) {
-		return this.viewFactory.create("leaf")
+	public String function view(required Context context) {
+		return "leaf"
 	}
 
 }

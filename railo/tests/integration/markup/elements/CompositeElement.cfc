@@ -1,11 +1,13 @@
-import craft.content.Composite;
+import craft.content.Component;
 
 import craft.markup.Scope;
 
+import tests.integration.markup.components.Composite;
+
 component extends="craft.markup.library.CompositeElement" tag="composite" {
 
-	private Composite function createComponent() {
-		return this.contentFactory.createComponent("Composite", {ref: getRef()})
+	private Component function createComponent() {
+		return new Composite(this.ref)
 	}
 
 }

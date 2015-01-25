@@ -10,7 +10,7 @@ component extends="AbstractDocumentElement" accessors="true" tag="document" {
 	}
 
 	private Document function createDocument(required LayoutContent layoutContent) {
-		return this.getContentFactory().createDocument(arguments.layoutContent);
+		return new Document(arguments.layoutContent);
 	}
 
 }

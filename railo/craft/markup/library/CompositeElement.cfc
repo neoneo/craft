@@ -26,8 +26,4 @@ component extends="ComponentElement" abstract="true" {
 		abort showerror="Not implemented";
 	}
 
-	public Composite function getProduct() {
-		return this.product
-	}
-
 }
