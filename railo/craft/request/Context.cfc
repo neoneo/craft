@@ -1,5 +1,5 @@
 /**
- * The `Context` is passed to `Component`s to provide access to items and parameters pertaining to the request, as well
+ * The `Context` is passed to `Component`s and `View`s to provide access to items and parameters pertaining to the request, as well
  * as some convenience methods.
  */
 component accessors="true" {
@@ -11,11 +11,9 @@ component accessors="true" {
 	property String downloadFile;
 	property Numeric statusCode default="200";
 
-	property Array dependencies setter="false"; // String[]
 	property String extension setter="false";
 	property Struct parameters setter="false";
 	property String path setter="false";
-	property PathSegment pathSegment setter="false";
 	property String requestMethod setter="false";
 
 	public void function init(required Endpoint endpoint, required PathSegment root) {
@@ -23,33 +21,12 @@ component accessors="true" {
 		this.endpoint = arguments.endpoint
 		this.root = arguments.root
 
-		this.extension = arguments.endpoint.extension
-		this.requestMethod = arguments.endpoint.requestMethod
 		this.parameters = arguments.endpoint.requestParameters
-
-		this.contentType = arguments.endpoint.contentType
 		this.path = arguments.endpoint.path
+		this.requestMethod = arguments.endpoint.requestMethod
 
-		// Parse the path. If path segments define parameters, they are appended on the parameters struct.
-		this.pathSegment = null
-		var segments = this.path.listToArray("/")
-
-		if (!segments.isEmpty()) {
-			var lastSegment = segments.last()
-			var extension = lastSegment.listLast(".")
-
-			// The extension cannot be the whole last segment.
-			if (extension != lastSegment && arguments.endpoint.extensions.find(extension) > 0) {
-				// Remove the extension from the last segment.
-				segments[segments.len()] = lastSegment.reReplace("\.[a-z0-9]{3,4}$", "")
-			}
-		}
-
-		// Walk the path to get the path segment that applies to this request.
-		this.walk(segments, arguments.root)
-		if (this.pathSegment === null) {
-			Throw("Path segment not found", "FileNotFoundException");
-		}
+		this.extension = arguments.endpoint.extension(this.path)
+		this.contentType = arguments.endpoint.contentType(this.extension)
 
 		this.dependencies = []
 
@@ -61,44 +38,94 @@ component accessors="true" {
 		return this.endpoint.createURL(argumentCollection: arguments);
 	}
 
-	public void function addDependency(required String dependency) {
-		this.dependencies.append(arguments.dependency)
+	public void function require(required String dependency) {
+		if (this.dependencies.find(arguments.dependency) == 0) {
+			this.dependencies.append(arguments.dependency)
+		}
+	}
+
+	public Any function handleRequest() {
+
+		var segments = this.path.listToArray("/")
+
+		// Remove the extension from the last segment.
+		if (!segments.isEmpty() && !this.extension.isEmpty()) {
+			var lastSegment = segments.last()
+			segments[segments.len()] = lastSegment.reReplace("\.#extension#$", "")
+		}
+
+		// Walk the path to get the path segment that applies to this request.
+		var result = this.root.walk(segments)
+		if (result.target === null) {
+			Throw("Not found", "NotFoundException");
+		}
+
+		// The result contains the target path segment and the parameters introduced by the intermediate path segments.
+		var target = result.target
+		this.parameters.append(result.parameters)
+
+		if (target.hasCommand(this.requestMethod)) {
+			var command = target.command(this.requestMethod)
+			var output = command.execute(this)
+
+			if (this.contentType == "text/html") {
+				for (var dependency in this.dependencies) {
+					htmlhead text="#this.get(dependency)#";
+				}
+			}
+
+			return output;
+		} else {
+			Throw("Method not allowed", "MethodNotAllowedException");
+		}
+
 	}
 
 	/**
-	 * Traverses the path to find the applicable `PathSegment`. When the `PathSegment` is found, any parameters defined by `PathSegment`s
-	 * on the path are available in the parameters.
+	 * Processes an internal request. Such a request is handled the same way as a regular request.
 	 */
-	private void function walk(required String[] path, required PathSegment start) {
+	private Any function request(required String requestMethod, required String path, required Struct parameters) {
 
-		if (arguments.path.isEmpty()) {
-			this.pathSegment = arguments.start
-		} else {
-			var children = arguments.start.children
-			var count = children.len()
-			var i = 1
-			while (this.pathSegment === null && i <= count) {
-				var child = children[i]
-				var segmentCount = child.match(arguments.path)
-				if (segmentCount > 0) {
-					// Remove the number of segments that were matched and walk the remaining path, starting at the child.
-					var remainingPath = segmentCount == arguments.path.len() ? [] : arguments.path.slice(segmentCount + 1)
-					this.walk(remainingPath, child)
+		// Overwrite some of the state to mimick a new request.
+		var contentType = this.contentType
+		var extension = this.extension
+		var parameters = this.parameters
+		var path = this.path
+		var requestMethod = this.requestMethod
 
-					if (this.pathSegment !== null) {
-						// The complete path is traversed so the current path segment is part of the tree.
-						var parameterName = child.parameterName
-						if (parameterName !== null) {
-							// Get the part of the path that was actually matched by the current path segment.
-							this.parameters[parameterName] = arguments.path.slice(1, segmentCount).toList("/")
-						}
-					}
-				}
+		this.parameters = arguments.parameters
+		this.path = arguments.path
+		this.requestMethod = arguments.requestMethod
 
-				i += 1
-			}
-		}
+		this.extension = this.endpoint.extension(arguments.path)
+		this.contentType = this.endpoint.contentType(this.extension)
 
+		var output = this.handleRequest()
+
+		// Revert the state and return the output.
+		this.contentType = contentType
+		this.extension = extension
+		this.parameters = parameters
+		this.path = path
+		this.requestMethod = requestMethod
+
+		return output;
+	}
+
+	public Any function get(required String path, Struct parameters = {}) {
+		return this.request("GET", arguments.path, arguments.parameters);
+	}
+
+	public Any function post(required String path, Struct parameters = {}) {
+		return this.request("POST", arguments.path, arguments.parameters);
+	}
+
+	public Any function put(required String path, Struct parameters = {}) {
+		return this.request("PUT", arguments.path, arguments.parameters);
+	}
+
+	public Any function delete(required String path, Struct parameters = {}) {
+		return this.request("DELETE", arguments.path, arguments.parameters);
 	}
 
 }

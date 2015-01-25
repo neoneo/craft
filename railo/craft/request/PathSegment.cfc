@@ -108,6 +108,41 @@ component accessors="true" {
 
 	}
 
+	/**
+	 * Traverses the path to find the target `PathSegment` corresponding to the path. Returns the pair `PathSegment` and parameters in a struct.
+	 */
+	public Struct function walk(required String[] path) {
+
+		if (arguments.path.isEmpty()) {
+			return {
+				target: this,
+				parameters: {}
+			}
+		} else {
+			for (var child in this.getChildren()) {
+				var count = child.match(arguments.path)
+				if (count > 0) {
+					// Remove the number of segments that were matched and walk the remaining path, starting at the child.
+					var remainingPath = count == arguments.path.len() ? [] : arguments.path.slice(count + 1)
+					var result = child.walk(remainingPath)
+
+					if (result.target !== null) {
+						// The complete path is traversed so the current path segment is part of the tree.
+						var parameterName = child.parameterName
+						if (parameterName !== null) {
+							// Get the part of the path that was actually matched by the current path segment.
+							result.parameters[parameterName] = arguments.path.slice(1, count).toList("/")
+						}
+
+						return result;
+					}
+				}
+			}
+		}
+
+		return {target: null}
+	}
+
 	private Collection function createCollection() {
 		return new ScopeCollection();
 	}

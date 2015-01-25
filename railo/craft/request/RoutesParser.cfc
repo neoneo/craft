@@ -1,8 +1,7 @@
 component {
 
-	public void function init(required PathSegment root, required PathSegmentFactory pathSegmentFactory, required CommandFactory commandFactory) {
+	public void function init(required PathSegment root, required CommandFactory commandFactory) {
 		this.root = arguments.root
-		this.pathSegmentFactory = arguments.pathSegmentFactory
 		this.commandFactory = arguments.commandFactory
 
 		// Array of path segments that correspond to the indents in the routes file.
@@ -146,7 +145,7 @@ component {
 
 			// Try to find a path segment that has this pattern.
 			var children = arguments.pathSegment.children
-			var index = children.find(function (child) {
+			var index = ArrayFind(children, function (child) {
 				return arguments.child.pattern == pattern;
 			})
 			if (index > 0) {
@@ -154,7 +153,7 @@ component {
 				return children[index];
 			} else {
 				// There is no path segment for this pattern, so create it.
-				var child = this.pathSegmentFactory.create(pattern, tokens.parameterName)
+				var child = this.create(pattern, tokens.parameterName)
 				arguments.pathSegment.addChild(child)
 				// Continue with the child for the next iteration.
 				return child;
@@ -173,6 +172,23 @@ component {
 		return pathSegment;
 	}
 
+	private PathSegment function create(required String pattern, String parameterName = null) {
+
+		if (arguments.pattern == "/") {
+			return new RootPathSegment()
+		} else if (arguments.pattern == "*") {
+			return new EntirePathSegment(arguments.parameterName)
+		} else {
+			// If the pattern contains some 'specific' regex character, we assume it is a regex.
+			if (arguments.pattern.findOneOf("[({*+?|") > 0) {
+				return new DynamicPathSegment(arguments.pattern, arguments.parameterName)
+			} else {
+				return new StaticPathSegment(arguments.pattern, arguments.parameterName)
+			}
+		}
+
+	}
+
 	/**
 	 * Removes the `Command` for the route.
 	 */
@@ -188,7 +204,7 @@ component {
 			var pattern = tokens.pattern
 
 			var children = arguments.pathSegment.children
-			var index = children.find(function (child) {
+			var index = ArrayFind(children, function (child) {
 				return arguments.child.pattern == pattern;
 			})
 			if (index == 0) {

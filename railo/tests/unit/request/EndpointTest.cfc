@@ -31,20 +31,36 @@ component extends="tests.MocktorySpec" {
 				})
 			})
 
-			describe(".extension and .contentType", function () {
+			describe(".extension", function () {
 
-				it("should return the pre-defined values, or the default", function () {
-					endpoint.$("getPath", "/path/to/request.json")
-					expect(endpoint.extension).toBe("json")
-					expect(endpoint.contentType).toBe("application/json")
+				it("should return the file extension if it is supported", function () {
+					expect(endpoint.extension("/path/to/request.html")).toBe("html")
+					expect(endpoint.extension("/path/to/request.json")).toBe("json")
+					expect(endpoint.extension("/path/to/request.pdf")).toBe("pdf")
+					expect(endpoint.extension("/path/to/request.txt")).toBe("txt")
+					expect(endpoint.extension("/path/to/request.xml")).toBe("xml")
+				})
 
-					endpoint.$("getPath", "/path/to/request.notexist")
-					expect(endpoint.extension).toBe("html")
-					expect(endpoint.contentType).toBe("text/html")
+				it("should return the empty string if there is no extension or it is not supported", function () {
+					expect(endpoint.extension("/path/to/request")).toBe("")
+					expect(endpoint.extension("/path/to/request.notexist")).toBe("")
+				})
 
-					endpoint.$("getPath", "/path/to/request")
-					expect(endpoint.extension).toBe("html")
-					expect(endpoint.contentType).toBe("text/html")
+			})
+
+			describe(".contentType", function () {
+
+				it("should return the content type if it is recognized", function () {
+					expect(endpoint.contentType("html")).toBe("text/html")
+					expect(endpoint.contentType("json")).toBe("application/json")
+					expect(endpoint.contentType("pdf")).toBe("application/pdf")
+					expect(endpoint.contentType("txt")).toBe("text/plain")
+					expect(endpoint.contentType("xml")).toBe("application/xml")
+				})
+
+				it("should return the html content type if the content type is not recognized", function () {
+					expect(endpoint.contentType("")).toBe("text/html")
+					expect(endpoint.contentType("content/unknown")).toBe("text/html")
 				})
 
 			})

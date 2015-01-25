@@ -1,26 +1,27 @@
 component extends="Collection" {
 
-	this.items = []
+	// The CopyOnWriteArrayList allows concurrent reads without synchronization. It is much slower for writes, but these are expected to be limited.
+	this.items = CreateObject("java", "java.util.concurrent.CopyOnWriteArrayList").init()
 
 	public Boolean function remove(required Any item) {
-		return this.items.delete(arguments.item);
+		return ArrayDelete(this.items, arguments.item);
 	}
 
 	public Boolean function contains(required Any item) {
-		return this.items.find(arguments.item) > 0;
+		return ArrayFind(this.items, arguments.item) > 0;
 	}
 
 	public Boolean function isEmpty() {
-		return this.items.isEmpty();
+		return ArrayIsEmpty(this.items);
 	}
 
 	public Any function select(required Function predicate) {
-		var index = this.items.find(arguments.predicate)
+		var index = ArrayFind(this.items, arguments.predicate)
 		return index > 0 ? this.items[index] : null;
 	}
 
 	public Numeric function size() {
-		return this.items.len();
+		return ArrayLen(this.items);
 	}
 
 	public Array function toArray() {
@@ -28,19 +29,19 @@ component extends="Collection" {
 	}
 
 	private void function append(required Any item) {
-		this.items.append(arguments.item)
+		ArrayAppend(this.items, arguments.item)
 	}
 
 	private void function insertAt(required Numeric index, required Any item) {
-		this.items.insertAt(arguments.index, arguments.item)
+		ArrayInsertAt(this.items, arguments.index, arguments.item)
 	}
 
 	private void function deleteAt(required Numeric index) {
-		this.items.deleteAt(arguments.index)
+		ArrayDeleteAt(this.items, arguments.index)
 	}
 
 	private Numeric function indexOf(required Any item) {
-		return this.items.find(arguments.item);
+		return ArrayFind(this.items, arguments.item);
 	}
 
 }

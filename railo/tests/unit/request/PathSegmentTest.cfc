@@ -1,6 +1,7 @@
 import craft.request.DynamicPathSegment;
 import craft.request.EntirePathSegment;
 import craft.request.PathSegment;
+import craft.request.RootPathSegment;
 import craft.request.StaticPathSegment;
 
 component extends="tests.MocktorySpec" {
@@ -258,6 +259,77 @@ component extends="tests.MocktorySpec" {
 						})
 					})
 
+				})
+
+			})
+
+			describe(".walk", function () {
+
+				beforeEach(function () {
+					// Create a path structure that contains segments using all types of path matchers
+					// FIXME: We're using real objects where mocks should be used.
+					root = new RootPathSegment()
+					index = new StaticPathSegment("index")
+					test1 = new StaticPathSegment("test1", "first")
+					test2 = new StaticPathSegment("test2", "second")
+					entire = new EntirePathSegment("entire")
+
+					mock({
+						$object: root,
+						children: [
+							{
+								$object: index
+							},
+							{
+								$object: test1,
+								children: [
+									{
+										$object: test2
+									}
+								]
+							},
+							{
+								$object: entire
+							}
+						]
+					})
+				})
+
+				it("should return the root path segment if the path is empty", function () {
+					var result = root.walk([])
+					$assert.isSameInstance(root, result.target)
+				})
+
+				it("should return the matching path segment for a path of one segment", function () {
+					var result = root.walk(["index"])
+					$assert.isSameInstance(index, result.target)
+				})
+
+				it("should set the matching path segment and set the request parameter to the matched segment", function () {
+					var result = root.walk(["test1"])
+					$assert.isSameInstance(test1, result.target)
+					var parameters = result.parameters
+					expect(parameters).toHaveKey("first")
+					expect(parameters.first).toBe("test1")
+				})
+
+				it("should set the matching child path segment and set request parameters for the matching segments", function () {
+					var result = root.walk(["test1", "test2"]) // This corresponds to path '/test1/test2'
+					$assert.isSameInstance(test2, result.target)
+					var parameters = result.parameters
+					expect(parameters).toHaveKey("first")
+					expect(parameters.first).toBe("test1")
+					expect(parameters).toHaveKey("second")
+					expect(parameters.second).toBe("test2")
+				})
+
+				it("should continue matching when the path was matched partially", function () {
+					// the test3 segment is not mapped, so the search should move on to the entire path matcher
+					var result = root.walk(["test1", "test2", "test3"])
+					$assert.isSameInstance(entire, result.target)
+					var parameters = result.parameters
+					expect(parameters).toHaveKey("entire")
+					expect(parameters.entire).toBe("test1/test2/test3")
 				})
 
 			})

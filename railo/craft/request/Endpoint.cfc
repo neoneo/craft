@@ -19,14 +19,19 @@ component accessors="true" {
 	this.contextRoot = GetContextRoot()
 	this.extensions = this.contentTypes.keyArray()
 
-	public String function getExtension() {
-		var extension = this.getPath().listLast(".")
+	public String function extension(required String path) {
+		var lastSegment = arguments.path.listLast("/")
+		var extension = lastSegment.listLast(".")
 
-		return this.contentTypes.keyExists(extension) ? extension : "html";
+		if (extension != lastSegment && this.contentTypes.keyExists(extension)) {
+			return extension;
+		}
+
+		return "";
 	}
 
-	public String function getContentType() {
-		return this.contentTypes[this.getExtension()];
+	public String function contentType(required String extension) {
+		return this.contentTypes[arguments.extension] ?: this.contentTypes.html;
 	}
 
 	public String function getPath() {

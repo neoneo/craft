@@ -5,9 +5,7 @@ import craft.content.Layout;
 import craft.content.Placeholder;
 import craft.content.Section;
 
-import craft.framework.ContentFactory;
 import craft.framework.DefaultElementFactory;
-import craft.framework.ViewFactory;
 
 import craft.markup.DirectoryBuilder;
 import craft.markup.FileBuilder;
@@ -39,12 +37,9 @@ component extends="testbox.system.BaseSpec" {
 
 			beforeEach(function () {
 				templateRenderer = new CFMLRenderer()
-				viewFactory = new ViewFactory(templateRenderer)
-				contentFactory = new ContentFactory(viewFactory)
-				elementFactory = new DefaultElementFactory(contentFactory)
+				elementFactory = new DefaultElementFactory()
 				tagRepository = new TagRepository(elementFactory)
 
-				contentFactory.addMapping(mapping & "/components")
 				tagRepository.register(mapping & "/elements")
 				tagRepository.register("/craft/markup/library")
 			})
@@ -148,8 +143,8 @@ component extends="testbox.system.BaseSpec" {
 
 		if (children !== null) {
 			var nodes = arguments.node.xmlChildren
-
-			return children.every(function (child, index) {
+			// children is not a CFML array so no member functions.
+			return ArrayEvery(children, function (child, index) {
 				return isEquivalent(arguments.child, nodes[arguments.index])
 			})
 		} else {
