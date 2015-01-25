@@ -8,10 +8,10 @@ component extends="tests.MocktorySpec" {
 		describe("ElementBuilder", function () {
 
 			beforeEach(function () {
-				tagRepository = mock("TagRepository")
+				tagRegistry = mock("TagRegistry")
 
 				scope = new Scope()
-				elementBuilder = new ElementBuilder(tagRepository, scope)
+				elementBuilder = new ElementBuilder(tagRegistry, scope)
 
 			})
 
@@ -212,7 +212,7 @@ component extends="tests.MocktorySpec" {
 
 					it("should create the element", function () {
 						mock({
-							$object: tagRepository,
+							$object: tagRegistry,
 							get: {
 								$args: ["namespace", "node"],
 								// The node metadata is a regular struct.
@@ -241,7 +241,7 @@ component extends="tests.MocktorySpec" {
 
 					it("should create the element with the attributes defined in the tag metadata", function () {
 						mock({
-							$object: tagRepository,
+							$object: tagRegistry,
 							get: {
 								$args: ["namespace", "node"],
 								$returns: {
@@ -275,7 +275,7 @@ component extends="tests.MocktorySpec" {
 
 					it("should create the tree of elements", function () {
 						mock({
-							$object: tagRepository,
+							$object: tagRegistry,
 							get: {
 								$args: ["namespace", "node"],
 								// The node metadata is a regular struct.
@@ -342,7 +342,7 @@ component extends="tests.MocktorySpec" {
 
 						beforeEach(function () {
 							mock({
-								$object: tagRepository,
+								$object: tagRegistry,
 								get: {
 									$args: ["namespace", "node"],
 									$returns: {

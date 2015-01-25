@@ -2,7 +2,7 @@ import craft.framework.DefaultElementFactory;
 
 import craft.markup.DirectoryBuilder;
 import craft.markup.FileBuilder;
-import craft.markup.TagRepository;
+import craft.markup.TagRegistry;
 
 import craft.output.CFMLRenderer;
 import craft.output.RenderVisitor;
@@ -25,17 +25,17 @@ component extends="testbox.system.BaseSpec" {
 				templateRenderer = new CFMLRenderer()
 				viewRepository = new ViewRepository(templateRenderer)
 				elementFactory = new DefaultElementFactory()
-				tagRepository = new TagRepository(elementFactory)
+				tagRegistry = new TagRegistry(elementFactory)
 
 				templateRenderer.addMapping(mapping & "/templates")
-				tagRepository.register(mapping & "/elements")
-				tagRepository.register("/craft/markup/library")
+				tagRegistry.register(mapping & "/elements")
+				tagRegistry.register("/craft/markup/library")
 
 				context = CreateObject("Context") // Create a stub.
 			})
 
 			it("should render the element using templates", function () {
-				var builder = new FileBuilder(tagRepository)
+				var builder = new FileBuilder(tagRegistry)
 				var path = path & "/markup/template/element.xml"
 
 				var element = builder.build(path)
@@ -67,7 +67,7 @@ component extends="testbox.system.BaseSpec" {
 			it("should render the element using views", function () {
 				viewRepository.addMapping(mapping & "/views")
 
-				var builder = new FileBuilder(tagRepository)
+				var builder = new FileBuilder(tagRegistry)
 				var path = path & "/markup/template/element.xml"
 
 				var element = builder.build(path)
@@ -106,7 +106,7 @@ component extends="testbox.system.BaseSpec" {
 			})
 
 			it("should render the documents using templates", function () {
-				var builder = new DirectoryBuilder(tagRepository)
+				var builder = new DirectoryBuilder(tagRegistry)
 				var path = path & "/markup/template"
 
 				var documents = builder.build(path)
@@ -163,7 +163,7 @@ component extends="testbox.system.BaseSpec" {
 			it("should render the documents using views", function () {
 				viewRepository.addMapping(mapping & "/views")
 
-				var builder = new DirectoryBuilder(tagRepository)
+				var builder = new DirectoryBuilder(tagRegistry)
 				var path = path & "/markup/view"
 
 				var documents = builder.build(path)

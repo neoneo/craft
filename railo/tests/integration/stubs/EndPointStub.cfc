@@ -1,4 +1,4 @@
-import craft.request.*;
+import craft.request.EndPoint;
 
 component extends="Endpoint" accessors="true" {
 

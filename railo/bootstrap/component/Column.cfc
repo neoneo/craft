@@ -5,7 +5,7 @@ import craft.request.Context;
 component extends="Composite" {
 
 	private void function configure(required String[] spans, String[] offsets = [], String[] pulls = []) {
-		this.viewObject = this.viewFactory.create("bootstrap/view/column", {
+		this.viewObject = this.viewRepository.create("bootstrap/view/column", {
 			spans: arguments.spans,
 			offsets: arguments.offsets,
 			pulls: arguments.pulls

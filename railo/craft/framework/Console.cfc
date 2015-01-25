@@ -1,7 +1,7 @@
 import craft.markup.DirectoryBuilder;
 import craft.markup.ElementFactory;
 import craft.markup.Scope;
-import craft.markup.TagRepository;
+import craft.markup.TagRegistry;
 
 import craft.output.CFMLRenderer;
 import craft.output.TemplateRenderer;
@@ -21,9 +21,9 @@ component {
 		this.elementFactory = null
 		this.requestFacade = null
 		this.scope = null
-		this.tagRepository = null
+		this.tagRegistry = null
 		this.templateRenderer = null
-		this.viewFactory = null
+		this.viewRepository = null
 
 		/*
 			Define dependencies among the framework objects, where keys are dependent objects, and values are arrays of objects being depended upon.
@@ -31,14 +31,14 @@ component {
 			In other words, these are the constructor dependencies.
 		*/
 		this.dependencies = {
-			componentFactory: ["viewFactory"],
-			commandFactory: ["tagRepository", "scope"],
+			componentFactory: ["viewRepository"],
+			commandFactory: ["tagRegistry", "scope"],
 			elementFactory: ["componentFactory"],
 			scope: [],
-			tagRepository: ["elementFactory"],
+			tagRegistry: ["elementFactory"],
 			templateRenderer: [],
 			requestFacade: ["commandFactory"],
-			viewFactory: ["templateRenderer"]
+			viewRepository: ["templateRenderer"]
 		}
 
 		initialize()
@@ -54,8 +54,8 @@ component {
 			construct: this.templateRenderer === null,
 			calls: []
 		}
-		this.actions.viewFactory = {
-			construct: this.viewFactory === null,
+		this.actions.viewRepository = {
+			construct: this.viewRepository === null,
 			calls: []
 		}
 		this.actions.componentFactory = {
@@ -66,8 +66,8 @@ component {
 			construct: this.elementFactory === null,
 			calls: []
 		}
-		this.actions.tagRepository = {
-			construct: this.tagRepository === null,
+		this.actions.tagRegistry = {
+			construct: this.tagRegistry === null,
 			calls: []
 		}
 		this.actions.scope = {
@@ -166,7 +166,7 @@ component {
 		this.actions.elementFactory.calls.append({deregisterNamespace: [arguments.namespace]})
 	}
 	public void function setElementFactory(required String namespace, required ElementFactory elementFactory) {
-		this.actions.tagRepository.calls.append({setElementFactory: [arguments.namespace, arguments.elementFactory]})
+		this.actions.tagRegistry.calls.append({setElementFactory: [arguments.namespace, arguments.elementFactory]})
 	}
 
 	// Markup documents
@@ -185,7 +185,7 @@ component {
 		this.actions.requestFacade.calls.append({setRootPath: [arguments.rootPath]})
 	}
 
-	// RoutesParser ===============================================================================
+	// RequestFacade ==============================================================================
 
 	public void function importRoutes(required String mapping) {
 		this.actions.requestFacade.calls.append({importRoutes: [arguments.mapping]})
@@ -206,16 +206,16 @@ component {
 		this.actions.templateRenderer.calls.append({clearMappings: []})
 	}
 
-	// ViewFactory ================================================================================
+	// ViewRepository ================================================================================
 
 	public void function addViewMapping(required String mapping) {
-		this.actions.viewFactory.calls.append({addMapping: [arguments.mapping]})
+		this.actions.viewRepository.calls.append({addMapping: [arguments.mapping]})
 	}
 	public void function removeViewMapping(required String mapping) {
-		this.actions.viewFactory.calls.append({removeMapping: [arguments.mapping]})
+		this.actions.viewRepository.calls.append({removeMapping: [arguments.mapping]})
 	}
 	public void function clearViewMappings() {
-		this.actions.viewFactory.calls.append({clearMappings: []})
+		this.actions.viewRepository.calls.append({clearMappings: []})
 	}
 
 	// Factory / wiring methods
@@ -236,7 +236,7 @@ component {
 	}
 
 	private void function build(required String path) {
-		new DirectoryBuilder(getTagRepository(), getScope()).build(arguments.path)
+		new DirectoryBuilder(getTagRegistry(), getScope()).build(arguments.path)
 	}
 
 	private ComponentFactory function getComponentFactory() {
@@ -293,14 +293,14 @@ component {
 		return this.scope;
 	}
 
-	private TagRepository function getTagRepository() {
-		var object = this.actions.tagRepository
+	private TagRegistry function getTagRegistry() {
+		var object = this.actions.tagRegistry
 		if (object.construct) {
-			this.tagRepository = createTagRepository()
+			this.tagRegistry = createTagRegistry()
 			object.construct = false
 		}
 
-		return this.tagRepository;
+		return this.tagRegistry;
 	}
 
 	private TemplateRenderer function getTemplateRenderer() {
@@ -313,24 +313,24 @@ component {
 		return this.templateRenderer;
 	}
 
-	private ViewFactory function getViewFactory() {
-		var object = this.actions.viewFactory
+	private ViewRepository function getViewRepository() {
+		var object = this.actions.viewRepository
 		if (object.construct) {
-			this.viewFactory = createViewFactory()
+			this.viewRepository = createViewRepository()
 			object.construct = false
 		}
 
-		return this.viewFactory;
+		return this.viewRepository;
 	}
 
 	// FACTORY METHODS ============================================================================
 
 	private ComponentFactory function createComponentFactory() {
-		return new ComponentFactory(getViewFactory());
+		return new ComponentFactory(getViewRepository());
 	}
 
 	private CommandFactory function createCommandFactory() {
-		return new ContentCommandFactory(getElementFactory(), getScope(), getViewFactory());
+		return new ContentCommandFactory(getElementFactory(), getScope(), getViewRepository());
 	}
 
 	private ElementFactory function createElementFactory() {
@@ -341,12 +341,12 @@ component {
 		return new RequestFacade(getCommandFactory());
 	}
 
-	private TagRepository function createTagRepository() {
-		return new TagRepository(getElementFactory());
+	private TagRegistry function createTagRegistry() {
+		return new TagRegistry(getElementFactory());
 	}
 
-	private ViewFactory function createViewFactory() {
-		return new ViewFactory(getTemplateRenderer());
+	private ViewRepository function createViewRepository() {
+		return new ViewRepository(getTemplateRenderer());
 	}
 
 	private TemplateRenderer function createTemplateRenderer() {

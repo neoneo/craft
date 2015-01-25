@@ -9,7 +9,7 @@ component extends="Composite" {
 	}
 
 	public Any function view(required Context context) {
-		return this.viewFactory.create("row");
+		return this.viewRepository.create("row");
 	}
 
 	public Any function process(required Context context) {

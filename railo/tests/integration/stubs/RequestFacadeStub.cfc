@@ -1,6 +1,6 @@
-import craft.request.*;
+import craft.request.RequestFacade;
 
-component extends="Facade" {
+component extends="RequestFacade" {
 
 	private Endpoint function createEndpoint() {
 		 return new EndpointStub();

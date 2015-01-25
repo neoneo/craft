@@ -9,7 +9,7 @@ import craft.framework.DefaultElementFactory;
 
 import craft.markup.DirectoryBuilder;
 import craft.markup.FileBuilder;
-import craft.markup.TagRepository;
+import craft.markup.TagRegistry;
 
 import craft.output.CFMLRenderer;
 
@@ -38,16 +38,16 @@ component extends="testbox.system.BaseSpec" {
 			beforeEach(function () {
 				templateRenderer = new CFMLRenderer()
 				elementFactory = new DefaultElementFactory()
-				tagRepository = new TagRepository(elementFactory)
+				tagRegistry = new TagRegistry(elementFactory)
 
-				tagRepository.register(mapping & "/elements")
-				tagRepository.register("/craft/markup/library")
+				tagRegistry.register(mapping & "/elements")
+				tagRegistry.register("/craft/markup/library")
 			})
 
 			describe("using FileBuilder", function () {
 
 				it("should throw InstantiationException if the document depends on another element", function () {
-					var builder = new FileBuilder(tagRepository)
+					var builder = new FileBuilder(tagRegistry)
 					var path = path & "/markup/template/document.xml"
 
 					expect(function () {
@@ -56,7 +56,7 @@ component extends="testbox.system.BaseSpec" {
 				})
 
 				it("should create an element whose product is the content", function () {
-					var builder = new FileBuilder(tagRepository)
+					var builder = new FileBuilder(tagRegistry)
 					var path = path & "/markup/template/element.xml"
 
 					var element = builder.build(path)
@@ -73,7 +73,7 @@ component extends="testbox.system.BaseSpec" {
 			describe("using DirectoryBuilder", function () {
 
 				it("should throw InstantiationException if any document in the directory depends on an unknown element", function () {
-					var builder = new DirectoryBuilder(tagRepository)
+					var builder = new DirectoryBuilder(tagRegistry)
 					var path = path & "/markup/invalid"
 
 					expect(function () {
@@ -83,7 +83,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it("should create an element whose product is the content", function () {
 					// The document depends on a tree of layouts that have to be loaded with a DirectoryBuilder.
-					var builder = new DirectoryBuilder(tagRepository)
+					var builder = new DirectoryBuilder(tagRegistry)
 					var path = path & "/markup/template"
 
 					var documents = builder.build(path)

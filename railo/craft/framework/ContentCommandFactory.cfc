@@ -1,4 +1,4 @@
-import craft.markup.TagRepository;
+import craft.markup.TagRegistry;
 import craft.markup.FileBuilder;
 import craft.markup.Scope;
 
@@ -14,11 +14,11 @@ component implements="CommandFactory" accessors="true" {
 
 	this.path = ""
 
-	public void function init(required TagRepository tagRepository, required Scope scope) {
-		this.tagRepository = arguments.tagRepository
+	public void function init(required TagRegistry tagRegistry, required Scope scope) {
+		this.tagRegistry = arguments.tagRegistry
 		this.scope = arguments.scope
 
-		this.fileBuilder = new FileBuilder(this.tagRepository, this.scope)
+		this.fileBuilder = new FileBuilder(this.tagRegistry, this.scope)
 	}
 
 	/**

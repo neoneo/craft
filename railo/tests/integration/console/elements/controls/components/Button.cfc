@@ -9,7 +9,7 @@ component extends="Leaf" {
 	}
 
 	public Any function view(required Context context) {
-		return this.viewFactory.create("button");
+		return this.viewRepository.create("button");
 	}
 
 	public Any function process(required Context context) {

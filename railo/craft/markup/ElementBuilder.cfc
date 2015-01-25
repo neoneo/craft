@@ -1,7 +1,7 @@
 component {
 
-	public void function init(required TagRepository tagRepository, required Scope scope) {
-		this.tagRepository = arguments.tagRepository
+	public void function init(required TagRegistry tagRegistry, required Scope scope) {
+		this.tagRegistry = arguments.tagRegistry
 		this.scope = arguments.scope
 	}
 
@@ -55,7 +55,7 @@ component {
 		var namespace = arguments.node.xmlNsURI
 		var tagName = arguments.node.xmlName.replace(arguments.node.xmlNsPrefix & ":", "") // Remove the namespace prefix, if it exists.
 
-		var tag = this.tagRepository.get(namespace, tagName)
+		var tag = this.tagRegistry.get(namespace, tagName)
 
 		// Create a struct with attribute name/value pairs to pass to the factory.
 		var attributes = {}
@@ -83,7 +83,7 @@ component {
 		})
 
 		// Get the factory for this namespace and create the element.
-		var factory = this.tagRepository.elementFactory(namespace)
+		var factory = this.tagRegistry.elementFactory(namespace)
 		var element = factory.create(tag.class, attributes, arguments.node.xmlText)
 
 		for (var child in arguments.node.xmlChildren) {

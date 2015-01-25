@@ -1,8 +1,8 @@
 component {
 
-	public void function init(required TagRepository tagRepository, Scope scope) {
+	public void function init(required TagRegistry tagRegistry, Scope scope) {
 		this.scope = arguments.scope ?: new Scope()
-		this.elementBuilder = new ElementBuilder(arguments.tagRepository, this.scope)
+		this.elementBuilder = new ElementBuilder(arguments.tagRegistry, this.scope)
 	}
 
 	/**

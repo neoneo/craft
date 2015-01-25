@@ -1,6 +1,4 @@
-component accessors="true" {
-
-	property String rootPath getter="false";
+component {
 
 	public void function init(required CommandFactory commandFactory) {
 
@@ -9,10 +7,6 @@ component accessors="true" {
 		this.root = createRoot(pathSegmentFactory)
 		this.routesParser = createRoutesParser(this.root, pathSegmentFactory, arguments.commandFactory)
 
-	}
-
-	public void function setRootPath(required String rootPath) {
-		this.endpoint.rootPath = arguments.rootPath
 	}
 
 	public void function importRoutes(required String mapping) {
@@ -27,17 +21,12 @@ component accessors="true" {
 
 		try {
 			var context = new Context(this.endpoint, this.root)
-		} catch (FileNotFoundException e) {
-			header statuscode="404" statustext="Not found";
-			return;
-		}
 
-		var pathSegment = context.pathSegment
-		var method = context.requestMethod
+			var pathSegment = context.pathSegment
+			var method = context.requestMethod
 
-		if (pathSegment.hasCommand(method)) {
-			var command = pathSegment.command(method)
-			try {
+			if (pathSegment.hasCommand(method)) {
+				var command = pathSegment.command(method)
 				var output = command.execute(context)
 
 				header statuscode="#context.statusCode#";
@@ -48,6 +37,10 @@ component accessors="true" {
 				}
 
 				switch (context.contentType) {
+					case "text/html":
+						// TODO: dependencies
+						break;
+
 					case "application/json":
 						if (IsArray(output) || IsStruct(output)) {
 							output = SerializeJSON(output)
@@ -72,14 +65,17 @@ component accessors="true" {
 				} else {
 					WriteOutput(output)
 				}
-			} catch (Any e) {
-				header statuscode="500";
-				dump(e)
-				return;
+			} else {
+				header statuscode="405" statustext="Method not allowed";
 			}
-		} else {
-			header statuscode="405" statustext="Method not allowed";
-			return;
+		} catch (BadRequestException e) {
+			header statuscode="400" statustext="#e.message#";
+		} catch (UnauthorizedException e) {
+			header statuscode="401" statustext="#e.message#";
+		} catch (ForbiddenException e) {
+			header statuscode="403" statustext="#e.message#";
+		} catch (NotFoundException e) {
+			header statuscode="404" statustext="#e.message#";
 		}
 
 	}

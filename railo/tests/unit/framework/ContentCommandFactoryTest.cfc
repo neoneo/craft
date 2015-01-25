@@ -8,10 +8,10 @@ component extends="tests.MocktorySpec" {
 		describe("ContentCommandFactory", function () {
 
 			beforeEach(function () {
-				tagRepository = mock("TagRepository")
+				tagRegistry = mock("TagRegistry")
 				scope = mock("Scope")
 				fileBuilder = mock("FileBuilder")
-				commandFactory = mock(new ContentCommandFactory(tagRepository, scope))
+				commandFactory = mock(new ContentCommandFactory(tagRegistry, scope))
 					.$property("fileBuilder", "this", fileBuilder)
 					.setPath("/path")
 			})

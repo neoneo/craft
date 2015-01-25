@@ -5,7 +5,7 @@ import craft.request.Context;
 component extends="Composite" {
 
 	public void function configure(required Boolean fluid) {
-		this.viewObject = this.viewFactory.create("bootstrap/view/container", {
+		this.viewObject = this.viewRepository.create("bootstrap/view/container", {
 			fluid: arguments.fluid
 		})
 	}

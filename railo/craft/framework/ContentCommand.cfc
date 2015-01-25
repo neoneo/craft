@@ -1,7 +1,6 @@
 import craft.markup.FileBuilder;
 
 import craft.output.RenderVisitor;
-import craft.output.ViewFactory;
 
 import craft.request.Command;
 import craft.request.Context;
