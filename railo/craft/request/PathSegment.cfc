@@ -20,7 +20,7 @@ component accessors="true" {
 		this.pattern = arguments.pattern
 		this.parameterName = arguments.parameterName
 
-		this.childCollection = createCollection()
+		this.childCollection = this.createCollection()
 		this.parent = null
 
 		this.commands = {} // Map of http methods to commands.

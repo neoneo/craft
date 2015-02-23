@@ -2,10 +2,9 @@ component {
 
 	public void function init(required CommandFactory commandFactory) {
 
-		this.endpoint = createEndpoint()
-		var pathSegmentFactory = createPathSegmentFactory()
-		this.root = createRoot(pathSegmentFactory)
-		this.routesParser = createRoutesParser(this.root, pathSegmentFactory, arguments.commandFactory)
+		this.endpoint = this.createEndpoint()
+		this.root = this.createRoot()
+		this.routesParser = this.createRoutesParser(this.root, arguments.commandFactory)
 
 	}
 
@@ -19,54 +18,46 @@ component {
 
 	public void function handleRequest() {
 
+		var context = new Context(this.endpoint, this.root)
+
 		try {
-			var context = new Context(this.endpoint, this.root)
+			var output = context.handleRequest()
 
-			var pathSegment = context.pathSegment
-			var method = context.requestMethod
+			header statuscode="#context.statusCode#";
+			content type="#context.contentType#; charset=#context.characterSet#";
 
-			if (pathSegment.hasCommand(method)) {
-				var command = pathSegment.command(method)
-				var output = command.execute(context)
+			if (context.downloadAs !== null) {
+				header name="Content-Disposition" value="attachment; filename=#context.downloadAs#";
+			}
 
-				header statuscode="#context.statusCode#";
-				content type="#context.contentType#; charset=#context.characterSet#";
+			switch (context.contentType) {
+				case "text/html":
+					// TODO: dependencies
+					break;
 
-				if (context.downloadAs !== null) {
-					header name="Content-Disposition" value="attachment; filename=#context.downloadAs#";
-				}
+				case "application/json":
+					if (IsArray(output) || IsStruct(output)) {
+						output = SerializeJSON(output)
+					}
+					break;
 
-				switch (context.contentType) {
-					case "text/html":
-						// TODO: dependencies
-						break;
+				case "application/xml":
+					if (IsXMLNode(output)) {
+						output = ToString(output)
+					}
+					break;
 
-					case "application/json":
-						if (IsArray(output) || IsStruct(output)) {
-							output = SerializeJSON(output)
-						}
-						break;
+				case "application/pdf":
 
-					case "application/xml":
-						if (IsXMLNode(output)) {
-							output = ToString(output)
-						}
-						break;
+					break;
+			}
 
-					case "application/pdf":
-
-						break;
-				}
-
-				if (IsBinary(output)) {
-					content variable="#output#";
-				} else if (context.downloadFile !== null) {
-					content file="#context.downloadFile#" deletefile="#context.deleteFile ?: false#";
-				} else {
-					WriteOutput(output)
-				}
+			if (IsBinary(output)) {
+				content variable="#output#";
+			} else if (context.downloadFile !== null) {
+				content file="#context.downloadFile#" deletefile="#context.deleteFile ?: false#";
 			} else {
-				header statuscode="405" statustext="Method not allowed";
+				WriteOutput(output)
 			}
 		} catch (BadRequestException e) {
 			header statuscode="400" statustext="#e.message#";
@@ -76,24 +67,21 @@ component {
 			header statuscode="403" statustext="#e.message#";
 		} catch (NotFoundException e) {
 			header statuscode="404" statustext="#e.message#";
+		} catch (MethodNotAllowedException e) {
+			header statuscode="405" statustext="#e.message#";
 		}
-
 	}
 
 	private Endpoint function createEndpoint() {
 		return new Endpoint();
 	}
 
-	private PathSegmentFactory function createPathSegmentFactory() {
-		return new PathSegmentFactory();
+	private PathSegment function createRoot() {
+		return new RootPathSegment();
 	}
 
-	private PathSegment function createRoot(required PathSegmentFactory pathSegmentFactory) {
-		return arguments.pathSegmentFactory.create("/");
-	}
-
-	private RoutesParser function createRoutesParser(required PathSegment root, required PathSegmentFactory pathSegmentFactory, required CommandFactory commandFactory) {
-		return new RoutesParser(arguments.root, arguments.pathSegmentFactory, arguments.commandFactory);
+	private RoutesParser function createRoutesParser(required PathSegment root, required CommandFactory commandFactory) {
+		return new RoutesParser(arguments.root, arguments.commandFactory);
 	}
 
 }

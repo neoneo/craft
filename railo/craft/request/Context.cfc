@@ -44,14 +44,13 @@ component accessors="true" {
 		}
 	}
 
-	public Any function handleRequest() {
+	package Any function handleRequest() {
 
 		var segments = this.path.listToArray("/")
 
 		// Remove the extension from the last segment.
 		if (!segments.isEmpty() && !this.extension.isEmpty()) {
-			var lastSegment = segments.last()
-			segments[segments.len()] = lastSegment.reReplace("\.#extension#$", "")
+			segments[segments.len()] = segments.last().reReplace("\.#this.extension#$", "")
 		}
 
 		// Walk the path to get the path segment that applies to this request.

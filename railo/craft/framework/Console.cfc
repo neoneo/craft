@@ -5,6 +5,7 @@ import craft.markup.TagRegistry;
 
 import craft.output.CFMLRenderer;
 import craft.output.TemplateRenderer;
+import craft.output.ViewRepository;
 
 import craft.request.RequestFacade;
 
@@ -16,7 +17,6 @@ component {
 
 	public void function init() {
 
-		this.componentFactory = null
 		this.commandFactory = null
 		this.elementFactory = null
 		this.requestFacade = null
@@ -31,9 +31,8 @@ component {
 			In other words, these are the constructor dependencies.
 		*/
 		this.dependencies = {
-			componentFactory: ["viewRepository"],
 			commandFactory: ["tagRegistry", "scope"],
-			elementFactory: ["componentFactory"],
+			elementFactory: [],
 			scope: [],
 			tagRegistry: ["elementFactory"],
 			templateRenderer: [],
@@ -56,10 +55,6 @@ component {
 		}
 		this.actions.viewRepository = {
 			construct: this.viewRepository === null,
-			calls: []
-		}
-		this.actions.componentFactory = {
-			construct: this.componentFactory === null,
 			calls: []
 		}
 		this.actions.elementFactory = {
@@ -148,12 +143,6 @@ component {
 		this.actions.commandFactory.calls.append({setPath: [ExpandPath(arguments.mapping)]})
 	}
 
-	// ComponentFactory =============================================================================
-
-	public void function addContentMapping(required String mapping) {
-		this.actions.componentFactory.calls.append({addMapping: [arguments.mapping]})
-	}
-
 	// ElementFactory =============================================================================
 
 	public void function registerElements(required String mapping) {
@@ -239,16 +228,6 @@ component {
 		new DirectoryBuilder(getTagRegistry(), getScope()).build(arguments.path)
 	}
 
-	private ComponentFactory function getComponentFactory() {
-		var object = this.actions.componentFactory
-		if (object.construct) {
-			this.componentFactory = createComponentFactory()
-			object.construct = false
-		}
-
-		return this.componentFactory;
-	}
-
 	private CommandFactory function getCommandFactory() {
 		var object = this.actions.commandFactory
 		if (object.construct) {
@@ -325,16 +304,12 @@ component {
 
 	// FACTORY METHODS ============================================================================
 
-	private ComponentFactory function createComponentFactory() {
-		return new ComponentFactory(getViewRepository());
-	}
-
 	private CommandFactory function createCommandFactory() {
 		return new ContentCommandFactory(getElementFactory(), getScope(), getViewRepository());
 	}
 
 	private ElementFactory function createElementFactory() {
-		return new DefaultElementFactory(getComponentFactory());
+		return new DefaultElementFactory();
 	}
 
 	private RequestFacade function createRequestFacade() {

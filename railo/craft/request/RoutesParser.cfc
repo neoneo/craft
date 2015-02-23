@@ -51,7 +51,7 @@ component {
 	 */
 	private Struct function tokenizeRoute(required String route, required Boolean requireIdentifier) {
 		// Split the route into words using spaces and tabs as delimiters.
-		var words = arguments.route.listToArray(" #Chr(9)#")
+		var words = arguments.route.listToArray(" " & Chr(9))
 
 		// A route has the form: <method> ([">"*] <path> | ".") <command identifier> [(-> <command identifier> | => <path>)]*
 
@@ -175,15 +175,15 @@ component {
 	private PathSegment function create(required String pattern, String parameterName = null) {
 
 		if (arguments.pattern == "/") {
-			return new RootPathSegment()
+			return new RootPathSegment();
 		} else if (arguments.pattern == "*") {
-			return new EntirePathSegment(arguments.parameterName)
+			return new EntirePathSegment(arguments.parameterName);
 		} else {
 			// If the pattern contains some 'specific' regex character, we assume it is a regex.
 			if (arguments.pattern.findOneOf("[({*+?|") > 0) {
-				return new DynamicPathSegment(arguments.pattern, arguments.parameterName)
+				return new DynamicPathSegment(arguments.pattern, arguments.parameterName);
 			} else {
-				return new StaticPathSegment(arguments.pattern, arguments.parameterName)
+				return new StaticPathSegment(arguments.pattern, arguments.parameterName);
 			}
 		}
 
