@@ -6,14 +6,14 @@ import craft.util.ScopeCollection;
  *
  * @abstract
  */
-component accessors="true" {
+component accessors = true {
 
-	property Array children setter="false"; // PathSegment[]
-	property Boolean hasChildren setter="false";
-	property Boolean hasParent setter="false";
-	property String parameterName setter="false";
+	property Array children setter = false; // PathSegment[]
+	property Boolean hasChildren setter = false;
+	property Boolean hasParent setter = false;
+	property String parameterName setter = false;
 	property PathSegment parent;
-	property String pattern setter="false";
+	property String pattern setter = false;
 
 	public void function init(String pattern = null, String parameterName = null) {
 

@@ -1,8 +1,8 @@
 import craft.request.Context;
 
-component extends="Component" accessors="true" {
+component extends = Component accessors = true {
 
-	property String ref setter="false";
+	property String ref setter = false;
 
 	public void function init(required String ref) {
 		this.ref = arguments.ref

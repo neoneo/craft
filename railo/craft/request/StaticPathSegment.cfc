@@ -1,4 +1,4 @@
-component extends="PathSegment" {
+component extends = PathSegment {
 
 	public void function init(required String pattern, String parameterName = null) {
 		super.init(arguments.pattern, arguments.parameterName)

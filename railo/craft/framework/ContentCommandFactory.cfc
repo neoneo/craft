@@ -8,7 +8,7 @@ import craft.request.CommandFactory;
 /**
  * `CommandFactory` implementation that returns `ContentCommand` instances.
  */
-component implements="CommandFactory" accessors="true" {
+component implements = CommandFactory accessors = true {
 
 	property String path;
 

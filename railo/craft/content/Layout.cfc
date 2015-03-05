@@ -1,7 +1,7 @@
-component implements="LayoutContent" accessors="true" {
+component implements = LayoutContent accessors = true {
 
-	property Section section setter="false";
-	property Array placeholders setter="false"; // Placeholder[]
+	property Section section setter = false;
+	property Array placeholders setter = false; // Placeholder[]
 
 	public void function init(required Section section) {
 		this.section = arguments.section

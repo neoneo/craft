@@ -1,4 +1,4 @@
-interface extends="Content" {
+interface extends = Content {
 
 	public Placeholder[] function getPlaceholders();
 

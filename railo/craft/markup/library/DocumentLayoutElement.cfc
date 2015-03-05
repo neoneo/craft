@@ -1,9 +1,9 @@
 import craft.content.DocumentLayout;
 import craft.content.LayoutContent;
 
-component extends="AbstractDocumentElement" accessors="true" tag="documentlayout" {
+component extends = AbstractDocumentElement accessors = true tag = documentlayout {
 
-	property String extends required="true";
+	property String extends required = true;
 
 	private String function getLayoutRef() {
 		return this.extends;

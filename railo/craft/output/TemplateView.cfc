@@ -1,6 +1,6 @@
 import craft.request.Context;
 
-component extends="View" {
+component extends = View {
 
 	public void function init(required TemplateRenderer templateRenderer, required String template) {
 		super.init(arguments.templateRenderer)

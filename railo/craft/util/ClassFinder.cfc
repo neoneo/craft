@@ -1,4 +1,4 @@
-component extends="FileFinder" {
+component extends = FileFinder {
 
 	public void function init() {
 		super.init("cfc")

@@ -1,4 +1,4 @@
-component extends="Collection" {
+component extends = Collection {
 
 	// The CopyOnWriteArrayList allows concurrent reads without synchronization. It is much slower for writes, but these are expected to be limited.
 	this.items = CreateObject("java", "java.util.concurrent.CopyOnWriteArrayList").init()

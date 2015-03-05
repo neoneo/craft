@@ -1,13 +1,13 @@
-component accessors="true" {
+component accessors = true {
 
-	property String indexFile default=""; // The index file used in the url. If set, the value should start with a /.
+	property String indexFile default = ""; // The index file used in the url. If set, the value should start with a /.
 
-	property String contextRoot setter="false";
-	property String extension setter="false";
-	property Array extensions setter="false"; // String[]
-	property String path setter="false";
-	property String requestMethod setter="false";
-	property Struct requestParameters setter="false";
+	property String contextRoot setter = false;
+	property String extension setter = false;
+	property Array extensions setter = false; // String[]
+	property String path setter = false;
+	property String requestMethod setter = false;
+	property Struct requestParameters setter = false;
 
 	this.contentTypes = {
 		html: "text/html",

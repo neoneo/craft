@@ -1,4 +1,4 @@
-component extends="PathSegment" {
+component extends = PathSegment {
 
 	public void function init() {
 		// No constructor arguments.

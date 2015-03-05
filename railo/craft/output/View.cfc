@@ -5,9 +5,9 @@
  */
 import craft.request.Context;
 
-component accessors="true" {
+component accessors = true {
 
-	property TemplateRenderer templateRenderer setter="false";
+	property TemplateRenderer templateRenderer setter = false;
 
 	public void function init(required TemplateRenderer templateRenderer) {
 		this.templateRenderer = arguments.templateRenderer

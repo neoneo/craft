@@ -10,9 +10,9 @@ import craft.output.ViewRepository;
 
 import craft.request.Context;
 
-component implements="Visitor" accessors="true" {
+component implements = Visitor accessors = true {
 
-	property Any content setter="false";
+	property Any content setter = false;
 
 	public void function init(required Context context, required ViewRepository viewRepository) {
 

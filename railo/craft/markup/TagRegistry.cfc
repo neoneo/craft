@@ -1,8 +1,8 @@
 import craft.util.ObjectHelper;
 
-component accessors="true" {
+component accessors = true {
 
-	property Struct tagNames setter="false";
+	property Struct tagNames setter = false;
 
 	this.elementClassName = GetComponentMetadata("Element").name
 	this.factories = {} // Element factories per namespace.
@@ -11,8 +11,8 @@ component accessors="true" {
 
 	this.objectHelper = new ObjectHelper()
 
-	public void function init(required ElementFactory elementFactory) {
-		this.defaultElementFactory = arguments.elementFactory
+	public void function init(required ElementFactory defaultElementFactory) {
+		this.defaultElementFactory = arguments.defaultElementFactory
 	}
 
 	/**

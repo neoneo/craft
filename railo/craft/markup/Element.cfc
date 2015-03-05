@@ -2,20 +2,20 @@
  * Represents a markup element.
  * An `Element` constructs a product in one or more steps.
  */
-component accessors="true" {
+component accessors = true {
 
 	// All elements may have a 'ref' attribute.
 	property String ref;
 
-	property Array children setter="false" attribute="false"; // Element[]
-	property Boolean childrenReady setter="false" attribute="false";
-	property Boolean hasChildren setter="false" attribute="false";
-	property Boolean hasParent setter="false" attribute="false";
-	property Element parent attribute="false";
-	property Any product attribute="false";
-	property Boolean ready setter="false" attribute="false";
-	property Array siblings setter="false" attribute="false"; // Element[]
-	property Numeric siblingIndex setter="false" attribute="false";
+	property Array children setter = false attribute = false; // Element[]
+	property Boolean childrenReady setter = false attribute = false;
+	property Boolean hasChildren setter = false attribute = false;
+	property Boolean hasParent setter = false attribute = false;
+	property Element parent attribute = false;
+	property Any product attribute = false;
+	property Boolean ready setter = false attribute = false;
+	property Array siblings setter = false attribute = false; // Element[]
+	property Numeric siblingIndex setter = false attribute = false;
 
 	this.children = []
 	this.parent = null

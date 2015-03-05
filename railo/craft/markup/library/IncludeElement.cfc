@@ -1,9 +1,9 @@
 import craft.markup.Element;
 import craft.markup.Scope;
 
-component extends="Element" accessors="true" tag="include" {
+component extends = Element accessors = true tag = include {
 
-	property String element required="true";
+	property String element required = true;
 
 	public void function construct(required Scope scope) {
 

@@ -1,4 +1,4 @@
-component implements="Cache" {
+component implements = Cache {
 
 	public void function init(TimeSpan timeToLive, TimeSpan idleTime, String cacheName) {
 

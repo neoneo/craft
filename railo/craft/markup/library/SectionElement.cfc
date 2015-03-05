@@ -3,9 +3,9 @@ import craft.content.Section;
 import craft.markup.Element;
 import craft.markup.Scope;
 
-component extends="Element" accessors="true" tag="section" {
+component extends = Element accessors = true tag = section {
 
-	property String placeholder required="true";
+	property String placeholder required = true;
 
 	public void function construct(required Scope scope) {
 

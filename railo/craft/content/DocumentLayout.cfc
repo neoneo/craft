@@ -2,9 +2,9 @@
  * Lets a document take the role of a layout. The placeholders in the layout it wraps can be replaced by fixed content, and
  * other placeholders can be inserted. The effect is that a sparse layout can be extended without losing the layout function.
  */
-component extends="Document" implements="LayoutContent" accessors="true" {
+component extends = Document implements = LayoutContent accessors = true {
 
-	property Array placeholders setter="false"; // Placeholder[]
+	property Array placeholders setter = false; // Placeholder[]
 
 	/**
 	 * Returns an array containing all placeholders that are not filled.

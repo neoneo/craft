@@ -4,9 +4,9 @@ import craft.content.LayoutContent;
 import craft.markup.Element;
 import craft.markup.Scope;
 
-component extends="Element" abstract="true" {
+component extends = Element abstract = true {
 
-	property String layoutRef setter="false";
+	property String layoutRef setter = false;
 
 	public void function construct(required Scope scope) {
 

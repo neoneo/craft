@@ -4,11 +4,11 @@ import craft.util.ScopeCollection;
 /**
  * Represents an isolated component tree.
  */
-component implements="Content" accessors="true" {
+component implements = Content accessors = true {
 
-	property Array components setter="false"; // Component[]
-	property Boolean hasComponents setter="false";
-	property Array placeholders setter="false"; // Placeholder[]
+	property Array components setter = false; // Component[]
+	property Boolean hasComponents setter = false;
+	property Array placeholders setter = false; // Placeholder[]
 
 	/*
 		A section has functional overlap with a composite, but it is not the same thing.

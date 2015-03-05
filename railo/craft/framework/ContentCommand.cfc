@@ -9,7 +9,7 @@ import craft.request.Context;
  * `Command` implementation that renders a `Content` instance, as defined by the given xml file.
  * The implementation only instantiates the `Content` upon first request.
  */
-component implements="Command" {
+component implements = Command {
 
 	public void function init(required FileBuilder fileBuilder, required String path) {
 		this.fileBuilder = arguments.fileBuilder

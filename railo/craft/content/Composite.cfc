@@ -6,10 +6,10 @@ import craft.util.ScopeCollection;
  *
  * @abstract
  */
-component extends="Component" accessors="true" {
+component extends = Component accessors = true {
 
-	property Array children setter="false"; // Component[]
-	property Boolean hasChildren setter="false";
+	property Array children setter = false; // Component[]
+	property Boolean hasChildren setter = false;
 
 	this.childCollection = this.createCollection()
 

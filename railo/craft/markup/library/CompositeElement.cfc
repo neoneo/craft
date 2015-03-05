@@ -6,7 +6,7 @@ import craft.markup.Scope;
 /**
  * Base implementation of an element that produces a `Composite`.
  */
-component extends="ComponentElement" abstract="true" {
+component extends = ComponentElement abstract = true {
 
 	public void function construct(required Scope scope) {
 

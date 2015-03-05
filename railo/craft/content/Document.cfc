@@ -1,7 +1,7 @@
-component implements="Content" {
+component implements = Content accessors = true {
 
-	property LayoutContent layout setter="false";
-	property Struct sections setter="false";
+	property LayoutContent layout setter = false;
+	property Struct sections setter = false;
 
 	this.sections = {}
 

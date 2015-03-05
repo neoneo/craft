@@ -1,4 +1,4 @@
-component implements="Cache" {
+component implements = Cache {
 
 	this.cache = {}
 

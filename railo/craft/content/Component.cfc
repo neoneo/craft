@@ -5,10 +5,10 @@ import craft.request.Context;
  *
  * @abstract
  */
-component implements="Content" accessors="true" {
+component implements = Content accessors = true {
 
-	property Boolean hasChildren setter="false";
-	property Boolean hasParent setter="false";
+	property Boolean hasChildren setter = false;
+	property Boolean hasParent setter = false;
 	property Composite parent;
 
 	this.parent = null

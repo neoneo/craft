@@ -2,19 +2,19 @@
  * The `Context` is passed to `Component`s and `View`s to provide access to items and parameters pertaining to the request, as well
  * as some convenience methods.
  */
-component accessors="true" {
+component accessors = true {
 
-	property String characterSet default="UTF-8";
+	property String characterSet default = "UTF-8";
 	property String contentType;
 	property Boolean deleteFile;
 	property String downloadAs;
 	property String downloadFile;
-	property Numeric statusCode default="200";
+	property Numeric statusCode default = 200;
 
-	property String extension setter="false";
-	property Struct parameters setter="false";
-	property String path setter="false";
-	property String requestMethod setter="false";
+	property String extension setter = false;
+	property Struct parameters setter = false;
+	property String path setter = false;
+	property String requestMethod setter = false;
 
 	public void function init(required Endpoint endpoint, required PathSegment root) {
 
@@ -44,7 +44,7 @@ component accessors="true" {
 		}
 	}
 
-	package Any function handleRequest() {
+	package Any function processRequest() {
 
 		var segments = this.path.listToArray("/")
 
@@ -55,29 +55,27 @@ component accessors="true" {
 
 		// Walk the path to get the path segment that applies to this request.
 		var result = this.root.walk(segments)
-		if (result.target === null) {
+		var target = result.target
+		if (target === null) {
 			Throw("Not found", "NotFoundException");
 		}
-
-		// The result contains the target path segment and the parameters introduced by the intermediate path segments.
-		var target = result.target
-		this.parameters.append(result.parameters)
-
-		if (target.hasCommand(this.requestMethod)) {
-			var command = target.command(this.requestMethod)
-			var output = command.execute(this)
-
-			if (this.contentType == "text/html") {
-				for (var dependency in this.dependencies) {
-					htmlhead text="#this.get(dependency)#";
-				}
-			}
-
-			return output;
-		} else {
+		if (!target.hasCommand(this.requestMethod)) {
 			Throw("Method not allowed", "MethodNotAllowedException");
 		}
 
+		// The result contains the target path segment and the parameters introduced by the intermediate path segments.
+		this.parameters.append(result.parameters)
+
+		var command = target.command(this.requestMethod)
+		var output = command.execute(this)
+
+		if (this.contentType == "text/html") {
+			for (var dependency in this.dependencies) {
+				htmlhead text="#this.get(dependency)#";
+			}
+		}
+
+		return output;
 	}
 
 	/**
@@ -99,7 +97,7 @@ component accessors="true" {
 		this.extension = this.endpoint.extension(arguments.path)
 		this.contentType = this.endpoint.contentType(this.extension)
 
-		var output = this.handleRequest()
+		var output = this.processRequest()
 
 		// Revert the state and return the output.
 		this.contentType = contentType

@@ -1,4 +1,4 @@
-component extends="Collection" {
+component extends = Collection {
 
 	public void function init(required Cache cache) {
 		this.cache = arguments.cache

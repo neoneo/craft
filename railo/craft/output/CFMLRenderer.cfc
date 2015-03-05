@@ -1,4 +1,4 @@
-component extends="TemplateRenderer" {
+component extends = TemplateRenderer {
 
 	public void function init() {
 		super.init("cfm")
@@ -15,8 +15,8 @@ component extends="TemplateRenderer" {
 		*/
 		StructAppend(local, arguments.model)
 
-		savecontent variable="local.output" {
-			include template="#mapping#";
+		savecontent variable = local.output {
+			include template = mapping;
 		}
 
 		return output;

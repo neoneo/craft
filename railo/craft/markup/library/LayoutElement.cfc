@@ -4,9 +4,9 @@ import craft.content.Section;
 import craft.markup.Element;
 import craft.markup.Scope;
 
-component extends="Element" accessors="true" tag="layout" {
+component extends = Element accessors = true tag = layout {
 
-	property String ref required="true";
+	property String ref required = true;
 
 	public void function construct(required Scope scope) {
 

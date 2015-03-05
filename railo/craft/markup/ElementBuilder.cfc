@@ -57,34 +57,33 @@ component {
 
 		var tag = this.tagRegistry.get(namespace, tagName)
 
-		// Create a struct with attribute name/value pairs to pass to the factory.
-		var attributes = {}
 
 		// Attribute validation and selection:
 		// Loop over the attributes defined in the tag, and pick them up from the node attributes.
 		// This means that any attributes not defined in the tag are ignored.
+		var attributes = {}
 		var nodeAttributes = arguments.node.xmlAttributes
-		tag.attributes.each(function (attribute) {
-			var name = arguments.attribute.name
-			var value = nodeAttributes[name] ?: arguments.attribute.default ?: null
+		for (var attribute in tag.attributes) {
+			var name = attribute.name
+			var value = nodeAttributes[name] ?: attribute.default ?: null
 
-			if (value === null && (arguments.attribute.required ?: false)) {
+			if (value === null && (attribute.required ?: false)) {
 				Throw("Attribute '#name#' is required", "MissingArgumentException");
 			}
 
 			if (value !== null) {
 				// Since we'll only encounter simple values here, we can use IsValid. We assume that the property type is specified.
-				if (!IsValid(arguments.attribute.type, value)) {
+				if (!IsValid(attribute.type, value)) {
 					Throw("Invalid value '#value#' for attribute '#name#'", "IllegalArgumentException", "Expected value of type #arguments.attribute.type#");
 				}
 
 				attributes[name] = value
 			}
-		})
+		}
 
 		// Get the factory for this namespace and create the element.
-		var factory = this.tagRegistry.elementFactory(namespace)
-		var element = factory.create(tag.class, attributes, arguments.node.xmlText)
+		var elementFactory = this.tagRegistry.elementFactory(namespace)
+		var element = elementFactory.create(tag.class, attributes, arguments.node.xmlText)
 
 		for (var child in arguments.node.xmlChildren) {
 			element.add(this.instantiate(child))
