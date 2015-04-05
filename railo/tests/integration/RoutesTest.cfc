@@ -1,6 +1,21 @@
-import craft.request.*;
+import craft.framework.ContentCommandFactory;
 
-component extends="mxunit.framework.TestCase" {
+import craft.request.RootPathSegment;
+
+component extends="testbox.system.BaseSpec" {
+
+	function run() {
+
+		describe("Performing requests", function () {
+
+			beforeAll(function () {
+				root = new RootPathSegment()
+			})
+
+		})
+
+	}
+
 
 	public void function beforeTests() {
 		content type="text/html" reset="false";

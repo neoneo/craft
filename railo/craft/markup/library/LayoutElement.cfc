@@ -13,9 +13,9 @@ component extends = Element accessors = true tag = layout {
 		if (this.getChildrenReady()) {
 			var section = new Section()
 
-			this.children.each(function (child) {
-				section.addComponent(arguments.child.product)
-			})
+			for (var child in this.children) {
+				section.addComponent(child.product)
+			}
 
 			this.product = new Layout(section)
 		}

@@ -99,10 +99,10 @@ component accessors = true {
 	 */
 	public void function trim() {
 
-		this.getChildren().reverse().each(function (child) {
-			arguments.child.trim()
-			if (!arguments.child.hasCommand() && !arguments.child.getHasChildren()) {
-				removeChild(arguments.child)
+		for (var child in this.getChildren().reverse()) {
+			child.trim()
+			if (!child.hasCommand() && !child.getHasChildren()) {
+				removeChild(child)
 			}
 		})
 

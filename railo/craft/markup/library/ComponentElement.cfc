@@ -3,7 +3,10 @@ import craft.content.Component;
 import craft.markup.Element;
 import craft.markup.Scope;
 
-component extends = Element abstract = true {
+/**
+ * @abstract
+ */
+component extends = Element {
 
 	public void function construct( Scope scope) {
 		this.product = createComponent()

@@ -1,5 +1,8 @@
 import craft.util.FileFinder;
 
+/**
+ * @abstract
+ */
 component {
 
 	property FileFinder templateFinder;

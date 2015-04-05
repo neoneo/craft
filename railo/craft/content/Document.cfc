@@ -50,18 +50,16 @@ component implements = Content accessors = true {
 		// Check if the new layout has placeholders compatible with the old one.
 		var newPlaceholders = arguments.layout.getPlaceholders()
 		// Loop over all current placeholders, and remove the section if there is no compatible new placeholder.
-		this.layout.getPlaceholders().each(
-			function (placeholder) {
-				var ref = arguments.placeholder.ref
-				var index = newPlaceholders.find(function (newPlaceholder) {
-					return arguments.newPlaceholder.ref == ref;
-				})
-				if (index == 0) {
-					// The placeholder is not used. Remove the section.
-					this.clearPlaceholder(ref)
-				}
+		for (var placeholder in this.layout.getPlaceholders()) {
+			var ref = placeholder.ref
+			var index = newPlaceholders.find(function (newPlaceholder) {
+				return arguments.newPlaceholder.ref == ref;
+			})
+			if (index == 0) {
+				// The placeholder is not used. Remove the section.
+				this.clearPlaceholder(ref)
 			}
-		)
+		}
 
 		this.layout = arguments.layout
 

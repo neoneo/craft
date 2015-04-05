@@ -7,7 +7,7 @@ import craft.output.CFMLRenderer;
 import craft.output.TemplateRenderer;
 import craft.output.ViewRepository;
 
-import craft.request.RequestFacade;
+import craft.request.Handler;
 
 /**
  * This component handles all the interactions between the different framework objects and initializes them.
@@ -19,7 +19,7 @@ component {
 
 		this.commandFactory = null
 		this.elementFactory = null
-		this.requestFacade = null
+		this.handler = null
 		this.scope = null
 		this.tagRegistry = null
 		this.templateRenderer = null
@@ -36,7 +36,7 @@ component {
 			scope: [],
 			tagRegistry: ["elementFactory"],
 			templateRenderer: [],
-			requestFacade: ["commandFactory"],
+			handler: ["commandFactory"],
 			viewRepository: ["templateRenderer"]
 		}
 
@@ -73,8 +73,8 @@ component {
 			construct: this.commandFactory === null,
 			calls: []
 		}
-		this.actions.requestFacade = {
-			construct: this.requestFacade === null,
+		this.actions.handler = {
+			construct: this.handler === null,
 			calls: []
 		}
 		this.actions.console = {
@@ -134,7 +134,7 @@ component {
 	}
 
 	public void function handleRequest() {
-		this.requestFacade.handleRequest()
+		this.handler.handleRequest()
 	}
 
 	// CommandFactory =============================================================================
@@ -171,16 +171,16 @@ component {
 	// Endpoint ===================================================================================
 
 	public void function setRootPath(required String rootPath) {
-		this.actions.requestFacade.calls.append({setRootPath: [arguments.rootPath]})
+		this.actions.handler.calls.append({setRootPath: [arguments.rootPath]})
 	}
 
-	// RequestFacade ==============================================================================
+	// Handler ==============================================================================
 
 	public void function importRoutes(required String mapping) {
-		this.actions.requestFacade.calls.append({importRoutes: [arguments.mapping]})
+		this.actions.handler.calls.append({importRoutes: [arguments.mapping]})
 	}
 	public void function purgeRoutes(required String mapping) {
-		this.actions.requestFacade.calls.append({purgeRoutes: [arguments.mapping]})
+		this.actions.handler.calls.append({purgeRoutes: [arguments.mapping]})
 	}
 
 	// TemplateRenderer ===========================================================================
@@ -252,14 +252,14 @@ component {
 		return this.elementFactory;
 	}
 
-	private RequestFacade function getRequestFacade() {
-		var object = this.actions.requestFacade
+	private Handler function getHandler() {
+		var object = this.actions.handler
 		if (object.construct) {
-			this.requestFacade = createRequestFacade()
+			this.handler = createHandler()
 			object.construct = false
 		}
 
-		return this.requestFacade;
+		return this.handler;
 	}
 
 	private Scope function getScope() {
@@ -312,8 +312,8 @@ component {
 		return new DefaultElementFactory();
 	}
 
-	private RequestFacade function createRequestFacade() {
-		return new RequestFacade(getCommandFactory());
+	private Handler function createHandler() {
+		return new Handler(getCommandFactory());
 	}
 
 	private TagRegistry function createTagRegistry() {

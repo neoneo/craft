@@ -13,7 +13,7 @@ component extends = TemplateRenderer {
 			Using an include instead of a module performs a little better.
 			In the template, care should be taken to scope all variables.
 		*/
-		StructAppend(local, arguments.model)
+		local.append(arguments.model)
 
 		savecontent variable = local.output {
 			include template = mapping;

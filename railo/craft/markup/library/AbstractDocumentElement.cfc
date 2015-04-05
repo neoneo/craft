@@ -4,7 +4,10 @@ import craft.content.LayoutContent;
 import craft.markup.Element;
 import craft.markup.Scope;
 
-component extends = Element abstract = true {
+/**
+ * @abstract
+ */
+component extends = Element {
 
 	property String layoutRef setter = false;
 
@@ -18,9 +21,9 @@ component extends = Element abstract = true {
 				var document = this.createDocument(layout.product)
 
 				// The child elements are all section elements. Each section element may contain multiple child elements.
-				this.children.each(function (child) {
+				for (var child in this.children) {
 					// Add the section under the placeholder attribute.
-					document.fillPlaceholder(arguments.child.placeholder, arguments.child.product)
+					document.fillPlaceholder(child.placeholder, child.product)
 				})
 
 				this.product = document

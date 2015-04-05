@@ -13,8 +13,8 @@ component extends = Element accessors = true tag = section {
 			var section = new Section()
 
 			// Now add the child elements to the section.
-			this.children.each(function (child) {
-				section.addComponent(arguments.child.product)
+			for (var child in this.children) {
+				section.addComponent(child.product)
 			})
 
 			this.product = section

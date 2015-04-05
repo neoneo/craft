@@ -1,4 +1,4 @@
-import craft.util.ObjectHelper;
+import craft.util.Metadata;
 
 component accessors = true {
 
@@ -9,7 +9,7 @@ component accessors = true {
 	this.factoryCache = {} // Used in order to create one instance per factory class.
 	this.tags = {} // Metadata of tags per namespace.
 
-	this.objectHelper = new ObjectHelper()
+	this.metadata = new Metadata()
 
 	public void function init(required ElementFactory defaultElementFactory) {
 		this.defaultElementFactory = arguments.defaultElementFactory
@@ -22,7 +22,8 @@ component accessors = true {
 	 */
 	public void function register(required String mapping) {
 
-		var path = ExpandPath(arguments.mapping)
+		var mapping = arguments.mapping
+		var path = ExpandPath(mapping)
 
 		// See if there is a craft.ini here.
 		var settingsFile = path & "/craft.ini"
@@ -43,7 +44,7 @@ component accessors = true {
 			// The element factory for this namespace can be specified by class name.
 			if (sections.craft.listFind("factory") > 0) {
 				// The class name is interpreted relative to the current mapping.
-				var className = arguments.mapping.listChangeDelims(".", "/") & "." & GetProfileString(settingsFile, "craft", "factory")
+				var className = mapping.listChangeDelims(".", "/") & "." & GetProfileString(settingsFile, "craft", "factory")
 				if (!this.factoryCache.keyExists(className)) {
 					this.factoryCache[className] = new "#className#"()
 				}
@@ -53,43 +54,36 @@ component accessors = true {
 				this.factories[namespace] = this.defaultElementFactory
 			}
 
-			var registerPaths = null
+			var registerMappings = null
 			if (sections.craft.listFind("directories") > 0) {
 				// The directories key contains a comma separated list of directories that should exist below the current one.
 				var directories = GetProfileString(settingsFile, "craft", "directories")
-				registerPaths = directories.listToArray().map(function (directory) {
+				registerMappings = directories.listToArray().map(function (directory) {
 					var directory = arguments.directory.trim()
 					var separator = directory.startsWith("/") ? "" : "/"
-					return path & separator & directory;
+					return mapping & separator & directory;
 				})
 			} else {
-				registerPaths = [path]
+				registerMappings = [mapping]
 			}
 
-			var mapping = arguments.mapping
-			registerPaths.each(function (registerPath) {
-				var registerPath = arguments.registerPath
-				var subdirectory = registerPath.replace(path, "")
+			registerMappings.each(function (registerMapping) {
 				// Pick up all classes in this directory (recursively) and keep the ones that extend Element.
-				DirectoryList(registerPath, true, "path", "*.cfc").each(function (filePath) {
-					// Construct the class name. Replace the directory with the mapping, make that a dot delimited path and remove the cfc extension.
-					var className = arguments.filePath.replace(registerPath, mapping & subdirectory).listChangeDelims(".", "/").reReplace("\.cfc$", "")
-					var metadata = GetComponentMetadata(className)
-
+				this.metadata.scan(arguments.registerMapping, true).each(function (metadata) {
 					// Ignore classes with the abstract annotation.
-					var abstract = metadata.abstract ?: false
-					if (!abstract && this.objectHelper.extends(metadata, this.elementClassName)) {
+					var abstract = arguments.metadata.abstract ?: false
+					if (!abstract && this.metadata.extends(arguments.metadata, this.elementClassName)) {
 						// If a tag annotation is present, that will be the tag name. Otherwise we take the class name.
-						var tagName = metadata.tag ?: metadata.name
+						var tagName = arguments.metadata.tag ?: arguments.metadata.name
+						if (this.tags[namespace].keyExists(tagName)) {
+							Throw("Tag '#tagName#' already exists in namespace '#namespace#'", "AlreadyBoundException");
+						}
 						var data = {
-							class: metadata.name,
-							attributes: this.objectHelper.collectProperties(metadata).filter(function (property) {
+							class: arguments.metadata.name,
+							attributes: this.metadata.collectProperties(arguments.metadata).filter(function (property) {
 								// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
 								return arguments.property.attribute ?: true;
 							})
-						}
-						if (this.tags[namespace].keyExists(tagName)) {
-							Throw("Tag '#tagName#' already exists in namespace '#namespace#'", "AlreadyBoundException");
 						}
 						// Store the tag data.
 						this.tags[namespace][tagName] = data
@@ -98,7 +92,7 @@ component accessors = true {
 			})
 		} else {
 			// Call again for each subdirectory.
-			var mapping = arguments.mapping
+			var mapping = mapping
 			DirectoryList(path, false, "name").each(function (name) {
 				if (DirectoryExists(path & "/" & arguments.name)) {
 					this.register(mapping & "/" & arguments.name)
