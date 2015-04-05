@@ -1,3 +1,6 @@
+/**
+ * The reflector provides methods for inspecting and modifying object instances.
+ */
 component {
 
 	this.accessLevels = {
@@ -50,56 +53,21 @@ component {
 	}
 
 	/**
-	 * Initializes the object. Applicable if the object is not created using `new`.
-	 */
-	public void function initialize(required Component object, Struct parameters = {}) {
-
-		// If the instance has a public init method, invoke it. Otherwise, run setters for each item in the argument collection.
-		var metadata = GetMetadata(arguments.object)
-		if (this.methodExists(metadata, "init", "public")) {
-			arguments.object.init(argumentCollection: arguments.parameters)
-		} else {
-			var object = arguments.object
-			arguments.parameters.each(function (name, value) {
-				var setter = "set" & arguments.name
-				if (this.methodExists(metadata, setter, "public")) {
-					Invoke(object, setter, [arguments.value])
-				}
-			})
-		}
-
-	}
-
-	/**
-	 * Injects all public and remote functions defined in the trait into the object.
-	 */
-	public void function mixin(required Component object, required Component trait) {
-
-		var accessLevel = this.accessLevels.public
-
-		var object = arguments.object
-		var trait = arguments.trait
-		this.collectFunctions(GetMetadata(arguments.trait)).each(function (metadata) {
-			if (this.accessLevels[arguments.metadata.access] >= accessLevel) {
-				var name = arguments.metadata.name
-				object[name] = trait[name]
-			}
-		})
-
-	}
-
-	/**
 	 * Returns the metadata of all properties defined in the given metadata (obtained using `GetMetadata` or `GetComponentMetadata`).
 	 */
 	public Struct[] function collectProperties(required Struct metadata) {
-		return collect("properties", arguments.metadata);
+		return this.collect("properties", arguments.metadata);
 	}
 
+	/**
+	 * Returns the metadata of all functions defined in the given metadata.
+	 */
 	public Struct[] function collectFunctions(required Struct metadata) {
-		return collect("functions", arguments.metadata);
+		return this.collect("functions", arguments.metadata);
 	}
 
 	private Struct[] function collect(required String type, required Struct metadata) {
+
 		var items = []
 		var names = []
 		var metadata = arguments.metadata
@@ -119,5 +87,20 @@ component {
 		return items;
 	}
 
+	/**
+	 * Returns the metadata for all classes found under the mapping.
+	 */
+	public Struct[] function scan(required String mapping, Boolean recursive = true) {
+
+		var mapping = arguments.mapping
+		var directory = ExpandPath(mapping)
+		return DirectoryList(directory, arguments.recursive, "path", "*.cfc").map(function (path) {
+			// Construct the class name. Replace the directory with the mapping, make that a dot delimited path and remove the cfc extension.
+			var className = arguments.filePath.replace(directory, mapping).listChangeDelims(".", "/").reReplace("\.cfc$", "")
+			return GetComponentMetadata(className);
+		}).filter(function (metadata) {
+			return arguments.metadata.type == "component";
+		});
+	}
 
 }

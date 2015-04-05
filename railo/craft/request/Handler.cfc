@@ -6,6 +6,8 @@ component {
 		this.root = this.createRoot()
 		this.routesParser = this.createRoutesParser(this.root, arguments.commandFactory)
 
+		this.statusPaths = {}
+
 	}
 
 	public void function importRoutes(required String mapping) {
@@ -16,59 +18,75 @@ component {
 		this.routesParser.purge(ExpandPath(arguments.mapping))
 	}
 
+	public void function mapStatusCode(required Numeric code, required String path) {
+		this.statusPaths[arguments.code] = arguments.path
+	}
+
 	public void function handleRequest() {
 
 		var context = new Context(this.endpoint, this.root)
 
 		try {
-			var output = context.handleRequest()
+			var result = context.processRequest()
 
-			header statuscode="#context.statusCode#";
-			content type="#context.contentType#; charset=#context.characterSet#";
+			header statuscode = context.statusCode;
+			content type = "#context.contentType#; charset=#context.characterSet#";
 
 			if (context.downloadAs !== null) {
-				header name="Content-Disposition" value="attachment; filename=#context.downloadAs#";
+				header name = "Content-Disposition" value = "attachment; filename=#context.downloadAs#";
 			}
 
+			var output = null
 			switch (context.contentType) {
 				case "text/html":
-					// TODO: dependencies
+				case "text/plain":
 					break;
 
 				case "application/json":
-					if (IsArray(output) || IsStruct(output)) {
-						output = SerializeJSON(output)
+					if (IsArray(result) || IsStruct(result) || IsSimpleValue(result) && !IsJSON(result)) {
+						output = SerializeJSON(result)
 					}
 					break;
 
 				case "application/xml":
-					if (IsXMLNode(output)) {
-						output = ToString(output)
+					if (IsXMLNode(result)) {
+						output = ToString(result)
 					}
 					break;
 
 				case "application/pdf":
-
+					document format = "pdf" name = "output" {
+						WriteOutput(result)
+					}
 					break;
 			}
 
 			if (IsBinary(output)) {
-				content variable="#output#";
+				content variable = output;
 			} else if (context.downloadFile !== null) {
-				content file="#context.downloadFile#" deletefile="#context.deleteFile ?: false#";
+				content file = context.downloadFile deletefile = (context.deleteFile ?: false);
 			} else {
 				WriteOutput(output)
 			}
 		} catch (BadRequestException e) {
-			header statuscode="400" statustext="#e.message#";
+			this.status(400, e.message)
 		} catch (UnauthorizedException e) {
-			header statuscode="401" statustext="#e.message#";
+			this.status(401, e.message)
 		} catch (ForbiddenException e) {
-			header statuscode="403" statustext="#e.message#";
+			this.status(403, e.message)
 		} catch (NotFoundException e) {
-			header statuscode="404" statustext="#e.message#";
+			this.status(404, e.message)
 		} catch (MethodNotAllowedException e) {
-			header statuscode="405" statustext="#e.message#";
+			this.status(405, e.message)
+		}
+	}
+
+	private void function status(required Numeric code, String text = "") {
+		content reset = true;
+		header statuscode = arguments.code statustext = arguments.text;
+
+		if (this.statusPaths.keyExists(arguments.code)) {
+			WriteOutput(context.get(this.statusPaths[arguments.code]))
 		}
 	}
 

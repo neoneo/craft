@@ -1,12 +1,8 @@
-import craft.framework.ContentCommandFactory;
-
-import craft.request.RequestFacade;
-
 component extends="tests.MocktorySpec" {
 
 	function run() {
 
-		describe("RequestFacade", function () {
+		describe("Handling requests", function () {
 
 			beforeEach(function () {
 				commandFactory = mock({
@@ -16,23 +12,19 @@ component extends="tests.MocktorySpec" {
 						return mock({
 							$interface: "Command",
 							execute: function (context) {
-								return {
-									command: identifier,
-									method: arguments.context.requestMethod,
-									path: arguments.context.path,
-									extension: arguments.context.extension,
-									parameters: arguments.context.parameters
-								}
+								return identifier;
 							}
 						});
 					}
 				})
 
-				requestFacade = mock({
-					$class: "RequestFacade",
+				handler = mock({
+					$class: "Handler",
+					// First override createEndPoint().
 					createEndPoint: mock("Endpoint")
 				})
-				requestFacade.init(commandFactory)
+				// Then call the constructor.
+				handler.init(commandFactory)
 			})
 
 			it("should be impl", function () {
