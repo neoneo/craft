@@ -28,7 +28,7 @@ component extends="tests.MocktorySpec" {
 					}
 				})
 
-				var result = fileBuilder.build(ExpandPath("/tests/unit/markup/stubs/build/file.xml"))
+				var result = fileBuilder.build(ExpandPath("/tests/unit/markup/filebuilder/file.xml"))
 
 				$assert.isSameInstance(element, result)
 				verify(elementBuilder, {
@@ -55,7 +55,7 @@ component extends="tests.MocktorySpec" {
 				})
 
 				expect(function () {
-					fileBuilder.build(ExpandPath("/tests/unit/markup/stubs/build/file.xml"))
+					fileBuilder.build(ExpandPath("/tests/unit/markup/filebuilder/file.xml"))
 				}).toThrow("InstantiationException")
 			})
 

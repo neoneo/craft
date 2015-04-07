@@ -29,12 +29,6 @@ component {
 				var singleton = metadata.singleton ?: false
 				var transient = metadata.transient ?: false
 				if (singleton || transient) {
-					var name = metadata.name.listLast(".")
-					if (this.has(name)) {
-						// For now, throw an exception.
-						Throw("Object '#name#' is already registered", "AlreadyBoundException");
-					}
-
 					var info = {
 						class: metadata.name,
 						singleton: singleton,
@@ -65,7 +59,29 @@ component {
 						}
 					}
 
-					this.registry[name] = info
+					// Try to register under a short name. Create aliases for all longer names.
+					var parts = metadata.name.listToArray(".")
+					var name = parts.last()
+					var registered = false
+					var registerName = null
+					for (var i = parts.len() - 1; i >= 1; i -= 1) {
+						if (this.has(name)) {
+							// Add the package to make the name more specific.
+							name = parts[i] & "." & name
+						} else {
+							if (!registered) {
+								this.registry[name] = info
+								registerName = name
+								registered = true
+							} else {
+								// Refer to the registration with an alias.
+								this.aliases[name] = registerName
+							}
+						}
+					}
+					if (!registered) {
+						Throw("Object '#metadata.name#' is already registered", "AlreadyBoundException");
+					}
 				}
 			}
 
@@ -135,8 +151,7 @@ component {
 	 * Returns a new instance of the class registered under the given name.
 	 */
 	public Component function newInstance(required String name, Struct properties = {}) {
-		var info = this.info(arguments.name)
-		return this.instantiate(info, arguments.properties);
+		return this.instantiate(this.info(arguments.name), arguments.properties);
 	}
 
 	/**
@@ -151,10 +166,14 @@ component {
 				var name = parameter.name
 				if (arguments.properties.keyExists(name)) {
 					collection[name] = properties[name]
+				} else if (this.has(name & "@" & info.name)) {
+					collection[name] = this.instance(name & "@" & info.name)
 				} else if (this.has(name)) {
 					collection[name] = this.instance(name)
-				} else if (parameter.required) {
-					Throw("Cannot find object for required constructor argument #parameter.name#");
+				} else {
+					if (parameter.required) {
+						Throw("Cannot find object for required constructor argument #parameter.name#");
+					}
 				}
 			}
 		}

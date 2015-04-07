@@ -12,16 +12,17 @@ component extends="tests.MocktorySpec" {
 				})
 				tagRegistry = new TagRegistry(elementFactory)
 
-				mapping = "/tests/unit/markup/stubs"
+				mapping = "/tests/unit/markup/tagregistry"
 				dotMapping = mapping.listChangeDelims(".", "/")
 			})
+
+			// TODO: mock Metadata.
 
 			describe(".register", function () {
 
 				var sameItems = function (expected, actual) {
 					return arguments.expected.containsAll(arguments.actual) && arguments.actual.containsAll(arguments.expected);
 				}
-
 
 				it("should register nothing if craft.ini is not found", function () {
 					tagRegistry.register(mapping & "/nosettings")

@@ -104,7 +104,7 @@ component accessors = true {
 			if (!child.hasCommand() && !child.getHasChildren()) {
 				removeChild(child)
 			}
-		})
+		}
 
 	}
 

@@ -10,16 +10,16 @@ component extends="tests.MocktorySpec" {
 				objectProvider = new ObjectProvider()
 			})
 
-			describe(".registerAll", function () {
+			xdescribe(".registerAll", function () {
 
 				beforeEach(function () {
 					metadata = mock({
 						$class: "Metadata",
 						scan: [
-							GetComponentMetadata(),
-							GetComponentMetadata(),
-							GetComponentMetadata(),
-							GetComponentMetadata(),
+							// GetComponentMetadata(),
+							// GetComponentMetadata(),
+							// GetComponentMetadata(),
+							// GetComponentMetadata(),
 						]
 					})
 					mock(objectProvider).$property("metadata", "this", metadata)

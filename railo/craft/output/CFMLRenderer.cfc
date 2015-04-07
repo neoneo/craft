@@ -15,7 +15,7 @@ component extends = TemplateRenderer {
 		*/
 		local.append(arguments.model)
 
-		savecontent variable = local.output {
+		savecontent variable = "local.output" {
 			include template = mapping;
 		}
 

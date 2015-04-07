@@ -2,6 +2,11 @@ import craft.util.Metadata;
 
 component extends="testbox.system.BaseSpec" {
 
+	function beforeAll() {
+		mapping = "/tests/unit/util/metadata"
+		dotMapping = mapping.listChangeDelims(".", "/")
+	}
+
 	function run() {
 
 		describe("Metadata", function () {
@@ -12,7 +17,7 @@ component extends="testbox.system.BaseSpec" {
 			describe(".methodExists for class without inheritance", function () {
 
 				beforeEach(function () {
-					metadata = GetComponentMetadata("classes.BaseClass")
+					metadata = GetComponentMetadata(dotMapping & ".BaseClass")
 				})
 
 				describe("and explicit methods", function () {
@@ -71,7 +76,7 @@ component extends="testbox.system.BaseSpec" {
 			describe(".methodExists for class with inheritance", function () {
 
 				beforeEach(function () {
-					metadata = GetComponentMetadata("classes.SubSubClass")
+					metadata = GetComponentMetadata(dotMapping & ".SubSubClass")
 				})
 
 				describe("and explicit methods", function () {
@@ -121,9 +126,9 @@ component extends="testbox.system.BaseSpec" {
 			describe(".extends", function () {
 
 				beforeEach(function () {
-					metadata = GetComponentMetadata("classes.BaseClass")
-					submetadata = GetComponentMetadata("classes.SubClass")
-					subsubmetadata = GetComponentMetadata("classes.SubSubClass")
+					metadata = GetComponentMetadata(dotMapping & ".BaseClass")
+					submetadata = GetComponentMetadata(dotMapping & ".SubClass")
+					subsubmetadata = GetComponentMetadata(dotMapping & ".SubSubClass")
 				})
 
 				it("should return true if the given metadata belongs to a subclass", function () {
@@ -144,7 +149,7 @@ component extends="testbox.system.BaseSpec" {
 			describe(".collectProperties", function () {
 
 				it("should return the property metadata defined in the class and its superclasses", function () {
-					var metadata = GetComponentMetadata("classes.SubSubClass")
+					var metadata = GetComponentMetadata(dotMapping & ".SubSubClass")
 					var properties = meta.collectProperties(metadata)
 						.sort(function (propertyA, propertyB) {
 							return CompareNoCase(arguments.propertyA.name, arguments.propertyB.name);
@@ -163,7 +168,7 @@ component extends="testbox.system.BaseSpec" {
 			describe(".collectFunctions", function () {
 
 				it("should return the function metadata defined in the class and its superclasses", function () {
-					var metadata = GetComponentMetadata("classes.SubSubClass")
+					var metadata = GetComponentMetadata(dotMapping & ".SubSubClass")
 					var functions = meta.collectFunctions(metadata)
 						.map(function (metadata) {
 							// For this test we are only interested in the existence of the function with the proper access level.
@@ -197,9 +202,35 @@ component extends="testbox.system.BaseSpec" {
 			})
 
 			describe(".scan", function () {
-				it("should be implemented", function () {
-					fail("TODO")
+
+				it("should return the metadata of all classes in the mapping", function () {
+					var results = meta.scan(mapping, false).map(function (metadata) {
+						return arguments.metadata.name;
+					}).sort("textnocase")
+					expect(results).toBe([
+						dotMapping & ".BaseClass",
+						dotMapping & ".SubClass",
+						dotMapping & ".SubSubClass"
+					])
 				})
+
+				it("should ignore the metadata of interfaces", function () {
+					var results = meta.scan(mapping & "/interface", false)
+					expect(results).toBeEmpty()
+				})
+
+				it("should return the metadata of all classes in the mapping recursively", function () {
+					var results = meta.scan(mapping, true).map(function (metadata) {
+						return arguments.metadata.name;
+					}).sort("textnocase")
+					expect(results).toBe([
+						dotMapping & ".BaseClass",
+						dotMapping & ".package.Class",
+						dotMapping & ".SubClass",
+						dotMapping & ".SubSubClass"
+					])
+				})
+
 			})
 
 		})

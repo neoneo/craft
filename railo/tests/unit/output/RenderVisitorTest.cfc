@@ -329,7 +329,7 @@ component extends="tests.MocktorySpec" {
 					expect(visitor.content).toBe(content)
 				})
 
-				it("should result in concatenated of generated content if all components generate string content", function () {
+				it("should result in concatenation of generated content if all components generate string content", function () {
 					var leaves = [
 						mock({
 							$class: "Leaf",
@@ -357,7 +357,7 @@ component extends="tests.MocktorySpec" {
 								$returns: {
 									$class: "View",
 									// Return a stringifiable object.
-									render: new stubs.StringifiableStub("tent")
+									render: new rendervisitor.StringifiableStub("tent")
 								}
 							}
 						]

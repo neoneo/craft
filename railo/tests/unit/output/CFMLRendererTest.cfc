@@ -8,7 +8,7 @@ component extends="testbox.system.BaseSpec" {
 
 			beforeEach(function () {
 				renderer = new CFMLRenderer()
-				renderer.addMapping("/tests/unit/output/templates")
+				renderer.addMapping("/tests/unit/output/cfmlrenderer")
 				template = "renderer"
 			})
 

@@ -3,7 +3,7 @@ import craft.util.FileFinder;
 component extends="testbox.system.BaseSpec" {
 
 	function beforeAll() {
-		mapping = "/tests/unit/util/fileFinder"
+		mapping = "/tests/unit/util/filefinder"
 	}
 
 	function run() {

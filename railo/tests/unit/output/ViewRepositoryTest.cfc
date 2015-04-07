@@ -2,7 +2,7 @@ import craft.output.ViewRepository;
 
 component extends="tests.MocktorySpec" {
 
-	mapping = "/tests/unit/output/stubs"
+	mapping = "/tests/unit/output/viewrepository"
 	dotMapping = mapping.listChangeDelims(".", "/")
 
 	function run() {

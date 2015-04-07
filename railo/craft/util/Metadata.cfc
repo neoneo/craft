@@ -96,7 +96,7 @@ component {
 		var directory = ExpandPath(mapping)
 		return DirectoryList(directory, arguments.recursive, "path", "*.cfc").map(function (path) {
 			// Construct the class name. Replace the directory with the mapping, make that a dot delimited path and remove the cfc extension.
-			var className = arguments.filePath.replace(directory, mapping).listChangeDelims(".", "/").reReplace("\.cfc$", "")
+			var className = arguments.path.replace(directory, mapping).listChangeDelims(".", "/").reReplace("\.cfc$", "")
 			return GetComponentMetadata(className);
 		}).filter(function (metadata) {
 			return arguments.metadata.type == "component";

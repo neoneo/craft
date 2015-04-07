@@ -3,7 +3,7 @@ import craft.util.ClassFinder;
 component extends="testbox.system.BaseSpec" {
 
 	function beforeAll() {
-		mapping = "/tests/unit/util/classFinder"
+		mapping = "/tests/unit/util/classfinder"
 		dotMapping = mapping.listChangeDelims(".", "/")
 	}
 

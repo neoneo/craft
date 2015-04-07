@@ -348,7 +348,7 @@ component {
 		} else if (IsArray(expected) && IsArray(actual)) {
 
 			return expected.len() == actual.len() && expected.every(function (_, index) {
-				return  this.isEqual(expected[arguments.index ?: JavaCast("null", 0)], actual[arguments.index] ?: JavaCast("null", 0));
+				return this.isEqual(expected[arguments.index ?: JavaCast("null", 0)], actual[arguments.index] ?: JavaCast("null", 0));
 			});
 
 		} else if (IsQuery(expected) && IsQuery(actual)) {
