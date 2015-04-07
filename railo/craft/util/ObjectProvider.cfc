@@ -51,7 +51,10 @@ component {
 						for (var property in properties) {
 							// Only include the setter if it is public.
 							if (this.metadata.methodExists(metadata, "set" & property.name, "public")) {
-								setters[property.name] = property
+								setters[property.name] = {
+									type: property.type,
+									required: property.required ?: false
+								}
 							}
 						}
 						if (!setters.isEmpty()) {
@@ -59,16 +62,14 @@ component {
 						}
 					}
 
-					// Try to register under a short name. Create aliases for all longer names.
-					var parts = metadata.name.listToArray(".")
-					var name = parts.last()
+					// Try to register under a short name. Create aliases for all longer names, including packages.
+					var parts = metadata.name.listToArray(".").reverse()
+					var name = ""
 					var registered = false
 					var registerName = null
-					for (var i = parts.len() - 1; i >= 1; i -= 1) {
-						if (this.has(name)) {
-							// Add the package to make the name more specific.
-							name = parts[i] & "." & name
-						} else {
+					for (var part in parts) {
+						name = name.listPrepend(part, ".")
+						if (!this.has(name, false)) {
 							if (!registered) {
 								this.registry[name] = info
 								registerName = name
@@ -93,7 +94,7 @@ component {
 	 * Maps the given name to the given alias.
 	 */
 	public void function registerAlias(required String alias, required String name) {
-		if (this.has(arguments.name)) {
+		if (this.has(arguments.name, false)) {
 			Throw("Object '#arguments.name#' is already registered", "AlreadyBoundException");
 		}
 		this.aliases[arguments.alias] = arguments.name
@@ -103,19 +104,27 @@ component {
 	 * Registers any value (objects and constants) under the given name as a singleton.
 	 */
 	public void function register(required String name, required Any value) {
-		if (this.has(arguments.name)) {
+		if (this.has(arguments.name, false)) {
 			Throw("Object '#arguments.name#' is already registered", "AlreadyBoundException");
 		}
 
 		this.cache[arguments.name] = arguments.value
 	}
 
-	public Boolean function has(required String name) {
-		return this.cache.keyExists(arguments.name) || this.registry.keyExists(arguments.name) || this.aliases.keyExists(arguments.name);
+	/**
+	 * Returns whether an object is registered under the given name.
+	 */
+	public Boolean function has(required String name, Boolean recursive = true) {
+		var found = this.registry.keyExists(arguments.name) || this.aliases.keyExists(arguments.name)
+		if (!found && arguments.recursive && this.parent !== null) {
+			found = this.parent.has(arguments.name, true)
+		}
+
+		return found;
 	}
 
 	/**
-	 * Returns metadata about the object registered under the name or alias.
+	 * Returns metadata about the object registered under the name or alias. The parent provider is not searched.
 	 */
 	public Struct function info(required String name) {
 		var register = arguments.name
@@ -134,14 +143,17 @@ component {
 	 */
 	public Any function instance(required String name, Struct properties = {}) {
 		if (!this.cache.keyExists(arguments.name)) {
-			// There should be some class registered under this name.
-			var info = this.info(arguments.name)
-			var instance = this.instantiate(info, arguments.properties)
-			if (info.singleton) {
-				this.cache[arguments.name] = instance
-			}
+			if (this.has(arguments.name, false)) {
+				var info = this.info(arguments.name)
+				var instance = this.instantiate(info, arguments.properties)
+				if (info.singleton) {
+					this.cache[arguments.name] = instance
+				}
 
-			return instance;
+				return instance;
+			} else if (this.parent !== null) {
+				return this.parent.instance(arguments.name, arguments.properties);
+			}
 		}
 
 		return this.cache[arguments.name];
@@ -151,7 +163,11 @@ component {
 	 * Returns a new instance of the class registered under the given name.
 	 */
 	public Component function newInstance(required String name, Struct properties = {}) {
-		return this.instantiate(this.info(arguments.name), arguments.properties);
+		if (this.has(arguments.name, false)) {
+			return this.instantiate(this.info(arguments.name), arguments.properties);
+		} else if (this.parent !== null) {
+			return this.parent.newInstance(arguments.name, arguments.properties);
+		}
 	}
 
 	/**
@@ -166,9 +182,9 @@ component {
 				var name = parameter.name
 				if (arguments.properties.keyExists(name)) {
 					collection[name] = properties[name]
-				} else if (this.has(name & "@" & info.name)) {
+				} else if (this.has(name & "@" & info.name, true)) {
 					collection[name] = this.instance(name & "@" & info.name)
-				} else if (this.has(name)) {
+				} else if (this.has(name, true)) {
 					collection[name] = this.instance(name)
 				} else {
 					if (parameter.required) {
@@ -184,7 +200,7 @@ component {
 			for (var name in arguments.info.setters) {
 				if (arguments.properties.keyExists(name)) {
 					Invoke(instance, "set" & name, [arguments.properties[name]])
-				} if (this.has(name)) {
+				} if (this.has(name, true)) {
 					Invoke(instance, "set" & name, [this.instance(name)])
 				} else if (arguments.info.setters[name].required ?: false) {
 					Throw("Cannot find object for required property #parameter.name#");

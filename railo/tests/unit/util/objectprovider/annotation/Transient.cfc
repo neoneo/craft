@@ -1,0 +1,6 @@
+/**
+ * @transient
+ */
+component {
+
+}
