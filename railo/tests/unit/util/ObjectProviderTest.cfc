@@ -127,8 +127,8 @@ component extends="tests.MocktorySpec" {
 						expect(objectProvider.has("string")).toBeFalse()
 						expect(objectProvider.has("number")).toBeFalse()
 
-						objectProvider.register("string", "string")
-						objectProvider.register("number", 42)
+						objectProvider.registerValue("string", "string")
+						objectProvider.registerValue("number", 42)
 
 						// We can't really check these instances from the provider without .instance, we'll test that below.
 						expect(objectProvider.has("string")).toBeTrue()
@@ -146,7 +146,7 @@ component extends="tests.MocktorySpec" {
 					})
 
 					it("should register the alias if there is an object registered under the original name", function () {
-						objectProvider.register("object1", 42)
+						objectProvider.registerValue("object1", 42)
 
 						expect(objectProvider.has("object2")).toBeFalse()
 						objectProvider.registerAlias("object1", "object2")
@@ -155,7 +155,7 @@ component extends="tests.MocktorySpec" {
 					})
 
 					it("should throw AlreadyBoundException if the name is already taken", function () {
-						objectProvider.register("object1", 42)
+						objectProvider.registerValue("object1", 42)
 						objectProvider.registerAlias("object1", "object2")
 
 						expect(function () {
@@ -171,7 +171,7 @@ component extends="tests.MocktorySpec" {
 
 						it("should return the original object", function () {
 							var object = {object: "object"}
-							objectProvider.register("object", object)
+							objectProvider.registerValue("object", object)
 
 							var result = objectProvider.instance("object")
 							expect(result).toBe(object)
@@ -180,7 +180,7 @@ component extends="tests.MocktorySpec" {
 
 						it("should return the original object when requested using an alias", function () {
 							var object = {object: "object"}
-							objectProvider.register("object1", object)
+							objectProvider.registerValue("object1", object)
 							objectProvider.registerAlias("object1", "object2")
 
 							var result = objectProvider.instance("object2")
@@ -252,10 +252,10 @@ component extends="tests.MocktorySpec" {
 							setup([className])
 
 							// Register values for all constructor arguments and properties.
-							objectProvider.register("property1", "property1")
-							objectProvider.register("property2", 2)
-							objectProvider.register("argument1", 1)
-							objectProvider.register("argument2", "argument2")
+							objectProvider.registerValue("property1", "property1")
+							objectProvider.registerValue("property2", 2)
+							objectProvider.registerValue("argument1", 1)
+							objectProvider.registerValue("argument2", "argument2")
 
 							var result = objectProvider.instance("InjectValues")
 
@@ -273,8 +273,8 @@ component extends="tests.MocktorySpec" {
 							setup([className, injectValuesClassName, emptyClassName])
 
 							// Register required values for InjectValues.
-							objectProvider.register("property2", 2)
-							objectProvider.register("argument1", 1)
+							objectProvider.registerValue("property2", 2)
+							objectProvider.registerValue("argument1", 1)
 
 							// Test.
 							var result = objectProvider.instance("InjectInstances")
@@ -303,14 +303,14 @@ component extends="tests.MocktorySpec" {
 
 					it("should also search the parent for the object", function () {
 						expect(child.has("object")).toBeFalse()
-						parent.register("object", 42)
+						parent.registerValue("object", 42)
 
 						expect(child.has("object")).toBeTrue()
 					})
 
 					it("should not search the parent if the search is not recursive", function () {
 						expect(child.has("object")).toBeFalse()
-						parent.register("object", 42)
+						parent.registerValue("object", 42)
 
 						expect(child.has("object", false)).toBeFalse()
 					})
@@ -356,11 +356,11 @@ component extends="tests.MocktorySpec" {
 				describe(".register", function () {
 
 					it("should register the object despite it being registered by the parent", function () {
-						parent.register("object", 42)
+						parent.registerValue("object", 42)
 						expect(child.has("object", false)).toBeFalse()
 
 						expect(function () {
-							child.register("object", 142)
+							child.registerValue("object", 142)
 						}).notToThrow()
 
 						expect(child.has("object", false)).toBeTrue()
@@ -371,7 +371,7 @@ component extends="tests.MocktorySpec" {
 				describe(".registerAlias", function () {
 
 					it("should throw NotBoundException despite the original object being registered by the parent", function () {
-						parent.register("object1", 42)
+						parent.registerValue("object1", 42)
 
 						expect(function () {
 							child.registerAlias("object1", "object2")
@@ -379,11 +379,11 @@ component extends="tests.MocktorySpec" {
 					})
 
 					it("should register the alias despite it being registered by the parent", function () {
-						parent.register("object1", 42)
+						parent.registerValue("object1", 42)
 						parent.registerAlias("object1", "object2")
 
 						expect(function () {
-							child.register("object1", 142)
+							child.registerValue("object1", 142)
 							child.registerAlias("object1", "object2")
 						}).notToThrow()
 

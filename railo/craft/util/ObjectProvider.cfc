@@ -23,75 +23,79 @@ component accessors = true {
 	 * with an abstract annotation.
 	 */
 	public void function registerAll(required String mapping) {
+		this.metadata.list(arguments.mapping, true).each(function (metadata) {
+			this.registerMetadata(arguments.metadata)
+		})
+	}
 
-		for (var metadata in this.metadata.list(arguments.mapping, true)) {
+	public void function register(required String mapping) {
+		this.registerMetadata(GetComponentMetadata(arguments.mapping))
+	}
 
-			var abstract = metadata.abstract ?: false
-			if (!abstract) {
-				// Search for the @singleton and @transient annotations in the class or its superclasses.
-				var singleton = this.metadata.annotation(metadata, "singleton") ?: false
-				var transient = !singleton && (this.metadata.annotation(metadata, "transient") ?: false)
-				if (singleton || transient) {
-					var info = {
-						name: null, // The name this class is registered under.
-						class: metadata.name,
-						singleton: singleton,
-						constructor: null,
-						setters: null,
-						configure: this.metadata.functionExists(metadata, "configure", "public")
-					}
+	private void function registerMetadata(required Struct metadata) {
+		var abstract = arguments.arguments.metadata.abstract ?: false
+		if (!abstract) {
+			// Search for the @singleton and @transient annotations in the class or its superclasses.
+			var singleton = this.metadata.annotation(arguments.metadata, "singleton") ?: false
+			var transient = !singleton && (this.metadata.annotation(arguments.metadata, "transient") ?: false)
+			if (singleton || transient) {
+				var functions = this.metadata.collectFunctions(arguments.metadata)
+				var info = {
+					name: null, // The name this class is registered under.
+					class: arguments.metadata.name,
+					singleton: singleton,
+					constructor: null,
+					setters: null,
+					configure: functions.keyExists("configure") && functions.configure.access == "public"
+				}
 
-					var functions = this.metadata.collectFunctions(metadata)
-					// Find the constructor, if defined.
-					if (functions.keyExists("init") && functions.init.access == "public") {
-						if (functions.init.inject ?: true) {
-							info.constructor = functions.init.parameters.filter(function (parameter) {
-								return arguments.parameter.inject ?: true;
-							})
-						}
-					}
-
-					if (metadata.accessors) {
-						var properties = this.metadata.collectProperties(metadata)
-						var setters = properties.filter(function (name, property) {
-							// Only include the setter if it is public, and has no @inject = false annotation.
-							var setter = "set" & arguments.name
-							return functions.keyExists(setter) && functions[setter].access == "public" && (arguments.property.inject ?: true);
-						}).map(function (name, property) {
-							return {
-								type: arguments.property.type,
-								required: arguments.property.required ?: false
-							}
+				// Find the constructor, if defined.
+				if (functions.keyExists("init") && functions.init.access == "public") {
+					if (functions.init.inject ?: true) {
+						info.constructor = functions.init.parameters.filter(function (parameter) {
+							return arguments.parameter.inject ?: true;
 						})
-						if (!setters.isEmpty()) {
-							info.setters = setters
-						}
-					}
-
-					// Try to register under a short name. Create aliases for all longer names, including packages.
-					var parts = metadata.name.listToArray(".").reverse()
-					var name = ""
-					for (var part in parts) {
-						name = name.listPrepend(part, ".")
-						if (!this.has(name, false)) {
-							if (info.name === null) {
-								this.registry[name] = info
-								info.name = name
-							} else {
-								// Refer to the registration with an alias.
-								this.aliases[name] = info.name
-							}
-						}
-					}
-					if (info.name === null) {
-						// Could not register this class, probably because it is already registered since all of its possible aliases are already taken.
-						Throw("Object '#metadata.name#' is already registered", "AlreadyBoundException");
 					}
 				}
+
+				if (arguments.metadata.accessors) {
+					var properties = this.metadata.collectProperties(arguments.metadata)
+					var setters = properties.filter(function (name, property) {
+						// Only include the setter if it is public, and has no @inject = false annotation.
+						var setter = "set" & arguments.name
+						return functions.keyExists(setter) && functions[setter].access == "public" && (arguments.property.inject ?: true);
+					}).map(function (name, property) {
+						return {
+							type: arguments.property.type,
+							required: arguments.property.required ?: false
+						}
+					})
+					if (!setters.isEmpty()) {
+						info.setters = setters
+					}
+				}
+
+				// Try to register under a short name. Create aliases for all longer names, including packages.
+				var parts = arguments.metadata.name.listToArray(".").reverse()
+				var name = ""
+				for (var part in parts) {
+					name = name.listPrepend(part, ".")
+					if (!this.has(name, false)) {
+						if (info.name === null) {
+							this.registry[name] = info
+							info.name = name
+						} else {
+							// Refer to the registration with an alias.
+							this.aliases[name] = info.name
+						}
+					}
+				}
+				if (info.name === null) {
+					// Could not register this class, probably because it is already registered since all of its possible aliases are already taken.
+					Throw("Object '#arguments.metadata.name#' is already registered", "AlreadyBoundException");
+				}
 			}
-
 		}
-
 	}
 
 	/**
@@ -111,7 +115,7 @@ component accessors = true {
 	/**
 	 * Registers any value under the given name as a singleton.
 	 */
-	public void function register(required String name, required Any value) {
+	public void function registerValue(required String name, required Any value) {
 		if (this.has(arguments.name, false)) {
 			Throw("Object '#arguments.name#' is already registered", "AlreadyBoundException");
 		}
