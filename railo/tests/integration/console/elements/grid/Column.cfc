@@ -4,7 +4,7 @@ import craft.markup.Scope;
 
 import craft.markup.library.CompositeElement;
 
-component extends="CompositeElement" accessors="true" tag="column" {
+component extends="CompositeElement" accessors = true tag="column" {
 
 	property Numeric span default="1";
 

@@ -13,16 +13,16 @@ component {
 	/**
 	 * Returns whether the method is defined in the given metadata and has an access level at or above the required access level.
 	 */
-	public Boolean function methodExists(required Struct metadata, required String methodName, String requiredAccess = "private") {
+	public Boolean function functionExists(required Struct metadata, required String functionName, String requiredAccess = "private") {
 
 		var metadata = arguments.metadata
-		var methodName = arguments.methodName
+		var functionName = arguments.functionName
 		var accessLevel = this.accessLevels[arguments.requiredAccess]
 
 		do {
 			if (metadata.keyExists("functions")) {
 				var index = metadata.functions.find(function (metadata) {
-					return arguments.metadata.name == methodName;
+					return arguments.metadata.name == functionName;
 				})
 
 				if (index > 0) {
@@ -42,47 +42,46 @@ component {
 	 * obtained with `GetComponentMetadata`.
 	 */
 	 public Boolean function extends(required Struct metadata, required String className) {
-
-		var success = arguments.metadata.name == arguments.className
-
-		if (!success && arguments.metadata.keyExists("extends")) {
-			success = this.extends(arguments.metadata.extends, arguments.className)
+		if (arguments.metadata.name == arguments.className) {
+			return true;
 		}
 
-		return success;
+		if (arguments.metadata.keyExists("extends")) {
+			return this.extends(arguments.metadata.extends, arguments.className);
+		}
+
+		return false;
 	}
 
 	/**
 	 * Returns the metadata of all properties defined in the given metadata (obtained using `GetMetadata` or `GetComponentMetadata`).
 	 */
-	public Struct[] function collectProperties(required Struct metadata) {
+	public Struct function collectProperties(required Struct metadata) {
 		return this.collect("properties", arguments.metadata);
 	}
 
 	/**
 	 * Returns the metadata of all functions defined in the given metadata.
 	 */
-	public Struct[] function collectFunctions(required Struct metadata) {
+	public Struct function collectFunctions(required Struct metadata) {
 		return this.collect("functions", arguments.metadata);
 	}
 
-	private Struct[] function collect(required String type, required Struct metadata) {
+	private Struct function collect(required String type, required Struct metadata) {
 
-		var items = []
-		var names = []
+		var items = {}
 		var metadata = arguments.metadata
 
 		while (metadata !== null && metadata.keyExists(arguments.type)) {
 			for (var item in metadata[arguments.type]) {
 				// Let an item in a subclass take precedence over one of the same name in a superclass.
-				if (names.find(item.name) == 0) {
-					items.append(item)
-					names.append(item.name)
+				if (!items.keyExists(item.name)) {
+					items[item.name] = item
 				}
 			}
 
 			metadata = metadata.extends ?: null
-		};
+		}
 
 		return items;
 	}
@@ -90,7 +89,7 @@ component {
 	/**
 	 * Returns the metadata for all classes found under the mapping.
 	 */
-	public Struct[] function scan(required String mapping, Boolean recursive = true) {
+	public Struct[] function list(required String mapping, Boolean recursive = true) {
 
 		var mapping = arguments.mapping
 		var directory = ExpandPath(mapping)
@@ -101,6 +100,21 @@ component {
 		}).filter(function (metadata) {
 			return arguments.metadata.type == "component";
 		});
+	}
+
+	/**
+	 * Returns the value of the annotation if the metadata or its inheritance chain owns it.
+	 */
+	public Any function annotation(required Struct metadata, required String name) {
+		if (arguments.metadata.keyExists(arguments.name)) {
+			return arguments.metadata[arguments.name];
+		}
+
+		if (arguments.metadata.keyExists("extends")) {
+			return this.annotation(arguments.metadata.extends, arguments.name);
+		}
+
+		return null;
 	}
 
 }

@@ -1,4 +1,6 @@
 /**
+ * This class will get values injected.
+ *
  * @transient
  */
 component accessors = true {

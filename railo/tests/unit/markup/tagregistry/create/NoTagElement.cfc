@@ -1,6 +1,6 @@
 import craft.markup.*;
 
-component extends="Element" accessors="true" {
+component extends="Element" accessors = true {
 
 	property String name;
 

@@ -1,6 +1,6 @@
 import craft.markup.*;
 
-component extends="Element" tag="tagelement" accessors="true" {
+component extends="Element" tag="tagelement" accessors = true {
 
 	property String ref;
 	property String attribute1;

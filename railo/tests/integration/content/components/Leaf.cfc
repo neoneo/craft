@@ -1,4 +1,4 @@
-component extends="craft.content.Leaf" accessors="true" {
+component extends="craft.content.Leaf" accessors = true {
 
 	property String ref;
 

@@ -69,7 +69,7 @@ component accessors = true {
 
 			registerMappings.each(function (registerMapping) {
 				// Pick up all classes in this directory (recursively) and keep the ones that extend Element.
-				this.metadata.scan(arguments.registerMapping, true).each(function (metadata) {
+				this.metadata.list(arguments.registerMapping, true).each(function (metadata) {
 					// Ignore classes with the abstract annotation.
 					var abstract = arguments.metadata.abstract ?: false
 					if (!abstract && this.metadata.extends(arguments.metadata, this.elementClassName)) {

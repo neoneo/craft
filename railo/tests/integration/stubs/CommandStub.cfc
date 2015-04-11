@@ -1,7 +1,7 @@
 import craft.request.Command;
 import craft.request.Context;
 
-component implements="Command" accessors="true" {
+component implements="Command" accessors = true {
 
 	property String identifier;
 

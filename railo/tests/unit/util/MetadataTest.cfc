@@ -14,7 +14,7 @@ component extends="testbox.system.BaseSpec" {
 				meta = new Metadata()
 			})
 
-			describe(".methodExists for class without inheritance", function () {
+			describe(".functionExists for class without inheritance", function () {
 
 				beforeEach(function () {
 					metadata = GetComponentMetadata(dotMapping & ".BaseClass")
@@ -24,29 +24,29 @@ component extends="testbox.system.BaseSpec" {
 
 					it("should return true if the method has a high enough access modifier", function () {
 						// Public method:
-						expect(meta.methodExists(metadata, "publicMethod", "public")).toBeTrue()
+						expect(meta.functionExists(metadata, "publicMethod", "public")).toBeTrue()
 						// The method is public, so is also accessible if we have private or package access to the class.
-						expect(meta.methodExists(metadata, "publicMethod", "package")).toBeTrue("if package access is required, a public method should be accessible")
-						expect(meta.methodExists(metadata, "publicMethod", "private")).toBeTrue("if private access is required, a public method should be accessible")
+						expect(meta.functionExists(metadata, "publicMethod", "package")).toBeTrue("if package access is required, a public method should be accessible")
+						expect(meta.functionExists(metadata, "publicMethod", "private")).toBeTrue("if private access is required, a public method should be accessible")
 						// Private method:
-						expect(meta.methodExists(metadata, "privateMethod", "private")).toBeTrue()
+						expect(meta.functionExists(metadata, "privateMethod", "private")).toBeTrue()
 
 					})
 
 					it("should return false if the method does not have a high enough access modifier", function () {
 						// Remote access is not allowed for the public method.
-						expect(meta.methodExists(metadata, "publicMethod", "remote")).toBeFalse("if remote access is required, public access is not enough")
+						expect(meta.functionExists(metadata, "publicMethod", "remote")).toBeFalse("if remote access is required, public access is not enough")
 
 						// None of the other access levels would allow execution of the method.
-						expect(meta.methodExists(metadata, "privateMethod", "package")).toBeFalse()
-						expect(meta.methodExists(metadata, "privateMethod", "public")).toBeFalse()
-						expect(meta.methodExists(metadata, "privateMethod", "remote")).toBeFalse()
+						expect(meta.functionExists(metadata, "privateMethod", "package")).toBeFalse()
+						expect(meta.functionExists(metadata, "privateMethod", "public")).toBeFalse()
+						expect(meta.functionExists(metadata, "privateMethod", "remote")).toBeFalse()
 
 					})
 
 					it("should return false if the method does not exist", function () {
 						// Test with private access requirement, because any method that exists would return true then.
-						expect(meta.methodExists(metadata, "nonExistingMethod", "private")).toBeFalse()
+						expect(meta.functionExists(metadata, "nonExistingMethod", "private")).toBeFalse()
 					})
 
 				})
@@ -54,26 +54,26 @@ component extends="testbox.system.BaseSpec" {
 				describe("and generated methods", function () {
 
 					it("should return true if the property exists unless remote access is required", function () {
-						expect(meta.methodExists(metadata, "getProperty1", "public")).toBeTrue()
-						expect(meta.methodExists(metadata, "getProperty1", "package")).toBeTrue()
-						expect(meta.methodExists(metadata, "getProperty1", "private")).toBeTrue()
-						expect(meta.methodExists(metadata, "getProperty1", "remote")).toBeFalse()
+						expect(meta.functionExists(metadata, "getProperty1", "public")).toBeTrue()
+						expect(meta.functionExists(metadata, "getProperty1", "package")).toBeTrue()
+						expect(meta.functionExists(metadata, "getProperty1", "private")).toBeTrue()
+						expect(meta.functionExists(metadata, "getProperty1", "remote")).toBeFalse()
 					})
 
 					it("should return false if the property exists but has no accessor", function () {
 						// There is no setter for property2.
-						expect(meta.methodExists(metadata, "setProperty2", "private")).toBeFalse()
+						expect(meta.functionExists(metadata, "setProperty2", "private")).toBeFalse()
 					})
 
 					it("should return false if the property does not exist", function () {
-						expect(meta.methodExists(metadata, "setNonExistingProperty", "private")).toBeFalse()
+						expect(meta.functionExists(metadata, "setNonExistingProperty", "private")).toBeFalse()
 					})
 
 				})
 
 			})
 
-			describe(".methodExists for class with inheritance", function () {
+			describe(".functionExists for class with inheritance", function () {
 
 				beforeEach(function () {
 					metadata = GetComponentMetadata(dotMapping & ".SubSubClass")
@@ -83,26 +83,26 @@ component extends="testbox.system.BaseSpec" {
 
 					// publicMethod is now private (due to SubClass)
 					it("should return true if the method has a high enough access modifier", function () {
-						expect(meta.methodExists(metadata, "publicMethod", "private")).toBeTrue()
-						expect(meta.methodExists(metadata, "packageMethod", "private")).toBeTrue()
-						expect(meta.methodExists(metadata, "packageMethod", "package")).toBeTrue()
-						expect(meta.methodExists(metadata, "remoteMethod", "private")).toBeTrue()
-						expect(meta.methodExists(metadata, "remoteMethod", "package")).toBeTrue()
-						expect(meta.methodExists(metadata, "remoteMethod", "public")).toBeTrue()
-						expect(meta.methodExists(metadata, "remoteMethod", "remote")).toBeTrue()
+						expect(meta.functionExists(metadata, "publicMethod", "private")).toBeTrue()
+						expect(meta.functionExists(metadata, "packageMethod", "private")).toBeTrue()
+						expect(meta.functionExists(metadata, "packageMethod", "package")).toBeTrue()
+						expect(meta.functionExists(metadata, "remoteMethod", "private")).toBeTrue()
+						expect(meta.functionExists(metadata, "remoteMethod", "package")).toBeTrue()
+						expect(meta.functionExists(metadata, "remoteMethod", "public")).toBeTrue()
+						expect(meta.functionExists(metadata, "remoteMethod", "remote")).toBeTrue()
 
 					})
 
 					it("should return false if the method does not have a high enough access modifier", function () {
-						expect(meta.methodExists(metadata, "publicMethod", "package")).toBeFalse()
-						expect(meta.methodExists(metadata, "publicMethod", "public")).toBeFalse()
-						expect(meta.methodExists(metadata, "publicMethod", "remote")).toBeFalse()
-						expect(meta.methodExists(metadata, "packageMethod", "public")).toBeFalse()
-						expect(meta.methodExists(metadata, "packageMethod", "remote")).toBeFalse()
+						expect(meta.functionExists(metadata, "publicMethod", "package")).toBeFalse()
+						expect(meta.functionExists(metadata, "publicMethod", "public")).toBeFalse()
+						expect(meta.functionExists(metadata, "publicMethod", "remote")).toBeFalse()
+						expect(meta.functionExists(metadata, "packageMethod", "public")).toBeFalse()
+						expect(meta.functionExists(metadata, "packageMethod", "remote")).toBeFalse()
 					})
 
 					it("should return false if the method does not exist", function () {
-						expect(meta.methodExists(metadata, "nonExistingMethod", "private")).toBeFalse()
+						expect(meta.functionExists(metadata, "nonExistingMethod", "private")).toBeFalse()
 					})
 
 				})
@@ -110,13 +110,13 @@ component extends="testbox.system.BaseSpec" {
 				describe("and generated methods", function () {
 
 					it("should return true if the property exists unless remote access is required", function () {
-						expect(meta.methodExists(metadata, "getProperty1", "public")).toBeTrue()
-						expect(meta.methodExists(metadata, "getProperty1", "package")).toBeTrue()
-						expect(meta.methodExists(metadata, "getProperty1", "private")).toBeTrue()
-						expect(meta.methodExists(metadata, "getProperty1", "remote")).toBeFalse()
+						expect(meta.functionExists(metadata, "getProperty1", "public")).toBeTrue()
+						expect(meta.functionExists(metadata, "getProperty1", "package")).toBeTrue()
+						expect(meta.functionExists(metadata, "getProperty1", "private")).toBeTrue()
+						expect(meta.functionExists(metadata, "getProperty1", "remote")).toBeFalse()
 
 						// The setter for property2 should now exist.
-						expect(meta.methodExists(metadata, "setProperty2", "private")).toBeTrue()
+						expect(meta.functionExists(metadata, "setProperty2", "private")).toBeTrue()
 					})
 
 				})
@@ -151,16 +151,13 @@ component extends="testbox.system.BaseSpec" {
 				it("should return the property metadata defined in the class and its superclasses", function () {
 					var metadata = GetComponentMetadata(dotMapping & ".SubSubClass")
 					var properties = meta.collectProperties(metadata)
-						.sort(function (propertyA, propertyB) {
-							return CompareNoCase(arguments.propertyA.name, arguments.propertyB.name);
-						})
 
-					expect(properties).toBe([
-						{name: "property1", type: "String"},
-						{name: "property2", type: "String", setter: "yes", default: "property"},
-						{name: "property3", type: "String"},
-						{name: "property4", type: "String"}
-					])
+					expect(properties).toBe({
+						property1: {name: "property1", type: "String"},
+						property2: {name: "property2", type: "String", setter: "yes", default: "property"},
+						property3: {name: "property3", type: "String"},
+						property4: {name: "property4", type: "String"}
+					})
 				})
 
 			})
@@ -170,41 +167,38 @@ component extends="testbox.system.BaseSpec" {
 				it("should return the function metadata defined in the class and its superclasses", function () {
 					var metadata = GetComponentMetadata(dotMapping & ".SubSubClass")
 					var functions = meta.collectFunctions(metadata)
-						.map(function (metadata) {
+						.map(function (name, metadata) {
 							// For this test we are only interested in the existence of the function with the proper access level.
 							return {
 								name: arguments.metadata.name,
 								access: arguments.metadata.access
 							};
 						})
-						.sort(function (functionA, functionB) {
-							return CompareNoCase(arguments.functionA.name, arguments.functionB.name);
-						})
 
-					expect(functions).toBe([
-						{name: "anotherPublicMethod", access: "public"},
-						{name: "getProperty1", access: "public"},
-						{name: "getProperty2", access: "public"},
-						{name: "getProperty3", access: "public"},
-						{name: "getproperty4", access: "public"},
-						{name: "init", access: "private"},
-						{name: "packageMethod", access: "package"},
-						{name: "privateMethod", access: "private"},
-						{name: "publicMethod", access: "private"},
-						{name: "remoteMethod", access: "remote"},
-						{name: "setProperty1", access: "public"},
-						{name: "setProperty2", access: "public"},
-						{name: "setProperty3", access: "public"},
-						{name: "setProperty4", access: "public"}
-					])
+					expect(functions).toBe({
+						anotherPublicMethod: {name: "anotherPublicMethod", access: "public"},
+						getProperty1: {name: "getProperty1", access: "public"},
+						getProperty2: {name: "getProperty2", access: "public"},
+						getProperty3: {name: "getProperty3", access: "public"},
+						getproperty4: {name: "getproperty4", access: "public"},
+						init: {name: "init", access: "private"},
+						packageMethod: {name: "packageMethod", access: "package"},
+						privateMethod: {name: "privateMethod", access: "private"},
+						publicMethod: {name: "publicMethod", access: "private"},
+						remoteMethod: {name: "remoteMethod", access: "remote"},
+						setProperty1: {name: "setProperty1", access: "public"},
+						setProperty2: {name: "setProperty2", access: "public"},
+						setProperty3: {name: "setProperty3", access: "public"},
+						setProperty4: {name: "setProperty4", access: "public"}
+					})
 				})
 
 			})
 
-			describe(".scan", function () {
+			describe(".list", function () {
 
 				it("should return the metadata of all classes in the mapping", function () {
-					var results = meta.scan(mapping, false).map(function (metadata) {
+					var results = meta.list(mapping, false).map(function (metadata) {
 						return arguments.metadata.name;
 					}).sort("textnocase")
 					expect(results).toBe([
@@ -215,12 +209,12 @@ component extends="testbox.system.BaseSpec" {
 				})
 
 				it("should ignore the metadata of interfaces", function () {
-					var results = meta.scan(mapping & "/interface", false)
+					var results = meta.list(mapping & "/interface", false)
 					expect(results).toBeEmpty()
 				})
 
 				it("should return the metadata of all classes in the mapping recursively", function () {
-					var results = meta.scan(mapping, true).map(function (metadata) {
+					var results = meta.list(mapping, true).map(function (metadata) {
 						return arguments.metadata.name;
 					}).sort("textnocase")
 					expect(results).toBe([
@@ -229,6 +223,28 @@ component extends="testbox.system.BaseSpec" {
 						dotMapping & ".SubClass",
 						dotMapping & ".SubSubClass"
 					])
+				})
+
+			})
+
+			describe(".annotation", function () {
+
+				it("should return the value of the annotation", function () {
+					var metadata = GetComponentMetadata(dotMapping & ".BaseClass")
+					expect(meta.annotation(metadata, "base")).toBeTrue()
+					expect(meta.annotation(metadata, "number")).toBe(1)
+				})
+
+				it("should return null if the annotation does not exist", function () {
+					var metadata = GetComponentMetadata(dotMapping & ".BaseClass")
+					expect(meta.annotation(metadata, "undefined")).toBeNull()
+				})
+
+				it("should return the value of the annotation if it is defined on a superclass", function () {
+					var metadata = GetComponentMetadata(dotMapping & ".SubSubClass")
+					expect(meta.annotation(metadata, "base")).toBeTrue()
+					expect(meta.annotation(metadata, "sub")).toBeTrue()
+					expect(meta.annotation(metadata, "number")).toBe(3)
 				})
 
 			})

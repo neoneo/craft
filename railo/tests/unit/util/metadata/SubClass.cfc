@@ -1,4 +1,8 @@
-component extends="BaseClass" accessors="true" {
+/**
+ * @sub
+ * @number 2
+ */
+component extends = BaseClass accessors = true {
 
 	property String property3;
 
