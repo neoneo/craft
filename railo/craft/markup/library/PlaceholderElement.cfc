@@ -1,6 +1,6 @@
 import craft.content.Placeholder;
 
-component extends = ComponentElement accessors = true tag = placeholder {
+component extends = ComponentElement accessors = true alias = placeholder {
 
 	property String ref required = true;
 

@@ -1,7 +1,7 @@
 import craft.markup.Element;
 import craft.markup.Scope;
 
-component extends = Element accessors = true tag = include {
+component extends = Element accessors = true alias = include {
 
 	property String element required = true;
 

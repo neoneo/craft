@@ -1,7 +1,7 @@
 import craft.content.Document;
 import craft.content.LayoutContent;
 
-component extends = AbstractDocumentElement accessors = true tag = document {
+component extends = AbstractDocumentElement accessors = true alias = document {
 
 	property String layout required = true;
 

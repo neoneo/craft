@@ -7,9 +7,9 @@ import craft.markup.Scope;
 /**
  * @abstract
  */
-component extends = Element {
+component extends = Element accessors = true {
 
-	property String layoutRef setter = false;
+	property String layoutRef setter = false inject = false;
 
 	public void function construct(required Scope scope) {
 
