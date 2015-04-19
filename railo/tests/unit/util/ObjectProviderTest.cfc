@@ -297,6 +297,10 @@ component extends="tests.MocktorySpec" {
 				beforeEach(function () {
 					parent = new ObjectProvider()
 					child = new ObjectProvider(parent)
+					parentMetadata = mock("Metadata")
+					mock(parent).$property("metadata", "this", parentMetadata)
+					childMetadata = mock("Metadata")
+					mock(child).$property("metadata", "this", childMetadata)
 				})
 
 				describe(".has", function () {
@@ -318,13 +322,6 @@ component extends="tests.MocktorySpec" {
 				})
 
 				describe(".registerAll", function () {
-
-					beforeEach(function () {
-						parentMetadata = mock("Metadata")
-						mock(parent).$property("metadata", "this", parentMetadata)
-						childMetadata = mock("Metadata")
-						mock(child).$property("metadata", "this", childMetadata)
-					})
 
 					it("should register the class despite it being registered by the parent", function () {
 						var className = dotMapping & ".info.Class"
@@ -395,7 +392,7 @@ component extends="tests.MocktorySpec" {
 
 				describe(".info", function () {
 
-					it("should not search the parent for the info", function () {
+					it("should also search the parent for the info", function () {
 						metadata = mock("Metadata")
 						mock(parent).$property("metadata", "this", metadata)
 						mock({
@@ -406,10 +403,9 @@ component extends="tests.MocktorySpec" {
 						})
 						parent.registerAll(mapping)
 
-						expect(child.has("Class")).toBeTrue()
-						expect(function () {
-							child.info("Class")
-						}).toThrow("NotBoundException")
+						expect(child.has("Class", false)).toBeFalse()
+						expect(parent.has("Class", false)).toBeTrue()
+						expect(child.info("Class")).toBeStruct()
 					})
 
 				})

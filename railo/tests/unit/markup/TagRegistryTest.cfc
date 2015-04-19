@@ -7,26 +7,28 @@ component extends="tests.MocktorySpec" {
 		describe("TagRegistry", function () {
 
 			beforeEach(function () {
-				elementFactory = mock({
-					$interface: "ElementFactory"
+				objectProvider = mock({
+					$class: "ObjectProvider"
 				})
-				tagRegistry = new TagRegistry(elementFactory)
+				tagRegistry = new TagRegistry(objectProvider)
 
 				mapping = "/tests/unit/markup/tagregistry"
 				dotMapping = mapping.listChangeDelims(".", "/")
 			})
 
-			// TODO: mock Metadata.
-
 			describe(".register", function () {
 
-				var sameItems = function (expected, actual) {
-					return arguments.expected.containsAll(arguments.actual) && arguments.actual.containsAll(arguments.expected);
-				}
+				beforeEach(function () {
+					mock({
+						$object: objectProvider,
+						spawn: objectProvider, // Just return the same instance, so we can track function calls.
+						registerAll: null
+					})
+				})
 
 				it("should register nothing if craft.ini is not found", function () {
 					tagRegistry.register(mapping & "/nosettings")
-					expect(tagRegistry.tagNames).toBeEmpty()
+					expect(tagRegistry.namespaces).toBeEmpty()
 				})
 
 				it("should throw ConfigurationException if no craft section is defined in craft.ini", function () {
@@ -41,67 +43,65 @@ component extends="tests.MocktorySpec" {
 					}).toThrow("ConfigurationException")
 				})
 
-				it("should register only elements, and only those that are not abstract", function () {
-					tagRegistry.register(mapping & "/recursive/dir2/sub")
+				it("should spawn a new object provider and register the mapping there", function () {
+					var registerMapping = mapping & "/recursive/dir2/sub"
+					tagRegistry.register(registerMapping)
 
-					var tags = tagRegistry.tagNames
-
-					expect(tags).toHaveKey("http://neoneo.nl/craft/dir2")
-					tagNames = tags["http://neoneo.nl/craft/dir2"]
-
-					expect(tagNames.find("noelement")).toBe(0)
-					expect(tagNames.find("abstractelement")).toBe(0)
-					expect(sameItems(tagNames, ["extendsextendssome", "extendssome", "some"])).toBeTrue()
-				})
-
-				it("should register elements in subdirectories", function () {
-					tagRegistry.register(mapping & "/recursive/dir1")
-
-					var tags = tagRegistry.tagNames
-
-					expect(tags).toHaveKey("http://neoneo.nl/craft/dir1")
-					tagNames = tags["http://neoneo.nl/craft/dir1"]
-
-					// There are 2 directories, with 1 element each.
-					expect(tagNames).toHaveLength(2)
-					// SomeElement has no tag annotation, so the fully qualified name should be returned.
-					expect(sameItems(tagNames, ["dir1sub", dotMapping & ".recursive.dir1.SomeElement"])).toBeTrue()
+					var namespaces = tagRegistry.namespaces
+					expect(namespaces).toBe(["http://neoneo.nl/craft/dir2"])
+					verify(objectProvider, {
+						spawn: {
+							$args: [],
+							$times: 1
+						},
+						registerAll: {
+							$args: [registerMapping],
+							$times: 1
+						}
+					})
 				})
 
 				it("should register multiple namespaces", function () {
 					tagRegistry.register(mapping & "/recursive")
 
-					var tags = tagRegistry.tagNames
-					expect(tags).toHaveKey("http://neoneo.nl/craft/dir1")
-					expect(tags).toHaveKey("http://neoneo.nl/craft/dir2")
+					var namespaces = tagRegistry.namespaces
+					expect(namespaces).toBe(["http://neoneo.nl/craft/dir1", "http://neoneo.nl/craft/dir2"])
 				})
 
-				it("should follow the directories directive", function () {
-					tagRegistry.register(mapping & "/directory")
+				it("should only register mappings defined in the directories directive", function () {
+					var registerMapping = mapping & "/directories"
+					tagRegistry.register(registerMapping)
 
-					var tags = tagRegistry.tagNames
-					expect(tags).toHaveKey("http://neoneo.nl/craft/directory")
-					tagNames = tags["http://neoneo.nl/craft/directory"]
+					var namespaces = tagRegistry.namespaces
+					expect(namespaces).toBe(["http://neoneo.nl/craft/directory"])
 
-					// There are 3 directories that should be inspected, with 1 element each.
-					expect(sameItems(tagNames, ["yes", "yessub", "subyes"])).toBeTrue()
-				})
-
-				it("should throw AlreadyBoundException if a tag by the given name is already registered", function () {
-					expect(function () {
-						tagRegistry.register(mapping & "/multiple/tagnames")
-					}).toThrow("AlreadyBoundException")
+					verify(objectProvider, {
+						spawn: {
+							$args: [],
+							$times: 1
+						},
+						registerAll: [
+							{
+								$args: [registerMapping & "/yes"],
+								$times: 1
+							},
+							{
+								$args: [registerMapping & "/sub/yes"],
+								$times: 1
+							}
+						]
+					})
 				})
 
 				it("should throw AlreadyBoundException if a namespace by the given name is already registered", function () {
 					expect(function () {
-						tagRegistry.register(mapping & "/multiple/namespaces")
+						tagRegistry.register(mapping & "/existingnamespace")
 					}).toThrow("AlreadyBoundException")
 				})
 
 			})
 
-			describe(".elementFactory", function () {
+			xdescribe(".elementFactory", function () {
 
 				it("should return the default factory if there is not factory directive", function () {
 					tagRegistry.register(mapping & "/factory/nodirective")
@@ -124,7 +124,7 @@ component extends="tests.MocktorySpec" {
 
 			})
 
-			describe(".setElementFactory", function () {
+			xdescribe(".setElementFactory", function () {
 
 				it("should set the factory for the given namespace", function () {
 					tagRegistry.register(mapping & "/factory/nodirective")
@@ -154,12 +154,13 @@ component extends="tests.MocktorySpec" {
 				it("should remove the namespace by the given name", function () {
 					tagRegistry.register(mapping & "/recursive")
 
+					var namespaces = tagRegistry.namespaces
+					expect(namespaces).toBe(["http://neoneo.nl/craft/dir1", "http://neoneo.nl/craft/dir2"])
+
 					tagRegistry.deregisterNamespace("http://neoneo.nl/craft/dir2")
 
-					// Test.
-					var tags = tagRegistry.tagNames
-					expect(tags).toHaveKey("http://neoneo.nl/craft/dir1")
-					expect(tags).notToHaveKey("http://neoneo.nl/craft/dir2")
+					var namespaces = tagRegistry.namespaces
+					expect(namespaces).toBe(["http://neoneo.nl/craft/dir1"])
 				})
 
 			})
@@ -170,13 +171,14 @@ component extends="tests.MocktorySpec" {
 					// First register some namespaces.
 					tagRegistry.register(mapping & "/recursive")
 
+					var namespaces = tagRegistry.namespaces
+					expect(namespaces).toBe(["http://neoneo.nl/craft/dir1", "http://neoneo.nl/craft/dir2"])
+
 					// Deregister one of the mappings.
 					tagRegistry.deregister(mapping & "/recursive/dir2")
 
-					// Test.
-					var tags = tagRegistry.tagNames
-					expect(tags).toHaveKey("http://neoneo.nl/craft/dir1")
-					expect(tags).notToHaveKey("http://neoneo.nl/craft/dir2")
+					var namespaces = tagRegistry.namespaces
+					expect(namespaces).toBe(["http://neoneo.nl/craft/dir1"])
 				})
 
 				it("should throw NotBoundException if no craft section is defined in craft.ini", function () {
@@ -196,35 +198,35 @@ component extends="tests.MocktorySpec" {
 			describe(".get", function () {
 
 				it("should throw NotBoundException if no namespace by the given name is registered", function () {
-					tagRegistry.register(mapping & "/create")
+					tagRegistry.register(mapping & "/recursive/dir1")
 
 					expect(function () {
-						tagRegistry.get("http://doesnotexist", "tagelement")
+						tagRegistry.get("http://doesnotexist")
 					}).toThrow("NotBoundException")
 				})
 
-				it("should throw NotBoundException if no tag by the given name is registered", function () {
-					tagRegistry.register(mapping & "/create")
+				it("should return the corresponding object provider", function () {
+					var descriptor = {
+						$class: "ObjectProvider",
+						registerAll: null
+					}
+					var dir1 = mock(descriptor)
+					var dir2 = mock(descriptor)
+					// Just to be sure, verify that we have different instances.
+					$assert.isNotSameInstance(dir1, dir2)
+					mock({
+						$object: objectProvider,
+						spawn: {
+							$results: [dir1, dir2] // Return dir1 and dir2 interchangeably.
+						}
+					})
 
-					expect(function () {
-						tagRegistry.get("http://neoneo.nl/craft", "doesnotexist")
-					}).toThrow("NotBoundException")
-				})
+					tagRegistry.register(mapping & "/recursive")
 
-				it("should return the corresponding tag metadata if requested by tag name", function () {
-					tagRegistry.register(mapping & "/create")
-
-					var metadata = tagRegistry.get("http://neoneo.nl/craft", "tagelement")
-
-					expect(metadata.class).toBe(dotMapping & ".create.TagElement")
-				})
-
-				it("should return the corresponding tag metadata if requested by class name", function () {
-					tagRegistry.register(mapping & "/create")
-
-					var metadata = tagRegistry.get("http://neoneo.nl/craft", dotMapping & ".create.NoTagElement")
-
-					expect(metadata.class).toBe(dotMapping & ".create.NoTagElement")
+					var result1 = tagRegistry.get("http://neoneo.nl/craft/dir1")
+					$assert.isSameInstance(dir1, result1)
+					var result2 = tagRegistry.get("http://neoneo.nl/craft/dir2")
+					$assert.isSameInstance(dir2, result2)
 				})
 
 			})

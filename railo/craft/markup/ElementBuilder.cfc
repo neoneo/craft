@@ -1,3 +1,6 @@
+/**
+ * @transient
+ */
 component {
 
 	public void function init(required TagRegistry tagRegistry, required Scope scope) {
@@ -9,38 +12,31 @@ component {
 
 		var element = this.instantiate(arguments.document.xmlRoot)
 
-		/*
-			Create a scope for local elements. We don't want elements from outside this document to be able to refer to inside elements.
-			The parent scope contains only root elements.
-		*/
-		var localScope = new Scope(this.scope)
+		// Create a scope for local elements. We don't want elements from outside this document to be able to refer to inside elements.
+		// The parent scope contains only root elements.
+		var localScope = this.scope.spawn()
 
-		// construct() returns an array of elements whose construction could not complete in one go.
-		var deferred = this.construct(element, localScope)
-
-		// Loop through the deferred elements until there are none left. Each turn should diminish the size of the array.
-		while (!deferred.isEmpty()) {
-			var count = deferred.len()
-
-			deferred = deferred.filter(function (element) {
-				arguments.element.construct(localScope)
-
-				if (arguments.element.ready) {
-					localScope.put(arguments.element)
-				}
-
-				return !arguments.element.ready;
-			})
+		var remaining = -1
+		var count = -1
+		// Loop through the deferred elements until there are none left. Each turn should diminish the number of remaining elements.
+		while (remaining > 0 || remaining == -1) {
+			// construct() returns the number of elements whose construction was not successful.
+			remaining = this.constructTree(element, localScope)
 
 			// If no elements could be completed in this loop, we have elements pointing to each other or elements depending on unknown elements.
-			if (count == deferred.len()) {
+			if (remaining == count) {
 				Throw("Could not construct all elements", "InstantiationException", "One or more elements have undefined dependencies, or are referring to each other. Circular references cannot be resolved.");
 			}
+
+			count = remaining
 		}
 
-		// If the element is not ready yet, give it one more try. Just in case it was waiting for some descendant element.
+		// If the element (= root) is not ready yet, give it one more try. Just in case it was waiting for some descendant element.
 		if (!element.ready) {
 			element.construct(localScope)
+		}
+		if (element.ready) {
+			this.scope.put(element)
 		}
 
 		// Return the element whether it's ready or not. It's the responsibility of other objects to handle this.
@@ -54,36 +50,11 @@ component {
 
 		var namespace = arguments.node.xmlNsURI
 		var tagName = arguments.node.xmlName.replace(arguments.node.xmlNsPrefix & ":", "") // Remove the namespace prefix, if it exists.
+		var attributes = arguments.node.xmlAttributes.copy()
+		attributes.textContent = arguments.node.xmlText
 
-		var tag = this.tagRegistry.get(namespace, tagName)
-
-
-		// Attribute validation and selection:
-		// Loop over the attributes defined in the tag, and pick them up from the node attributes.
-		// This means that any attributes not defined in the tag are ignored.
-		var attributes = {}
-		var nodeAttributes = arguments.node.xmlAttributes
-		for (var attribute in tag.attributes) {
-			var name = attribute.name
-			var value = nodeAttributes[name] ?: attribute.default ?: null
-
-			if (value === null && (attribute.required ?: false)) {
-				Throw("Attribute '#name#' is required", "MissingArgumentException");
-			}
-
-			if (value !== null) {
-				// Since we'll only encounter simple values here, we can use IsValid. We assume that the property type is specified.
-				if (!IsValid(attribute.type, value)) {
-					Throw("Invalid value '#value#' for attribute '#name#'", "IllegalArgumentException", "Expected value of type #arguments.attribute.type#");
-				}
-
-				attributes[name] = value
-			}
-		}
-
-		// Get the factory for this namespace and create the element.
-		var elementFactory = this.tagRegistry.elementFactory(namespace)
-		var element = elementFactory.create(tag.class, attributes, arguments.node.xmlText)
+		var objectProvider = this.tagRegistry.get(namespace)
+		var element = objectProvider.instance(tagName, attributes)
 
 		for (var child in arguments.node.xmlChildren) {
 			element.add(this.instantiate(child))
@@ -93,33 +64,45 @@ component {
 	}
 
 	/**
-	 * Tries to construct the element and its children. The returned array contains all elements (the given element or its descendants) that could not be constructed yet.
+	 * Tries to construct the `Element` and its children, and returns the number of elements in the tree that were NOT constructed successfully.
 	 */
-	private Element[] function construct(required Element element, required Scope scope) {
+	private Numeric function constructTree(required Element element, required Scope scope) {
 
-		var deferred = []
+		var remaining = 0
 		// Construct the tree depth first. Most of the time, parent elements need their children to be ready.
 		for (var child in arguments.element.children) {
-			// The element could have been deferred before, in which case the child may have been constructed already.
-			if (!child.ready) {
-				// Construct the child element and append the elements that could not be constructed.
-				deferred.append(this.construct(child, arguments.scope), true)
-			}
+			remaining += this.constructTree(child, arguments.scope)
 		}
 
-		arguments.element.construct(arguments.scope)
+		if (!arguments.element.ready) {
+			arguments.element.construct(arguments.scope)
+		}
 
-		// The root element may depend on other elements, outside the current scope, so don't push it on the deferred elements array.
-		// Neither put it in the current scope.
+		// The root element may depend on other elements, outside the current scope, so don't count it. Neither put it in the current scope.
 		if (arguments.element.hasParent) {
 			if (!arguments.element.ready) {
-				deferred.append(arguments.element)
+				remaining += 1
 			} else {
-				arguments.scope.put(arguments.element)
+				var ref = arguments.element.ref
+				if (ref !== null) {
+					// Store the element in the scope unless it is already stored there.
+					if (!arguments.scope.has(ref) || arguments.element !== arguments.scope.get(ref)) {
+						arguments.scope.put(arguments.element)
+					}
+				}
 			}
 		}
 
-		return deferred;
+		return remaining;
+	}
+
+	/**
+	 * Tries to construct the `Element` and returns whether construction was successful.
+	 */
+	public Boolean function construct(required Element element) {
+		arguments.element.construct(this.scope)
+
+		return arguments.element.ready;
 	}
 
 }

@@ -1,8 +1,10 @@
+/**
+ * @transient
+ */
 component {
 
-	public void function init(required TagRegistry tagRegistry, Scope scope) {
-		this.scope = arguments.scope ?: new Scope()
-		this.elementBuilder = new ElementBuilder(arguments.tagRegistry, this.scope)
+	public void function init(required ElementBuilder elementBuilder) {
+		this.elementBuilder = arguments.elementBuilder
 	}
 
 	/**
@@ -18,8 +20,6 @@ component {
 			// The element builder only returns if all child elements are ready, so it can only be this element that's not ready.
 			Throw("Could not construct element", "InstantiationException", "The element has an undefined dependency.");
 		}
-
-		this.scope.put(element)
 
 		return element;
 	}

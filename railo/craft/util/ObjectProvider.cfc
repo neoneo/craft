@@ -7,15 +7,16 @@ component accessors = true {
 
 	property ObjectProvider parent setter = false;
 
+	this.cache = {
+		objectProvider: this
+	}
+	this.registry = {}
+	this.aliases = {}
+
+	this.metadata = new Metadata()
+
 	public void function init(ObjectProvider parent) {
 		this.parent = arguments.parent ?: null
-		this.metadata = new Metadata()
-
-		this.cache = {
-			objectProvider: this
-		}
-		this.registry = {}
-		this.aliases = {}
 	}
 
 	/**
@@ -94,6 +95,11 @@ component accessors = true {
 					// Could not register this class, probably because it is already registered since all of its possible aliases are already taken.
 					Throw("Object '#arguments.metadata.name#' is already registered", "AlreadyBoundException");
 				}
+
+				var alias = this.metadata.annotation(arguments.metadata, "alias")
+				if (alias !== null) {
+					this.registerAlias(info.name, alias)
+				}
 			}
 		}
 	}
@@ -139,18 +145,42 @@ component accessors = true {
 	}
 
 	/**
-	 * Returns metadata about the object registered under the name or alias. The parent provider is not searched.
+	 * Returns metadata about the object registered under the name or alias.
 	 */
 	public Struct function info(required String name) {
-		var register = arguments.name
+		var slot = arguments.name
 		if (!this.registry.keyExists(arguments.name) && this.aliases.keyExists(arguments.name)) {
-			register = this.aliases[arguments.name]
+			slot = this.aliases[arguments.name]
 		}
-		if (!this.registry.keyExists(register)) {
-			Throw("Info for object '#arguments.name#' not found", "NotBoundException");
+		if (this.registry.keyExists(slot)) {
+			return this.registry[slot];
+		} else if (this.parent !== null) {
+			return this.parent.info(arguments.name);
 		}
 
-		return this.registry[register];
+		Throw("Info for object '#arguments.name#' not found", "NotBoundException");
+	}
+
+	public Boolean function isSingleton(required String name) {
+		return this.info(arguments.name).singleton;
+	}
+
+	/**
+	 * Returns whether the instantiation of the object registered under the name or alias is managed by this `ObjectProvider` or its parent.
+	 */
+	public Boolean function isManaged(required String name) {
+		var slot = arguments.name
+		if (!this.registry.keyExists(arguments.name) && this.aliases.keyExists(arguments.name)) {
+			slot = this.aliases[arguments.name]
+		}
+
+		if (this.registry.keyExists(slot)) {
+			return true;
+		} else if (this.parent !== null) {
+			return this.parent.isManaged(arguments.name);
+		}
+
+		return false;
 	}
 
 	/**
@@ -159,7 +189,7 @@ component accessors = true {
 	public Any function instance(required String name, Any properties = null) {
 		if (!this.cache.keyExists(arguments.name)) {
 			if (this.has(arguments.name, false)) {
-				// First check if the name is actually an alias. An alias can refer to anything, so no info is available for it.
+				// First check if the name is actually an alias. An alias can refer to anything, so no info may be available for it.
 				if (this.aliases.keyExists(arguments.name)) {
 					return this.instance(this.aliases[arguments.name], arguments.properties);
 				}
@@ -205,7 +235,7 @@ component accessors = true {
 	 */
 	private Component function instantiate(required Struct info, Any properties) {
 
-		var instance = null
+		var instance = CreateObject(arguments.info.class)
 
 		if (arguments.info.constructor !== null) {
 			var collection = {}
@@ -215,21 +245,26 @@ component accessors = true {
 				if (arguments.properties !== null && arguments.properties.keyExists(name)) {
 					collection[name] = arguments.properties[name]
 				} else if (this.has(name & "@" & arguments.info.name, true)) {
+					name &= "@" & arguments.info.name
 					// If multiple classes have properties or constructor arguments by the same name, allow the client to differentiate
 					// by registering an alias of the form <property>@<class>.
-					collection[name] = this.instance(name & "@" & arguments.info.name)
+					// If the object is a transient, only inject it if the parameter is required.
+					if (parameter.required || !this.isManaged(name) || this.isSingleton(name)) {
+						collection[name] = this.instance(name)
+					}
 				} else if (this.has(name, true)) {
-					collection[name] = this.instance(name)
+					// The parent has the object. Apply the same reasoning regarding transient objects.
+					if (parameter.required || !this.isManaged(name) || this.isSingleton(name)) {
+						collection[name] = this.instance(name)
+					}
 				} else {
 					if (parameter.required) {
-						Throw("Cannot find object for required constructor argument '#name#'");
+						Throw("Cannot find object for required constructor argument '#name#'", "MissingArgumentException");
 					}
 				}
 			}
 
-			instance = new "#arguments.info.class#"(argumentCollection: collection)
-		} else {
-			instance = new "#arguments.info.class#"()
+			instance.init(argumentCollection: collection)
 		}
 
 		if (arguments.info.setters !== null) {
@@ -243,7 +278,7 @@ component accessors = true {
 					instance[name] = this.instance(name)
 				} else {
 					if (arguments.info.setters[name].required) {
-						Throw("Cannot find object for required property '#name#'");
+						Throw("Cannot find object for required property '#name#'", "MissingArgumentException");
 					}
 				}
 			}
@@ -254,6 +289,10 @@ component accessors = true {
 		}
 
 		return instance;
+	}
+
+	public ObjectProvider function spawn() {
+		return new ObjectProvider(this);
 	}
 
 }

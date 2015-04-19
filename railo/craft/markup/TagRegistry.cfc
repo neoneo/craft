@@ -1,22 +1,20 @@
-import craft.util.Metadata;
+import craft.util.ObjectProvider;
 
+/**
+ * @singleton
+ */
 component accessors = true {
 
-	property Struct tagNames setter = false;
+	property Array namespaces setter = false;
 
-	this.elementClassName = GetComponentMetadata("Element").name
-	this.factories = {} // Element factories per namespace.
-	this.factoryCache = {} // Used in order to create one instance per factory class.
-	this.tags = {} // Metadata of tags per namespace.
+	this.objectProviders = {} // Object providers per namespace.
 
-	this.metadata = new Metadata()
-
-	public void function init(required ElementFactory defaultElementFactory) {
-		this.defaultElementFactory = arguments.defaultElementFactory
+	public void function init(required ObjectProvider objectProvider) {
+		this.objectProvider = arguments.objectProvider
 	}
 
 	/**
-	 * Registers any `Element`s found in the mapping. A craft.ini file must be present in order for any classes to be inspected.
+	 * Registers any classes found in the mapping. A craft.ini file must be present in order for any classes to be registered.
 	 * If absent, the subdirectories are searched for craft.ini files and `register()` is then called recursively.
 	 * The mapping should be passed in without a trailing slash.
 	 */
@@ -36,23 +34,11 @@ component accessors = true {
 
 			var namespace = GetProfileString(settingsFile, "craft", "namespace")
 
-			if (this.tags.keyExists(namespace)) {
+			if (this.objectProviders.keyExists(namespace)) {
 				Throw("Namespace '#namespace#' already exists", "AlreadyBoundException");
 			}
-			this.tags[namespace] = {}
 
-			// The element factory for this namespace can be specified by class name.
-			if (sections.craft.listFind("factory") > 0) {
-				// The class name is interpreted relative to the current mapping.
-				var className = mapping.listChangeDelims(".", "/") & "." & GetProfileString(settingsFile, "craft", "factory")
-				if (!this.factoryCache.keyExists(className)) {
-					this.factoryCache[className] = new "#className#"()
-				}
-				this.factories[namespace] = this.factoryCache[className]
-			} else {
-				// Use the default element factory.
-				this.factories[namespace] = this.defaultElementFactory
-			}
+			var objectProvider = this.objectProviders[namespace] = this.objectProvider.spawn()
 
 			var registerMappings = null
 			if (sections.craft.listFind("directories") > 0) {
@@ -67,32 +53,11 @@ component accessors = true {
 				registerMappings = [mapping]
 			}
 
-			registerMappings.each(function (registerMapping) {
-				// Pick up all classes in this directory (recursively) and keep the ones that extend Element.
-				this.metadata.list(arguments.registerMapping, true).each(function (metadata) {
-					// Ignore classes with the abstract annotation.
-					var abstract = arguments.metadata.abstract ?: false
-					if (!abstract && this.metadata.extends(arguments.metadata, this.elementClassName)) {
-						// If a tag annotation is present, that will be the tag name. Otherwise we take the class name.
-						var tagName = arguments.metadata.tag ?: arguments.metadata.name
-						if (this.tags[namespace].keyExists(tagName)) {
-							Throw("Tag '#tagName#' already exists in namespace '#namespace#'", "AlreadyBoundException");
-						}
-						var data = {
-							class: arguments.metadata.name,
-							attributes: this.metadata.collectProperties(arguments.metadata).filter(function (property) {
-								// If the property has an attribute annotation (a boolean), return that. If absent, include the property.
-								return arguments.property.attribute ?: true;
-							})
-						}
-						// Store the tag data.
-						this.tags[namespace][tagName] = data
-					}
-				})
+			registerMappings.each(function (mapping) {
+				objectProvider.registerAll(arguments.mapping)
 			})
 		} else {
 			// Call again for each subdirectory.
-			var mapping = mapping
 			DirectoryList(path, false, "name").each(function (name) {
 				if (DirectoryExists(path & "/" & arguments.name)) {
 					this.register(mapping & "/" & arguments.name)
@@ -134,55 +99,19 @@ component accessors = true {
 	}
 
 	public void function deregisterNamespace(required String namespace) {
-		this.tags.delete(arguments.namespace)
-		this.factories.delete(arguments.namespace)
+		this.objectProviders.delete(arguments.namespace)
 	}
 
-	/**
-	 * Returns the available tag names per namespace.
-	 */
-	public Struct function getTagNames() {
-		return this.tags.map(function (namespace, metadata) {
-			// The metadata argument is a struct where the keys are tag names.
-			return arguments.metadata.keyArray();
-		});
+	public ObjectProvider function get(required String namespace) {
+		if (!this.objectProviders.keyExists(arguments.namespace)) {
+			Throw("Namespace '#arguments.namespace#' does not exist", "NotBoundException");
+		}
+
+		return this.objectProviders[arguments.namespace];
 	}
 
-	/**
-	 * Returns metadata for the given tag in the given namespace.
-	 */
-	public Struct function get(required String namespace, required String tagName) {
-
-		if (!this.tags.keyExists(arguments.namespace)) {
-			Throw("Namespace '#arguments.namespace#' not found", "NotBoundException");
-		}
-
-		var tags = this.tags[arguments.namespace]
-
-		if (!tags.keyExists(arguments.tagName)) {
-			Throw("Tag '#arguments.tagName#' not found in namespace '#arguments.namespace#'", "NotBoundException");
-		}
-
-		return tags[arguments.tagName];
-	}
-
-	/**
-	 * Returns the `ElementFactory` to be used for creating the `Element`s in the given namespace.
-	 */
-	public ElementFactory function elementFactory(required String namespace) {
-		if (!this.factories.keyExists(arguments.namespace)) {
-			Throw("Namespace '#arguments.namespace#' not found", "NotBoundException");
-		}
-
-		return this.factories[arguments.namespace];
-	}
-
-	public void function setElementFactory(required String namespace, required ElementFactory elementFactory) {
-		if (!this.tags.keyExists(arguments.namespace)) {
-			Throw("Namespace '#arguments.namespace#' not found", "NotBoundException");
-		}
-
-		this.factories[arguments.namespace] = arguments.elementFactory
+	public String[] function getNamespaces() {
+		return this.objectProviders.keyArray();
 	}
 
 }

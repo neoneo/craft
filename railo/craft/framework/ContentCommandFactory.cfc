@@ -1,12 +1,15 @@
-import craft.markup.TagRegistry;
 import craft.markup.FileBuilder;
 import craft.markup.Scope;
 
 import craft.request.Command;
 import craft.request.CommandFactory;
 
+import craft.util.ObjectProvider;
+
 /**
  * `CommandFactory` implementation that returns `ContentCommand` instances.
+ *
+ * @singleton
  */
 component implements = CommandFactory accessors = true {
 
@@ -14,11 +17,9 @@ component implements = CommandFactory accessors = true {
 
 	this.path = ""
 
-	public void function init(required TagRegistry tagRegistry, required Scope scope) {
-		this.tagRegistry = arguments.tagRegistry
-		this.scope = arguments.scope
-
-		this.fileBuilder = new FileBuilder(this.tagRegistry, this.scope)
+	public void function init(required ObjectProvider objectProvider, required Scope scope) {
+		this.objectProvider = arguments.objectProvider
+		this.fileBuilder = this.objectProvider.instance("FileBuilder", {scope: arguments.scope})
 	}
 
 	/**
@@ -26,7 +27,10 @@ component implements = CommandFactory accessors = true {
 	 */
 	public Command function create(required String identifier) {
 		// Pass the file builder and the path. The command will use them when first requested.
-		return new ContentCommand(this.fileBuilder, this.path & (arguments.identifier.startsWith("/") ? "" : "/") & arguments.identifier);
+		return this.objectProvider.instance("ContentCommand", {
+			fileBuilder: this.fileBuilder,
+			path: this.path & (arguments.identifier.startsWith("/") ? "" : "/") & arguments.identifier
+		);
 	}
 
 }

@@ -1,8 +1,12 @@
+/**
+ * @transient
+ */
 component {
+
+	this.elements = {}
 
 	public void function init(Scope parent) {
 		this.parent = arguments.parent ?: null
-		this.elements = {}
 	}
 
 	/**
@@ -32,12 +36,16 @@ component {
 	public void function put(required Element element) {
 		var ref = arguments.element.ref
 		if (ref !== null) {
-			// The ref may not exist in this scope. It MAY exist in the parent scope.
+			// The ref must not exist in this scope. It MAY exist in the parent scope.
 			if (this.elements.keyExists(ref)) {
-				Throw("Element '#ref#' already exists", "AlreadyBoundException")
+				Throw("Element '#ref#' already exists", "AlreadyBoundException");
 			}
 			this.elements[ref] = arguments.element
 		}
+	}
+
+	public Scope function spawn() {
+		return new Scope(this);
 	}
 
 }

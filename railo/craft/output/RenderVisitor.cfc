@@ -10,14 +10,17 @@ import craft.output.ViewRepository;
 
 import craft.request.Context;
 
+/**
+ * @transient
+ */
 component implements = Visitor accessors = true {
 
 	property Any content setter = false;
 
 	public void function init(required Context context, required ViewRepository viewRepository) {
 
-		this.viewRepository = arguments.viewRepository
 		this.context = arguments.context
+		this.viewRepository = arguments.viewRepository
 
 		// Define state. The following state variables will be modified during component traversal.
 		// The sections in document instances are kept, so that placeholder instances can pick them up.

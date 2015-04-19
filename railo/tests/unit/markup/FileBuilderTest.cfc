@@ -1,4 +1,4 @@
-import craft.markup.ElementBuilder;
+import craft.markup.FileBuilder;
 
 component extends="tests.MocktorySpec" {
 
@@ -9,14 +9,8 @@ component extends="tests.MocktorySpec" {
 			beforeEach(function () {
 				elementBuilder = mock("ElementBuilder")
 				element = mock("Element")
-				scope = mock({
-					$class: "Scope",
-					put: null
-				})
 
-				fileBuilder = mock("FileBuilder")
-				fileBuilder.$property("elementBuilder", "this", elementBuilder)
-				fileBuilder.$property("scope", "this", scope)
+				fileBuilder = new FileBuilder(elementBuilder)
 			})
 
 			it("should build the element described by the xml file", function () {
@@ -34,12 +28,6 @@ component extends="tests.MocktorySpec" {
 				verify(elementBuilder, {
 					build: {
 						$args: ["{xml}"],
-						$times: 1
-					}
-				})
-				verify(scope, {
-					put: {
-						$args: [element],
 						$times: 1
 					}
 				})

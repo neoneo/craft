@@ -8,10 +8,21 @@ component extends="tests.MocktorySpec" {
 		describe("ElementBuilder", function () {
 
 			beforeEach(function () {
-				tagRegistry = mock("TagRegistry")
+				objectProvider = mock("ObjectProvider")
+				tagRegistry = mock({
+					$class: "TagRegistry",
+					get: objectProvider
+				})
 
-				scope = new Scope()
-				elementBuilder = new ElementBuilder(tagRegistry, scope)
+				childScope = mock("Scope")
+				parentScope = mock({
+					$class: "Scope",
+					spawn: childScope
+				})
+				childScope.$property("parent", "this", parentScope)
+				parentScope.$property("parent", "this", null)
+
+				elementBuilder = new ElementBuilder(tagRegistry, parentScope)
 
 			})
 
@@ -202,94 +213,61 @@ component extends="tests.MocktorySpec" {
 							$class: "Element",
 							ready: true
 						})
-						elementFactory = mock({
-							$interface: "ElementFactory",
-							create: element
+						objectProvider = mock({
+							$class: "ObjectProvider",
+							instance: element
+						})
+						mock({
+							$object: tagRegistry,
+							get: objectProvider
 						})
 
 						document = XMLNew()
 					})
 
 					it("should create the element", function () {
-						mock({
-							$object: tagRegistry,
-							get: {
-								$args: ["namespace", "node"],
-								// The node metadata is a regular struct.
-								$returns: {
-									class: "node",
-									attributes: []
-								}
-							},
-							elementFactory: {
-								$args: ["namespace"],
-								$returns: elementFactory
-							}
-						})
-
 						document.xmlRoot = XMLElemNew(document, "namespace", "node")
 
 						var result = elementBuilder.build(document)
 
-						verify(elementFactory, {
-							create: {
-								$args: ["node", {}, ""],
+						verify(tagRegistry, {
+							get: {
+								$args: ["namespace"],
+								$times: 1
+							}
+						})
+						verify(objectProvider, {
+							instance: {
+								$args: ["node", {textContent: ""}],
 								$times: 1
 							}
 						})
 					})
 
-					it("should create the element with the attributes defined in the tag metadata", function () {
-						mock({
-							$object: tagRegistry,
-							get: {
-								$args: ["namespace", "node"],
-								$returns: {
-									class: "node",
-									attributes: [{name: "ref", type: "String", required: false}]
-								}
-							},
-							// Return a different element factory for each namespace.
-							elementFactory: {
-								$args: ["namespace"],
-								$returns: elementFactory
-							}
-						})
-
+					it("should create the element using the attributes", function () {
 						document.xmlRoot = XMLElemNew(document, "namespace", "node")
 						document.xmlRoot.xmlAttributes = {
 							ref: "ref",
-							name: "name" // This attribute is not defined in the metadata.
+							name: "name"
 						}
 
 						var result = elementBuilder.build(document)
 
-						verify(elementFactory, {
-							create: {
-								// Only the defined attributes should be passed to the factory.
-								$args: ["node", {ref: "ref"}, ""],
+						verify(tagRegistry, {
+							get: {
+								$args: ["namespace"],
+								$times: 1
+							}
+						})
+						verify(objectProvider, {
+							instance: {
+								$args: ["node", {ref: "ref", name: "name", textContent: ""}],
 								$times: 1
 							}
 						})
 					})
 
 					it("should create the tree of elements", function () {
-						mock({
-							$object: tagRegistry,
-							get: {
-								$args: ["namespace", "node"],
-								// The node metadata is a regular struct.
-								$returns: {
-									class: "node",
-									attributes: [{name: "ref", type: "String", required: false}]
-								}
-							},
-							elementFactory: {
-								$args: ["namespace"],
-								$returns: elementFactory
-							}
-						})
-
 						document.xmlRoot = XMLElemNew(document, "namespace", "node")
 
 						var createNode = function (ref) {
@@ -318,98 +296,27 @@ component extends="tests.MocktorySpec" {
 								$times: 2
 							}
 						})
-
-						verify(elementFactory, {
-							create: [
+						verify(tagRegistry, {
+							get: {
+								$args: ["namespace"],
+								$times: 3
+							}
+						})
+						verify(objectProvider, {
+							instance: [
 								{
-									$args: ["node", {}, ""],
+									$args: ["node", {textContent: ""}],
 									$times: 1
 								},
 								{
-									$args: ["node", {ref: "ref1"}, ""],
+									$args: ["node", {ref: "ref1", textContent: ""}],
 									$times: 1
 								},
 								{
-									$args: ["node", {ref: "ref2"}, ""],
+									$args: ["node", {ref: "ref2", textContent: ""}],
 									$times: 1
 								}
 							]
-						})
-
-					})
-
-					describe("validating attributes", function () {
-
-						beforeEach(function () {
-							mock({
-								$object: tagRegistry,
-								get: {
-									$args: ["namespace", "node"],
-									$returns: {
-										class: "node",
-										attributes: [
-											{name: "ref", type: "String", required: true},
-											{name: "number", type: "Numeric", required: false, default: 2}
-										]
-									}
-								},
-								// Return a different element factory for each namespace.
-								elementFactory: {
-									$args: ["namespace"],
-									$returns: elementFactory
-								}
-							})
-						})
-
-						it("should throw MissingArgumentException if not all required attributes are defined", function () {
-							document.xmlRoot = XMLElemNew(document, "namespace", "node")
-							document.xmlRoot.xmlAttributes = {}
-
-							expect(function () {
-								elementBuilder.build(document)
-							}).toThrow("MissingArgumentException")
-
-							document.xmlRoot.xmlAttributes = {ref: "ref"}
-							expect(function () {
-								elementBuilder.build(document)
-							}).notToThrow()
-						})
-
-						it("should throw IllegalArgumentException if the datatype of the attributes cannot be validated", function () {
-							document.xmlRoot = XMLElemNew(document, "namespace", "node")
-							document.xmlRoot.xmlAttributes = {
-								ref: "ref",
-								number: "nonumber"
-							}
-
-							expect(function () {
-								elementBuilder.build(document)
-							}).toThrow("IllegalArgumentException")
-
-							document.xmlRoot.xmlAttributes = {
-								ref: "ref",
-								number: 9
-							}
-							expect(function () {
-								elementBuilder.build(document)
-							}).notToThrow()
-						})
-
-						it("should set default values for undefined attributes", function () {
-							document.xmlRoot = XMLElemNew(document, "namespace", "node")
-							document.xmlRoot.xmlAttributes = {
-								ref: "ref"
-							}
-
-							var result = elementBuilder.build(document)
-
-							// Verify that the default value for attribute number was passed with the attributes.
-							verify(elementFactory, {
-								create: {
-									$args: ["node", {ref: "ref", number: 2}, ""],
-									$times: 1
-								}
-							})
 						})
 
 					})
