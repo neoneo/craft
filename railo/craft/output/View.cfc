@@ -5,9 +5,13 @@
  */
 import craft.request.Context;
 
-component accessors = true {
+/**
+ * @singleton
+ * @abstract
+ */
+component {
 
-	property TemplateRenderer templateRenderer setter = false;
+	property TemplateRenderer templateRenderer;
 
 	public void function init(required TemplateRenderer templateRenderer) {
 		this.templateRenderer = arguments.templateRenderer

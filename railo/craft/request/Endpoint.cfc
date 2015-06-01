@@ -1,3 +1,6 @@
+/**
+ * @singleton
+ */
 component accessors = true {
 
 	property String indexFile default = ""; // The index file used in the url. If set, the value should start with a /.

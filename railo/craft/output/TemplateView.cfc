@@ -1,5 +1,8 @@
 import craft.request.Context;
 
+/**
+ * @transient
+ */
 component extends = View {
 
 	public void function init(required TemplateRenderer templateRenderer, required String template) {

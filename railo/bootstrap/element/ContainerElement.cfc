@@ -1,6 +1,6 @@
 import craft.markup.library.CompositeElement;
 
-component extends="CompositeElement" accessors="true" tag="container" {
+component extends="CompositeElement" accessors = true tag="container" {
 
 	property Boolean fluid default="true";
 

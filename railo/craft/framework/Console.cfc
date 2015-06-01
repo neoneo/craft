@@ -9,6 +9,8 @@ import craft.output.ViewRepository;
 
 import craft.request.Handler;
 
+import craft.util.ObjectProvider;
+
 /**
  * This component handles all the interactions between the different framework objects and initializes them.
  * An important goal is that changes to settings should have effect without having to reinitialize everything.

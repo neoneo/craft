@@ -1,13 +1,14 @@
+import craft.util.ObjectProvider;
+
+/**
+ * @singleton
+ */
 component {
 
-	public void function init(required CommandFactory commandFactory) {
-
-		this.endpoint = this.createEndpoint()
-		this.root = this.createRoot()
-		this.routesParser = this.createRoutesParser(this.root, arguments.commandFactory)
-
+	public void function init(required ObjectProvider objectProvider) {
+		this.objectProvider = arguments.objectProvider
+		this.routesParser = this.objectProvider.instance("RoutesParser")
 		this.statusPaths = {}
-
 	}
 
 	public void function importRoutes(required String mapping) {
@@ -18,13 +19,16 @@ component {
 		this.routesParser.purge(ExpandPath(arguments.mapping))
 	}
 
+	/**
+	 * Maps the given status code to the given path.
+	 */
 	public void function mapStatusCode(required Numeric code, required String path) {
 		this.statusPaths[arguments.code] = arguments.path
 	}
 
 	public void function handleRequest() {
 
-		var context = new Context(this.endpoint, this.root)
+		var context = this.objectProvider.instance("Context")
 
 		try {
 			var result = context.processRequest()
@@ -88,18 +92,6 @@ component {
 		if (this.statusPaths.keyExists(arguments.code)) {
 			WriteOutput(context.get(this.statusPaths[arguments.code]))
 		}
-	}
-
-	private Endpoint function createEndpoint() {
-		return new Endpoint();
-	}
-
-	private PathSegment function createRoot() {
-		return new RootPathSegment();
-	}
-
-	private RoutesParser function createRoutesParser(required PathSegment root, required CommandFactory commandFactory) {
-		return new RoutesParser(arguments.root, arguments.commandFactory);
 	}
 
 }

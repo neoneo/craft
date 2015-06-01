@@ -1,6 +1,7 @@
 import craft.util.FileFinder;
 
 /**
+ * @singleton
  * @abstract
  */
 component {

@@ -1,3 +1,6 @@
+/**
+ * @singleton
+ */
 component {
 
 	public void function init(required PathSegment root, required CommandFactory commandFactory) {

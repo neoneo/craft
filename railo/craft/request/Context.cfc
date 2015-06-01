@@ -1,15 +1,17 @@
 /**
  * The `Context` is passed to `Component`s and `View`s to provide access to items and parameters pertaining to the request, as well
  * as some convenience methods.
+ *
+ * @transient
  */
 component accessors = true {
 
-	property String characterSet default = "UTF-8";
-	property String contentType;
-	property Boolean deleteFile;
-	property String downloadAs;
-	property String downloadFile;
-	property Numeric statusCode default = 200;
+	property String characterSet default = "UTF-8" inject = false;
+	property String contentType inject = false;
+	property Boolean deleteFile inject = false;
+	property String downloadAs inject = false;
+	property String downloadFile inject = false;
+	property Numeric statusCode default = 200 inject = false;
 
 	property String extension setter = false;
 	property Struct parameters setter = false;

@@ -1,6 +1,6 @@
 import craft.markup.library.CompositeElement;
 
-component extends="CompositeElement" accessors="true" tag="column" {
+component extends="CompositeElement" accessors = true tag="column" {
 
 	property String offset default="";
 	property String pull default="";

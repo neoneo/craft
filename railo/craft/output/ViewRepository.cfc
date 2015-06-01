@@ -1,11 +1,14 @@
-import craft.util.ClassFinder;
+import craft.util.ObjectProvider;
 
+/**
+ * @singleton
+ */
 component {
 
-	public void function init(required TemplateRenderer templateRenderer) {
-		this.templateRenderer = arguments.templateRenderer
-		this.viewFinder = new ClassFinder()
+	public void function init(required ObjectProvider objectProvider) {
+		this.objectProvider = arguments.objectProvider
 
+		this.viewFinder = new ClassFinder()
 		this.views = CreateObject("java", "java.util.concurrent.ConcurrentHashMap").init() // Maps names to view instances.
 	}
 
@@ -42,9 +45,9 @@ component {
 	private View function create(required String name) {
 		if (this.viewFinder.exists(arguments.name)) {
 			var className = this.viewFinder.get(arguments.name)
-			return new "#className#"(this.templateRenderer);
+			return this.objectProvider.instance(className);
 		} else {
-			return new TemplateView(this.templateRenderer, arguments.name);
+			return this.objectProvider.instance("TemplateView", {template: name});
 		}
 	}
 
